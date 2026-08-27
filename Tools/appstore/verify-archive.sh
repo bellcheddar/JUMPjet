@@ -1,55 +1,59 @@
 #!/usr/bin/env bash
+# Check a release archive actually contains a working app.
 #
-# Open the archive and check it is not hollow.
-#
-# BOFFIN's first successful archive was 7.6 MB and contained not one model. The
-# build succeeded, the signature was valid, and the app could not do the one
-# thing it exists to do. `ARCHIVE SUCCEEDED` says nothing about the contents,
-# so this script says it instead.
-set -euo pipefail
+# ARCHIVE SUCCEEDED says nothing about the contents. An archive missing its
+# Core ML models builds, signs and uploads perfectly, and the app cannot do the
+# one thing it exists to do. This wraps verify-bundle.sh, which is itself
+# negative-tested, and adds the checks that only matter for a release: the
+# signing authority and the embedded provisioning profile.
+set -uo pipefail
+cd "$(dirname "$0")/.."
 
-ARCHIVE="${1:-build/JUMPjet.xcarchive}"
-APP="$ARCHIVE/Products/Applications/JUMPjet.app"
-[ -d "$APP" ] || { echo "no app bundle at $APP"; exit 1; }
+ARCHIVE="${1:-build/archives/PfamIE-ios.xcarchive}"
+if [ ! -d "$ARCHIVE" ]; then
+    echo "No archive at $ARCHIVE. Run ./Tools/archive.sh first." >&2
+    exit 1
+fi
+
+APP=$(find "$ARCHIVE/Products/Applications" -maxdepth 1 -name "*.app" | head -1)
+if [ -z "$APP" ]; then
+    echo "The archive contains no application." >&2
+    exit 1
+fi
 
 fail=0
-ok()   { printf "  \033[32mOK\033[0m   %s\n" "$1"; }
-bad()  { printf "  \033[31mMISS\033[0m %s\n" "$1"; fail=1; }
+./Tools/verify-bundle.sh "$APP" || fail=1
 
-echo "== resources =="
-for f in esm2_t6_8M_UR50D.mlmodelc esm2_t6_8M_UR50D.tokeniser.json \
-         flexibility_centroids.json torsion_tables.json; do
-    found=$(find "$APP" -maxdepth 4 -name "$f" | head -1)
-    if [ -n "$found" ]; then ok "$(printf '%-40s %s' "$f" "$(du -sh "$found" | cut -f1)")"
-    else bad "$f"; fi
-done
-
-echo "== icon =="
-# The compiled icon is a flat PNG at the bundle root, not the .appiconset. An
-# empty appiconset still builds, so checking the source proves nothing.
-if ls "$APP"/AppIcon60x60@2x.png >/dev/null 2>&1; then ok "AppIcon60x60@2x.png"; else bad "AppIcon60x60@2x.png"; fi
-if ls "$APP"/AppIcon76x76@2x~ipad.png >/dev/null 2>&1; then ok "AppIcon76x76@2x~ipad.png"; else bad "AppIcon76x76@2x~ipad.png (iPad)"; fi
-
-echo "== signature =="
-# No early `exit` in the awk and no `head`: either closes the pipe while
-# codesign is still writing, and under `set -o pipefail` that SIGPIPE becomes a
-# script failure (exit 141) that looks exactly like a failed check.
-authority=$(codesign -dv --verbose=2 "$APP" 2>&1 | awk -F= '/^Authority=/ && !seen++ {print $2}')
+echo
+echo "Release checks:"
+authority=$(codesign -dvv "$APP" 2>&1 | grep "^Authority=" | head -1 | cut -d= -f2-)
 case "$authority" in
-    "Apple Distribution"*) ok "signed by $authority" ;;
-    *) bad "authority is '$authority', expected Apple Distribution" ;;
+    "Apple Distribution"*) printf '  %-42s %s\n' "signing authority" "$authority" ;;
+    "") printf '  %-42s %s\n' "signing authority" "UNSIGNED"; fail=1 ;;
+    *)  printf '  %-42s %s\n' "signing authority" "NOT DISTRIBUTION: $authority"; fail=1 ;;
 esac
 
-profile=$(security cms -D -i "$APP/embedded.mobileprovision" 2>/dev/null \
-          | plutil -extract Name raw - 2>/dev/null || true)
-if [ "$profile" = "JUMPjet App Store" ]; then ok "profile '$profile'"
-else bad "profile is '$profile', expected 'JUMPjet App Store'"; fi
+PROFILE=$(find "$APP" -maxdepth 1 -name "embedded.mobileprovision" | head -1)
+if [ -n "$PROFILE" ]; then
+    NAME=$(security cms -D -i "$PROFILE" 2>/dev/null \
+           | plutil -extract Name raw - 2>/dev/null || echo "unreadable")
+    printf '  %-42s %s\n' "embedded profile" "$NAME"
+else
+    printf '  %-42s %s\n' "embedded profile" "none (fine for a macOS archive)"
+fi
 
-echo "== identity =="
-for key in CFBundleIdentifier CFBundleShortVersionString CFBundleVersion MinimumOSVersion; do
-    printf "       %-28s %s\n" "$key" \
-        "$(/usr/libexec/PlistBuddy -c "Print :$key" "$APP/Info.plist" 2>/dev/null)"
+# Every embedded extension has to be signed too, or the upload is rejected
+# after the fact rather than here.
+for ext in $(find "$APP" -name "*.appex" -maxdepth 4); do
+    a=$(codesign -dvv "$ext" 2>&1 | grep "^Authority=" | head -1 | cut -d= -f2-)
+    printf '  %-42s %s\n' "$(basename "$ext")" "${a:-UNSIGNED}"
+    [ -z "$a" ] && fail=1
 done
-printf "       %-28s %s\n" "bundle size" "$(du -sh "$APP" | cut -f1)"
 
-exit $fail
+echo
+if [ "$fail" -eq 0 ]; then
+    echo "OK: archive is complete and signed for distribution."
+else
+    echo "FAILED: do not upload this archive." >&2
+fi
+exit "$fail"

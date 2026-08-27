@@ -1,42 +1,38 @@
-# macOS
-.DS_Store
 
+__pycache__/
+.build/
+.DS_Store
+.swiftpm/
+*.dSYM
+*.dSYM.zip
+*.hmap
+*.ipa
+*.jsonl
+*.mlmodelc
+*.moved-aside
+*.pyc
+*.xccheckout
+*.xcscmblueprint
+*.xcuserstate
+# Capture scratch: DerivedData must live OUTSIDE this iCloud-synced folder or
+# codesign fails with "resource fork, Finder information, or similar detritus".
+# Compiled Core ML, derived from the .mlpackage by `xcrun coremlcompiler`.
+# compute_centroids.py, and its own AlphaFold API call.
+# Core ML intermediates (Phase 2)
+# Download cache for the centroid reference structures. Reproducible from
+# Fetched structure cache used during development
+# macOS
+# Session transcripts and scratch (never commit these)
+# Swift Package Manager
 # Xcode
 build/
 DerivedData/
-*.xcuserstate
-xcuserdata/
-*.xcscmblueprint
-*.xccheckout
-*.moved-aside
-*.hmap
-*.ipa
-*.dSYM.zip
-*.dSYM
-
-# Swift Package Manager
-.build/
-.swiftpm/
+Fixtures/cache/
+Fixtures/centroid-cache/
+Models/*.mlmodelc/
 Packages/*/.build/
 Packages/*/.swiftpm/
-
-# Session transcripts and scratch (never commit these)
-*.jsonl
 scratch/
 scratchpad/
-
-# Fetched structure cache used during development
-Fixtures/cache/
-
-# Core ML intermediates (Phase 2)
-*.mlmodelc
 Tools/coreml/.venv/
-
-# Compiled Core ML, derived from the .mlpackage by `xcrun coremlcompiler`.
-Models/*.mlmodelc/
-
-# Download cache for the centroid reference structures. Reproducible from
-# compute_centroids.py, and its own AlphaFold API call.
-Fixtures/centroid-cache/
-__pycache__/
-*.pyc
+xcuserdata/

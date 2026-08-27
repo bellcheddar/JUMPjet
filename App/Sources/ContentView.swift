@@ -35,7 +35,7 @@ struct ContentView: View {
                         HStack(alignment: .top, spacing: HUDMetrics.panelSpacing) {
                             viewerArea
                                 .frame(maxWidth: .infinity)
-                            ScrollView { instruments }
+                            instrumentColumn
                                 .frame(width: sizeClass == .regular ? 340 : 300)
                         }
                     } else {
@@ -53,7 +53,7 @@ struct ContentView: View {
                             .frame(
                                 maxHeight: hasRecord
                                     ? geometry.size.height * 0.34 : .infinity)
-                        ScrollView { instruments }
+                        instrumentColumn
                             .frame(
                                 maxHeight: hasRecord
                                     ? .infinity
@@ -64,6 +64,39 @@ struct ContentView: View {
             }
         }
         .foregroundStyle(HUDPalette.text)
+    }
+
+    // MARK: - Instruments
+
+    /// The instrument column, plus the seam a screenshot run needs.
+    ///
+    /// `JUMPJET_PANEL=recorder` scrolls straight to that panel once a record
+    /// exists. Without it there is no way to photograph anything below the
+    /// fold from outside the app: the column scrolls and a capture script
+    /// cannot drag. It reads an environment variable rather than a build flag
+    /// so a release build behaves identically when nothing sets it, which is
+    /// the choice `JUMPJET_AUTOLOAD` already makes.
+    @ViewBuilder
+    private var instrumentColumn: some View {
+        ScrollViewReader { proxy in
+            ScrollView { instruments }
+                .onChange(of: model.run.record != nil) { _, hasRecord in
+                    guard hasRecord, let panel = Self.panelToShow else { return }
+                    // A record arriving relays the whole column, so scrolling
+                    // in the same turn lands on a layout that is about to be
+                    // replaced.
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(600))
+                        withAnimation { proxy.scrollTo(panel, anchor: .top) }
+                    }
+                }
+        }
+    }
+
+    private static var panelToShow: String? {
+        let value = ProcessInfo.processInfo.environment["JUMPJET_PANEL"]?
+            .trimmingCharacters(in: .whitespaces)
+        return (value?.isEmpty == false) ? value : nil
     }
 
     // MARK: - Viewer
@@ -111,8 +144,8 @@ struct ContentView: View {
                 if let record = model.run.record {
                     // Playback above the analysis: the analysis is what to look
                     // at, and the transport is how you look at it.
-                    PlaybackPanel(run: model.run)
-                    ExportPanel(model: model)
+                    PlaybackPanel(run: model.run).id("playback")
+                    ExportPanel(model: model).id("export")
                     FlightRecorderPanel(
                         record: record, structure: loaded.structure,
                         // Written as a closure, not `model.select`: `model` is
@@ -120,7 +153,8 @@ struct ContentView: View {
                         // through the dynamic-member subscript and comes back
                         // as a Binding.
                         onSelect: { model.select($0) })
-                    EnginePanel(model: model)
+                        .id("recorder")
+                    EnginePanel(model: model).id("engine")
                     SortiePanel(model: loaded)
                 } else if model.run.stage.isBusy {
                     EnginePanel(model: model)
@@ -129,15 +163,15 @@ struct ContentView: View {
                     SortiePanel(model: loaded)
                     EnginePanel(model: model)
                 }
-                DisplayPanel(model: model, structure: loaded.structure)
+                DisplayPanel(model: model, structure: loaded.structure).id("display")
             } else {
                 HUDPanel("Engines") {
                     VStack(alignment: .leading, spacing: 8) {
                         HUDLamp(role: .inactive, text: "JetEngine offline")
                         HUDLamp(role: .inactive, text: "Neural prior offline")
                         Text(
-                            "The sampler and the neural flexibility prior arrive in Phase 2. "
-                                + "Phase 1 flies the airframe: fetch, parse and view."
+                            "Enter an accession to bring the airframe online. The sampler "
+                                + "and the neural flexibility prior spin up with it."
                         )
                         .font(HUDTypography.body(12))
                         .foregroundStyle(HUDPalette.muted)
@@ -168,7 +202,7 @@ private struct StandbyView: View {
             Text("Enter a UniProt accession")
                 .font(HUDTypography.title())
                 .foregroundStyle(HUDPalette.text)
-            Text("Vertical take-off molecular dynamics. No cluster, no queue, no cloud.")
+            Text("Vertical take-off conformational sampling. No cluster, no queue, no cloud.")
                 .font(HUDTypography.body(13))
                 .foregroundStyle(HUDPalette.muted)
                 .multilineTextAlignment(.center)
