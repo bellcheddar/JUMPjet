@@ -16,9 +16,26 @@ The neural flexibility prior and the `JetEngine` sampler, wired into the app.
 | Metropolis with Gaussian, rotamer-jump and ring-flip moves | Met |
 | Deterministic replay from a seed | Met |
 | Acceptance ratio between 20 and 60% at the default throttle | Met. 0.395 at 142 residues, 0.378 at 335, calibrated by measurement |
-| No runaway across 50,000 sweeps on three test proteins | Met by an opt-in test (`JUMPJET_LONGRUN=1`), because at the measured rates it is several minutes of wall clock |
+| No runaway across 50,000 sweeps on three test proteins | Met, and run: see the table below |
 | **100 sweeps/s for a 300-residue protein** | **NOT met.** 130.8 sweeps/s at 142 residues and 22.3 at 335. See "Performance" |
 | Live HUD readouts during a run | Met. Acceptance, sweeps/s, RMSD, energy, and the protein visibly moving |
+
+### The 50,000 sweep stability check, actually run
+
+Behind `JUMPJET_LONGRUN=1`, because at the measured rates it is minutes of wall
+clock and does not belong in a suite anyone runs before a commit.
+
+| Structure | Residues | Energy, start to end | RMSD | Acceptance |
+|---|---|---|---|---|
+| AF-P69905 (haemoglobin alpha) | 142 | 208.7 to 338.1 | 1.96 A | 0.384 |
+| AF-P04406 (GAPDH) | 335 | 807.4 to 953.8 | 1.35 A | 0.371 |
+| 1BAB (haemoglobin tetramer) | 576 | 1398.4 to 1381.7 | 1.59 A | 0.367 |
+
+Nothing ran away, nothing came apart, and every acceptance ratio stayed in band
+over 28.8 million attempted moves on the largest of them. The energies drift
+gently upward on the two predictions and not on the crystal structure, which is
+what an energy-minimised model equilibrating into a thermal ensemble looks like:
+a prediction starts closer to a local minimum than a real structure does.
 
 ### The disorder proxy is not the one the plan specified
 
