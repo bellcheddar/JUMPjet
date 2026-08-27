@@ -46,6 +46,30 @@ public enum Element: String, Sendable, Hashable, CaseIterable, Codable {
         }
     }
 
+    /// Covalent radius in angstroms (Cordero 2008), used to decide whether two
+    /// atoms are bonded. Bond detection compares the distance against the sum
+    /// of these plus a tolerance, which is why they matter more than they look.
+    public var covalentRadius: Float {
+        switch self {
+        case .hydrogen: 0.31
+        case .carbon: 0.76
+        case .nitrogen: 0.71
+        case .oxygen: 0.66
+        case .sulphur: 1.05
+        case .selenium: 1.20
+        case .phosphorus: 1.07
+        case .magnesium: 1.41
+        case .calcium: 1.76
+        case .zinc: 1.22
+        case .iron: 1.32
+        case .manganese: 1.39
+        case .sodium: 1.66
+        case .potassium: 2.03
+        case .chlorine: 1.02
+        case .unknown: 0.77
+        }
+    }
+
     /// Display colour as a linear RGB triple, following the CPK convention the
     /// structural biology world already reads fluently.
     public var cpkColour: SIMD3<Float> {

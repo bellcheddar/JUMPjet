@@ -21,6 +21,11 @@ let package = Package(
     dependencies: [
         .package(path: "../JumpjetCore"),
         .package(path: "../JumpjetHUD"),
+        // TEST ONLY. Named at package level so the test target can reach it,
+        // but deliberately absent from the JumpjetViewer target's dependencies:
+        // the renderer must not know how a file was read. The tests use it to
+        // render real fixtures rather than hand-built toy structures.
+        .package(path: "../JumpjetParse"),
     ],
     targets: [
         .target(
@@ -30,7 +35,7 @@ let package = Package(
         ),
         .testTarget(
             name: "JumpjetViewerTests",
-            dependencies: ["JumpjetViewer"],
+            dependencies: ["JumpjetViewer", "JumpjetParse"],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
     ]
