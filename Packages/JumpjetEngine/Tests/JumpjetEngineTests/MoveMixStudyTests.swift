@@ -34,6 +34,13 @@ final class MoveMixStudyTests: XCTestCase {
 
         // Every mix normalised to the same total, so the only thing changing is
         // WHICH moves are proposed, not how many.
+        //
+        // The metric that decides this is backbone motion per SECOND, not per
+        // sweep. Fewer backbone moves means fewer sweeps are needed to reach the
+        // same backbone sampling only if a sweep costs the same, and it does
+        // not: a backbone move costs a hundred times what a side-chain move
+        // costs, so trading them for cheaper sweeps can buy MORE backbone
+        // motion per unit of wall clock, not less.
         let mixes: [(String, MoveMix)] = [
             ("as shipped", MoveMix()),
             ("no backbone", MoveMix(
@@ -45,9 +52,18 @@ final class MoveMixStudyTests: XCTestCase {
             ("half backbone", MoveMix(
                 sideChainPerturbation: 0.56, rotamerJump: 0.25, ringFlip: 0.08,
                 backbonePerturbation: 0.11)),
+            ("backbone 6%", MoveMix(
+                sideChainPerturbation: 0.60, rotamerJump: 0.26, ringFlip: 0.08,
+                backbonePerturbation: 0.06)),
+            ("backbone 3%", MoveMix(
+                sideChainPerturbation: 0.62, rotamerJump: 0.27, ringFlip: 0.08,
+                backbonePerturbation: 0.03)),
+            ("backbone 1.5%", MoveMix(
+                sideChainPerturbation: 0.63, rotamerJump: 0.275, ringFlip: 0.08,
+                backbonePerturbation: 0.015)),
         ]
 
-        print("\n  mix              sweeps/s   accept   RMSD    Rg drift   backbone RMSF")
+        print("\n  mix              sweeps/s   accept   RMSD    Rg drift   bbRMSF   bbRMSF/s")
         for (name, mix) in mixes {
             let started = Date()
             let sampler = MonteCarloSampler(
@@ -79,9 +95,10 @@ final class MoveMixStudyTests: XCTestCase {
             backboneShift /= Float(max(1, counted))
 
             print(String(
-                format: "  %-15s %8.1f  %7.3f  %6.2f  %9.3f  %14.3f",
+                format: "  %-15s %8.1f  %7.3f  %6.2f  %9.3f  %7.3f  %9.4f",
                 (name as NSString).utf8String!, 400 / seconds,
-                trajectory.acceptanceRatio, rmsd, radiusDrift, backboneShift))
+                trajectory.acceptanceRatio, rmsd, radiusDrift, backboneShift,
+                backboneShift / Float(seconds)))
         }
         print("")
     }

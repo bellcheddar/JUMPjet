@@ -171,6 +171,16 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
 - **Where the time goes.** A backbone rotation moves about a quarter of the
   atoms and each needs its neighbourhood re-tested, which is 97% of the cost.
   Side-chain moves touch five atoms and are effectively free.
+- **Metal is unlikely to be the answer, and the reason is latency not
+  throughput.** The build plan's risk table names a Metal clash grid, but a
+  Metropolis move needs its energy delta BEFORE the next move can be proposed,
+  so every dispatch is a synchronous round trip. At 335 residues there are 74
+  backbone moves per sweep; 100 sweeps a second is 7,400 round trips a second,
+  and Apple-silicon dispatch-and-wait is tens to hundreds of microseconds. The
+  arithmetic does not close even if the kernel itself were free. What WOULD
+  close it is an algorithmic change (local concerted-rotation backbone moves,
+  which touch six to eight residues instead of a quarter of the protein), or
+  batching genuinely independent moves. Measure before writing any of it.
 - **Parallelism made it SEVEN TIMES SLOWER.** A deterministic
   `concurrentPerform` split (disjoint stamp buffers, fixed-order reduction,
   bit-identical acceptance) took 335 residues from 19.6 sweeps/s to 3.1. The
