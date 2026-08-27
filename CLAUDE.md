@@ -308,6 +308,29 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.mdeller.jump
   described the app as "molecular dynamics", which is the one claim this
   project exists not to make. Both were about to become App Store screenshots.
 
+### App Store screenshots
+
+- **A system notification banner will land on a capture eventually.** "Ready
+  for Apple Intelligence" hit exactly one shot of one device and shipped,
+  because the other set was checked by eye and this one was assumed to match.
+  `Tools/appstore/banner-check.py` measures mean luminance of the band under
+  the status bar: about 30 clean, 143 with a banner. The capture script retakes
+  on failure.
+- **Do NOT threshold on "fraction of bright pixels" in that band.** The amber
+  LAUNCH button sits there and puts it at 10 to 15 per cent on a perfectly
+  clean capture, so that measure flags every shot. The first version of the
+  detector did exactly this and reported 12 banners out of 15.
+- **Screenshots freeze once a version is `WAITING_FOR_REVIEW`**: delete returns
+  409 *"Can't Delete Screenshot After Submit for review"* and reorder returns
+  *"Can't Reorder Assets after Submission"*. Withdrawing (PATCH the
+  reviewSubmission with `canceled: true`) moves the version to
+  `DEVELOPER_REJECTED`, which is editable, and loses the queue position.
+- **`upload_screenshots` skips by filename**, so re-running it after a re-shoot
+  is a no-op that prints "already there" and keeps the old image.
+  `store_metadata.py clear-screenshots` first.
+- Override the status bar to 9:41 with full bars. It is Apple's convention and
+  it stops the clock differing between device sets shot minutes apart.
+
 ### GitHub Pages for the privacy policy
 
 - **`Docs` is not `docs`.** They are the same directory on a case-insensitive
