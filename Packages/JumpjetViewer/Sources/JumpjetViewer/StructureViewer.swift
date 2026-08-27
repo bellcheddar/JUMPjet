@@ -48,9 +48,11 @@ private struct GeometryKey: Equatable {
     let colourMode: ColourMode
     let showsSideChains: Bool
     let visibleChains: Set<Int>
+    let highlightedResidues: Set<Int>
     let frameVersion: Int
 
     init(_ structure: Structure, _ options: ViewerOptions, _ frameVersion: Int) {
+        self.highlightedResidues = options.highlightedResidues
         self.identifier = structure.identifier
         self.atomCount = structure.atomCount
         self.colourMode = options.colourMode

@@ -1,5 +1,6 @@
 import Foundation
 import JumpjetCore
+import JumpjetAnalysis
 import JumpjetEngine
 import JumpjetNeural
 import Observation
@@ -90,6 +91,11 @@ final class RunCoordinator {
     /// this: an identifier and an atom count are identical between frames, so
     /// without a counter nothing would ever redraw.
     private(set) var frameVersion = 0
+    /// The flight recorder's output, computed once the run finishes.
+    private(set) var record: FlightRecord?
+    /// A frame the user has scrubbed to from the analysis, or `nil` to follow
+    /// the live run.
+    private(set) var pinnedFrame: Int?
 
     var configuration = RunConfiguration()
 
@@ -153,6 +159,8 @@ final class RunCoordinator {
         cancel()
         liveStructure = nil
         frameVersion = 0
+        record = nil
+        pinnedFrame = nil
         stopFlag.reset()
         let configuration = configuration
 
@@ -214,6 +222,21 @@ final class RunCoordinator {
 
                 guard !Task.isCancelled else { return }
                 self.trajectory = trajectory
+
+                // The analysis runs off the main actor. It is measured at 0.02 s
+                // for a 335-residue, 201-frame run, so this is not about the
+                // time it takes: it is that the cost scales with frames times
+                // residues, and a user who asks for 50,000 sweeps at a stride
+                // of 5 should not find the interface frozen while it thinks.
+                let frames = TrajectoryFrames(
+                    positions: trajectory.positions, atomCount: trajectory.atomCount,
+                    sweeps: trajectory.sweeps)
+                let priorValues = prior.values
+                self.record = await Task.detached(priority: .userInitiated) {
+                    FlightRecorder.analyse(
+                        structure: structure, trajectory: frames, flexibility: priorValues)
+                }.value
+
                 self.stage = .finished(
                     sweeps: trajectory.sweeps.last ?? 0,
                     seconds: Date().timeIntervalSince(started))
@@ -251,6 +274,17 @@ final class RunCoordinator {
         task?.cancel()
         task = nil
         if stage.isBusy { stage = .idle }
+    }
+
+    /// Show a specific frame of the finished trajectory.
+    func show(frame index: Int) {
+        guard let trajectory, trajectory.frameCount > 0 else { return }
+        let clamped = min(max(0, index), trajectory.frameCount - 1)
+        guard var structure = baseStructure else { return }
+        structure.setPositions(Array(trajectory.frame(clamped)))
+        pinnedFrame = clamped
+        liveStructure = structure
+        frameVersion += 1
     }
 
     func reset() {

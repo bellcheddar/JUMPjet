@@ -18,7 +18,7 @@ ROOT = File.expand_path("..", __dir__)
 project = Xcodeproj::Project.open(File.join(ROOT, "JUMPjet.xcodeproj"))
 app = project.targets.find { |t| t.name == "JUMPjet" } or abort "no JUMPjet target"
 
-NEW_PACKAGES = %w[JumpjetNeural JumpjetEngine].freeze
+NEW_PACKAGES = %w[JumpjetNeural JumpjetEngine JumpjetAnalysis].freeze
 
 # The model artefacts. Xcode compiles a .mlpackage to a .mlmodelc inside the
 # bundle at build time, which is what ESMEmbedder.Resources.inBundle looks for.

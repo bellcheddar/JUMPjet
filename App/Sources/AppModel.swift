@@ -1,5 +1,6 @@
 import Foundation
 import JumpjetCore
+import JumpjetAnalysis
 import JumpjetEngine
 import JumpjetFetch
 import JumpjetNeural
@@ -150,6 +151,29 @@ final class AppModel {
         recents = Array(recents.prefix(Self.recentsLimit))
         recentAccessions = recents
         defaults.set(recents, forKey: Self.recentsKey)
+    }
+
+    // MARK: - Flight recorder
+
+    /// Act on a tap in the flight recorder.
+    ///
+    /// Build plan, Phase 3 item 6: tapping an analysis element takes the viewer
+    /// to that residue or frame. A table of jump-happy residues that points at
+    /// nothing is a table nobody can act on.
+    func select(_ selection: AnalysisSelection) {
+        switch selection {
+        case .residue(let index):
+            // Toggle, and replace rather than accumulate. Highlighting that can
+            // only be added ends with the whole protein amber and nothing
+            // distinguishable in it.
+            if options.highlightedResidues.contains(index) {
+                options.highlightedResidues.remove(index)
+            } else {
+                options.highlightedResidues = [index]
+            }
+        case .frame(let index):
+            run.show(frame: index)
+        }
     }
 
     // MARK: - Chain selection

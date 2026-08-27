@@ -1,4 +1,5 @@
 import JumpjetCore
+import JumpjetAnalysis
 import JumpjetHUD
 import JumpjetViewer
 import SwiftUI
@@ -38,14 +39,25 @@ struct ContentView: View {
                                 .frame(width: sizeClass == .regular ? 340 : 300)
                         }
                     } else {
+                        // Once there is a flight record the balance flips.
+                        // Before a run the structure is what you came for;
+                        // after one the analysis is, and six panels under a
+                        // 330 point window is a scroll nobody finishes.
+                        //
+                        // The panel column was already raised from 260 to 330
+                        // when Phase 2 added the engines, because at 260 the
+                        // RUN control sat below the fold and the app looked as
+                        // though it had none.
+                        let hasRecord = model.run.record != nil
                         viewerArea
-                            .frame(maxHeight: .infinity)
+                            .frame(
+                                maxHeight: hasRecord
+                                    ? geometry.size.height * 0.34 : .infinity)
                         ScrollView { instruments }
-                            // Taller since Phase 2 added the engine panel: at
-                            // 260 the RUN control was below the fold on a
-                            // phone, which made the app look like it had no
-                            // engines at all.
-                            .frame(maxHeight: sizeClass == .regular ? 420 : 330)
+                            .frame(
+                                maxHeight: hasRecord
+                                    ? .infinity
+                                    : (sizeClass == .regular ? 420 : 330))
                     }
                 }
                 .padding(HUDMetrics.panelSpacing)
@@ -91,10 +103,21 @@ struct ContentView: View {
     private var instruments: some View {
         VStack(spacing: HUDMetrics.panelSpacing) {
             if let loaded = model.status.model {
-                // The engines come first once they are doing something. A run
-                // in progress is the thing the user is watching, and on a phone
-                // the instrument column scrolls, so third place means offscreen.
-                if model.run.stage.isBusy || model.run.trajectory != nil {
+                // Newest information first. The instrument column scrolls on a
+                // phone, so "third panel down" means offscreen, and the panel
+                // worth reading changes as a sortie progresses: the engines
+                // while they are running, the flight recorder once they stop.
+                if let record = model.run.record {
+                    FlightRecorderPanel(
+                        record: record, structure: loaded.structure,
+                        // Written as a closure, not `model.select`: `model` is
+                        // `@Bindable`, so a bare method reference resolves
+                        // through the dynamic-member subscript and comes back
+                        // as a Binding.
+                        onSelect: { model.select($0) })
+                    EnginePanel(model: model)
+                    SortiePanel(model: loaded)
+                } else if model.run.stage.isBusy {
                     EnginePanel(model: model)
                     SortiePanel(model: loaded)
                 } else {
@@ -102,13 +125,6 @@ struct ContentView: View {
                     EnginePanel(model: model)
                 }
                 DisplayPanel(model: model, structure: loaded.structure)
-                if !loaded.report.summary.isEmpty {
-                    HUDPanel("Parser") {
-                        Text(loaded.report.summary)
-                            .font(HUDTypography.body(12))
-                            .foregroundStyle(HUDPalette.muted)
-                    }
-                }
             } else {
                 HUDPanel("Engines") {
                     VStack(alignment: .leading, spacing: 8) {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08F7BD861DD1AFEAEE537762 /* FlightRecorderPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EE32BA8EACD75C7167E581 /* FlightRecorderPanel.swift */; };
 		0C84522D303D03BCCB3373AF /* torsion_tables.json in Resources */ = {isa = PBXBuildFile; fileRef = CAF99B196BC11D2C4547FF8A /* torsion_tables.json */; };
 		0F4101BD3FB9B59327277BC8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A77372F6CC773C8A8AF38A /* Assets.xcassets */; };
 		12F005D3346CEB9A442E0FD3 /* AccessionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */; };
@@ -14,6 +15,8 @@
 		2054A6A7EC43F8813A31EC1F /* InstrumentPanels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */; };
 		367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */; };
 		5FDF6457B0995D2F79539BBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
+		7E7680288876DB4BD17C136B /* FlightRecorderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9385E98655AEEA0A29EA4E /* FlightRecorderUITests.swift */; };
+		7FD704402989A6425A490CE0 /* FlightRecorderViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2501D41CF14B01D1E4933DA6 /* FlightRecorderViews.swift */; };
 		8DECF8F9F9C3C136AD8ABF16 /* esm2_t6_8M_UR50D.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 5F4F5181596011987DF0BAAE /* esm2_t6_8M_UR50D.mlpackage */; };
 		92B5EAB294113C4645A37572 /* RunCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */; };
 		9F996EB0674A93A7EF54C4F9 /* esm2_t6_8M_UR50D.tokeniser.json in Resources */ = {isa = PBXBuildFile; fileRef = 77BD586C9A220F53FAA261A2 /* esm2_t6_8M_UR50D.tokeniser.json */; };
@@ -45,9 +48,11 @@
 
 /* Begin PBXFileReference section */
 		02A77372F6CC773C8A8AF38A /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = App/Resources/Assets.xcassets; sourceTree = "<group>"; };
+		08EE32BA8EACD75C7167E581 /* FlightRecorderPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FlightRecorderPanel.swift; path = App/Sources/FlightRecorderPanel.swift; sourceTree = "<group>"; };
 		0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AccessionBar.swift; path = App/Sources/AccessionBar.swift; sourceTree = "<group>"; };
 		1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JUMPjetApp.swift; path = App/Sources/JUMPjetApp.swift; sourceTree = "<group>"; };
 		1CB5E2BEC3A4302E567932E4 /* flexibility_centroids.json */ = {isa = PBXFileReference; includeInIndex = 1; name = flexibility_centroids.json; path = Models/flexibility_centroids.json; sourceTree = "<group>"; };
+		2501D41CF14B01D1E4933DA6 /* FlightRecorderViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FlightRecorderViews.swift; path = App/Sources/FlightRecorderViews.swift; sourceTree = "<group>"; };
 		27599206621DD74001DF7C6D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		28B30285D7172CBC0EF35291 /* JUMPJET_BUILD_PLAN.md */ = {isa = PBXFileReference; includeInIndex = 1; name = JUMPJET_BUILD_PLAN.md; path = Docs/JUMPJET_BUILD_PLAN.md; sourceTree = "<group>"; };
 		3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InstrumentPanels.swift; path = App/Sources/InstrumentPanels.swift; sourceTree = "<group>"; };
@@ -63,6 +68,7 @@
 		C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RunCoordinator.swift; path = App/Sources/RunCoordinator.swift; sourceTree = "<group>"; };
 		CAF99B196BC11D2C4547FF8A /* torsion_tables.json */ = {isa = PBXFileReference; includeInIndex = 1; name = torsion_tables.json; path = Models/torsion_tables.json; sourceTree = "<group>"; };
 		ECE5C811AD6CBF8E22F9F138 /* JUMPjetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JUMPjetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE9385E98655AEEA0A29EA4E /* FlightRecorderUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FlightRecorderUITests.swift; path = App/UITests/FlightRecorderUITests.swift; sourceTree = "<group>"; };
 		EFDC331CA809B86B402364F2 /* JUMPjetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JUMPjetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB419058136043ABDC127E9E /* AppModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModel.swift; path = App/Sources/AppModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -148,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */,
+				EE9385E98655AEEA0A29EA4E /* FlightRecorderUITests.swift */,
 			);
 			name = UITests;
 			sourceTree = SOURCE_ROOT;
@@ -198,6 +205,8 @@
 				1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */,
 				C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */,
 				A7BF15B8AF34303520262DBD /* EnginePanel.swift */,
+				08EE32BA8EACD75C7167E581 /* FlightRecorderPanel.swift */,
+				2501D41CF14B01D1E4933DA6 /* FlightRecorderViews.swift */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -244,6 +253,7 @@
 				A7A598D7034DC70D16E6CA66 /* JumpjetViewer */,
 				13EF67724CDECFACA8A58D51 /* JumpjetNeural */,
 				E9D3FC3CB74D0610CB5090DF /* JumpjetEngine */,
+				551B3E07FACDA510ED1B92BE /* JumpjetAnalysis */,
 			);
 			productName = JUMPjet;
 			productReference = 88B714579B2910031D973FB5 /* JUMPjet.app */;
@@ -294,6 +304,7 @@
 				59EDAA33AE3D45A20563DC08 /* XCLocalSwiftPackageReference "JumpjetViewer" */,
 				D1C72BC85FDDBF3BF5545E03 /* XCLocalSwiftPackageReference "JumpjetNeural" */,
 				33F1FFEE35E29A4E9FCB6508 /* XCLocalSwiftPackageReference "JumpjetEngine" */,
+				D03DAF0A65CE701635C71CA4 /* XCLocalSwiftPackageReference "JumpjetAnalysis" */,
 			);
 			preferredProjectObjectVersion = 100;
 			productRefGroup = 2DD0C8EB9259CC885E0E6177 /* Products */;
@@ -350,6 +361,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9DFED2C9E87959204F78DA3 /* LaunchUITests.swift in Sources */,
+				7E7680288876DB4BD17C136B /* FlightRecorderUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +376,8 @@
 				367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */,
 				92B5EAB294113C4645A37572 /* RunCoordinator.swift in Sources */,
 				C02C05C6E4B9213D65060C6C /* EnginePanel.swift in Sources */,
+				08F7BD861DD1AFEAEE537762 /* FlightRecorderPanel.swift in Sources */,
+				7FD704402989A6425A490CE0 /* FlightRecorderViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -682,6 +696,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/JumpjetParse;
 		};
+		D03DAF0A65CE701635C71CA4 /* XCLocalSwiftPackageReference "JumpjetAnalysis" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetAnalysis;
+		};
 		D1C72BC85FDDBF3BF5545E03 /* XCLocalSwiftPackageReference "JumpjetNeural" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/JumpjetNeural;
@@ -707,6 +725,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C5C4B593EF9CA85D639F9241 /* XCLocalSwiftPackageReference "JumpjetParse" */;
 			productName = JumpjetParse;
+		};
+		551B3E07FACDA510ED1B92BE /* JumpjetAnalysis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D03DAF0A65CE701635C71CA4 /* XCLocalSwiftPackageReference "JumpjetAnalysis" */;
+			productName = JumpjetAnalysis;
 		};
 		A7A598D7034DC70D16E6CA66 /* JumpjetViewer */ = {
 			isa = XCSwiftPackageProductDependency;

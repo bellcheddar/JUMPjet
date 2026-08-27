@@ -11,12 +11,22 @@ public struct ViewerOptions: Sendable, Hashable {
     public var visibleChains: Set<Int> = []
     public var tubeRadius: Float = 0.42
     public var stickRadius: Float = 0.12
+    /// Residues drawn in the accent colour, whatever the colour mode.
+    ///
+    /// Phase 3 needs this: tapping a jump-happy residue or a flipped ring in
+    /// the analysis has to point at something in the structure, and a table of
+    /// labels that highlights nothing is a table nobody can act on.
+    public var highlightedResidues: Set<Int> = []
 
     public init() {}
 
     public func drawsChain(_ index: Int) -> Bool {
         visibleChains.isEmpty || visibleChains.contains(index)
     }
+
+    /// Afterburner amber, the same colour a jump event gets everywhere else in
+    /// the app. Reusing it here is deliberate: one colour, one meaning.
+    public static let highlightColour = SIMD3<Float>(1.0, 0xB3 / 255.0, 0)
 }
 
 /// Builds a SceneKit scene from a structure.
@@ -63,8 +73,11 @@ public enum StructureScene {
     ) {
         root.childNodes.forEach { $0.removeFromParentNode() }
 
-        let colours = ResidueColouring.colours(
+        var colours = ResidueColouring.colours(
             for: structure, mode: options.colourMode, flexibility: flexibility)
+        for residue in options.highlightedResidues where colours.indices.contains(residue) {
+            colours[residue] = ViewerOptions.highlightColour
+        }
         // Centre on the whole structure, not on the visible subset: filtering
         // to one chain of a tetramer should not slide the other three across
         // the panel as it is toggled.
