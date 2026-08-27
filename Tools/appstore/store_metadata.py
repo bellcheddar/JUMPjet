@@ -398,6 +398,87 @@ def upload_screenshots(auth: str, app: str) -> None:
             order_screenshots(auth, set_id)
 
 
+def submit_for_review(auth: str, app: str) -> None:
+    """
+    Put the current version into Apple's review queue.
+
+    Deliberately NOT part of `all`: submitting is outward-facing and it is not
+    something a metadata refresh should ever do as a side effect.
+
+    Three calls, and the third is the one that matters. Creating a
+    reviewSubmission and adding an item to it leaves everything in
+    READY_FOR_REVIEW, which looks submitted and is not: nothing reaches Apple
+    until the PATCH sets submitted=true.
+    """
+    existing = call("GET", f"/apps/{app}/reviewSubmissions?limit=10", auth=auth)["data"]
+    open_subs = [s for s in existing
+                 if s["attributes"].get("state") in ("READY_FOR_REVIEW",)]
+    if open_subs:
+        submission = open_subs[0]
+        print(f"  reusing open submission {submission['id']}")
+    else:
+        submission = call("POST", "/reviewSubmissions", {
+            "data": {"type": "reviewSubmissions",
+                     "attributes": {"platform": "IOS"},
+                     "relationships": {"app": {
+                         "data": {"type": "apps", "id": app}}}}
+        }, auth=auth)["data"]
+        print(f"  created submission {submission['id']}")
+
+    items = call("GET", f"/reviewSubmissions/{submission['id']}/items", auth=auth)["data"]
+    if items:
+        print(f"  {len(items)} item(s) already attached")
+    else:
+        for version in versions(auth, app):
+            call("POST", "/reviewSubmissionItems", {
+                "data": {"type": "reviewSubmissionItems",
+                         "relationships": {
+                             "reviewSubmission": {"data": {
+                                 "type": "reviewSubmissions", "id": submission["id"]}},
+                             "appStoreVersion": {"data": {
+                                 "type": "appStoreVersions", "id": version["id"]}}}}
+            }, auth=auth)
+            print(f"  attached version {version['attributes'].get('versionString')} "
+                  f"[{version['attributes'].get('platform')}]")
+
+    call("PATCH", f"/reviewSubmissions/{submission['id']}", {
+        "data": {"type": "reviewSubmissions", "id": submission["id"],
+                 "attributes": {"submitted": True}}
+    }, auth=auth)
+    state = call("GET", f"/reviewSubmissions/{submission['id']}",
+                 auth=auth)["data"]["attributes"].get("state")
+    print(f"  submitted. state={state}")
+
+
+def clear_screenshots(auth: str, app: str) -> None:
+    """
+    Delete every uploaded screenshot, so a re-capture actually replaces them.
+
+    `upload_screenshots` skips any file whose name it already sees, which makes
+    re-running it after a re-shoot a no-op that prints "already there" and
+    leaves the old image in the listing. That is the right default (uploads are
+    slow and mostly idempotent) but it means replacing a capture needs this
+    first.
+    """
+    removed = 0
+    for version in versions(auth, app):
+        platform = version["attributes"].get("platform")
+        for loc in call("GET",
+                        f"/appStoreVersions/{version['id']}/appStoreVersionLocalizations",
+                        auth=auth)["data"]:
+            for st in call("GET",
+                           f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets",
+                           auth=auth)["data"]:
+                shots = call("GET", f"/appScreenshotSets/{st['id']}/appScreenshots",
+                             auth=auth)["data"]
+                for shot in shots:
+                    call("DELETE", f"/appScreenshots/{shot['id']}", auth=auth)
+                    removed += 1
+                print(f"  {platform} {st['attributes']['screenshotDisplayType']}: "
+                      f"deleted {len(shots)}")
+    print(f"  {removed} screenshots removed")
+
+
 def order_screenshots(auth: str, set_id: str) -> None:
     """
     Tell the set what order its screenshots go in.
@@ -616,6 +697,8 @@ if __name__ == "__main__":
         "agerating": set_age_rating,
         "rights": set_content_rights,
         "screenshots": upload_screenshots,
+        "clear-screenshots": clear_screenshots,
+        "submit": submit_for_review,
         "eula": set_eula,
         "attach-builds": attach_builds,
         "review": set_review_details,
@@ -624,7 +707,14 @@ if __name__ == "__main__":
     if command == "all":
         # Not attach-builds: a build still processing returns 409, and that is
         # a normal state rather than a failure worth printing on every run.
-        chosen = {k: v for k, v in steps.items() if k != "attach-builds"}
+        #
+        # And emphatically not clear-screenshots, which is destructive: it runs
+        # only when asked by name. Inside "all" it would delete every uploaded
+        # screenshot on each run, and since the order here is the dict's, it
+        # could just as easily run AFTER the upload and leave the listing with
+        # no images at all.
+        skip = {"attach-builds", "clear-screenshots", "submit"}
+        chosen = {k: v for k, v in steps.items() if k not in skip}
     else:
         chosen = {command: steps[command]}
     for name, fn in chosen.items():
