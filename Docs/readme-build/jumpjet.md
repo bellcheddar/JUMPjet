@@ -2,7 +2,7 @@
 
 > **Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.**
 
-![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-8%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-224%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-3%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-9%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-232%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-4%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -52,7 +52,9 @@ Phase 1 is complete and shipping the airframe.
 | Rotamer jumps, ring flips, basins, dwell times | ✅ Built |
 | Validation panel: RMSF against the neural prior | ✅ Built |
 | Tap-through from any analysis element to the 3D view | ✅ Built |
-| Trajectory playback and H.264 movie export | 🔜 Phase 4 |
+| Trajectory playback with a scrubber, ghost trail and event ticks | ✅ Built |
+| H.264 movie export with HUD burn-in and a slow orbit | ✅ Built |
+| Sortie report card, exportable as PNG | ✅ Built |
 
 ## 🧱 Stack
 
@@ -65,12 +67,12 @@ Pure Apple platform. No third-party dependency manager, nothing vendored, nothin
 | Physics | Swift, written from scratch as `JetEngine`. Metal is the named next lever, not yet used |
 | Machine learning | Core ML, ESM-2 t6-8M, 98% of operations planned on the Apple Neural Engine |
 | Charts | Swift Charts, HUD-styled, with the raster and terrain map drawn in a `Canvas` |
-| Movie (Phase 4) | `SCNRenderer` offscreen into `AVAssetWriter` |
+| Movie | `SCNRenderer.snapshot` offscreen into `AVAssetWriter`, H.264 |
 | Language | Swift 6 language mode, complete strict concurrency |
 
 ### Module graph
 
-Eight local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
+Nine local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
 
 ```
 JumpjetCore     (nothing)      structure model, chemistry, geometry, bonds
@@ -81,6 +83,7 @@ JumpjetViewer   Core, HUD      SceneKit renderer
 JumpjetNeural   Core           ESM-2 on Core ML, the flexibility prior
 JumpjetEngine   Core           JetEngine: torsional Monte Carlo
 JumpjetAnalysis Core           the flight recorder
+JumpjetMovie    Core, Viewer   offscreen renderer into AVAssetWriter
 ```
 
 `JumpjetViewer` names `JumpjetParse` in its **test** target only, so the renderer never learns how a file was read while the tests still render real structures rather than hand-built toys.
@@ -156,7 +159,8 @@ The model version is read from the AlphaFold API on every fetch and never hard-c
 
 ## 🧪 Tests
 
-224 tests across eight packages, host-side, no simulator.
+232 tests across nine packages, host-side, no simulator, plus four interface
+tests that need a simulator.
 
 They run in **release**. `swift test` builds debug by default, and for the physics
 package that is a factor of thirty-six, which makes the suite unusable and any
@@ -172,6 +176,7 @@ benchmark meaningless.
 | JumpjetNeural | 13 | Tokeniser, Core ML parity against PyTorch, stride handling, the prior |
 | JumpjetEngine | 33 | Topology, each energy term against hand-computed values, the sampler |
 | JumpjetAnalysis | 39 | Jump and flip detection against planted transitions, PCA, basins |
+| JumpjetMovie | 8 | Presets, and a written file read back with AVFoundation |
 
 The strongest tests parse the PDB **and** the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.
 
@@ -219,15 +224,23 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 
 ### Phase 4: Airshow
 
-- [ ] **Trajectory playback.** Scrubber, 0.5–4× speed, loop, ghost trail, and jump events flagged as tick marks on the scrub bar
-- [ ] **Movie export.** Offscreen `SCNRenderer` into `AVAssetWriter`, H.264, 1080p and square 720p at 30 fps, optional HUD burn-in and slow orbit, share sheet and save to Photos
-- [ ] **Sortie report card.** Accession, source model, sweeps, jumps, flips, basin count and RMSF hotspots, exportable as a PNG alongside the movie
-- [ ] **Polish.** Haptics on jump ticks, accessibility labels throughout, an App Store icon, and a TestFlight archive checklist
+- [x] **Trajectory playback.** Scrubber, transport, 0.5–4× speed, loop and a ghost trail drawn as a thin Cα trace (four full tubes at 30 fps buries the structure it is a trail of)
+- [x] **Event ticks on the scrub bar, but not as specified.** Ticking every frame with a rotamer jump gives a *solid amber band*, because a 5,000-sweep run has a jump in essentially every stored frame. It now marks every ring flip (67 against 15,889 jumps) and the busiest tenth of jump frames, which leaves marks worth pressing "next event" to reach
+- [x] **Movie export.** Offscreen `SCNRenderer.snapshot` into `AVAssetWriter`, H.264, 1080p and square 720 at 30 fps, optional HUD burn-in and slow orbit, share sheet. Verified by reading the written file back with AVFoundation: a video track, the right dimensions, the right duration
+- [x] **Sortie report card** at a fixed 1000×1400, so a card made on a phone and one made on an iPad are the same picture
+- [x] **Haptics on the event ticks**, fired on the crossing rather than on every touch move: a continuous buzz through a drag is noise
+- [x] **Accessibility labels on every custom-drawn view.** The raster, terrain map, transition matrix and scrubber are `Canvas` and `Grid` and have no text of their own
+- [x] **TestFlight archive checklist** in [`Docs/TESTFLIGHT.md`](Docs/TESTFLIGHT.md), including what is still blocked
+- [ ] **A real app icon.** The 1024 slot is declared and empty; the final icon comes from the `marcs-vibe-icon` skill
+- [ ] **Verify the two-minute end-to-end demo on a device.** On a release simulator build a 1,500-sweep sortie of a 142-residue protein takes about twelve seconds and the export a few more, so the budget looks comfortable. A simulator is not a phone
+
+### Outstanding decisions
 
 ### Outstanding decisions
 
 - [ ] **Choose a licence.** No `LICENSE` file exists yet and none is claimed anywhere. This is Marc's call and nothing should assume one
 - [ ] **Push to GitHub.** The repository is local only; `bellcheddar/jumpjet` does not exist yet
+- [ ] **An Apple Developer team.** `CODE_SIGN_STYLE` is Automatic with no team set, so `xcodebuild archive` cannot sign. Needs an account only Marc holds
 
 ## 📝 Changes
 

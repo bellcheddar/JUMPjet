@@ -29,13 +29,12 @@ final class ExportUITests: XCTestCase {
         let square = app.buttons["Square 720"]
         if square.exists { square.tap() }
 
-        let export = app.buttons["EXPORT MOVIE"]
-        var attempts = 0
-        while !export.isHittable && attempts < 10 {
-            app.swipeUp()
-            attempts += 1
-        }
-        XCTAssertTrue(export.isHittable, "the export control was never reachable")
+        // By identifier, not by the uppercased caption: `textCase` changes
+        // what is drawn, not what the control is called.
+        let export = app.buttons["Export movie"]
+        XCTAssertTrue(
+            app.scrollUntilHittable(export),
+            "the export control was never reachable. Tree:\n\(app.debugDescription)")
         export.tap()
 
         // The share link only appears once a file exists on disk.
@@ -54,12 +53,9 @@ final class ExportUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Export"].waitForExistence(timeout: 300))
 
         let card = app.buttons["Sortie report card"]
-        var attempts = 0
-        while !card.isHittable && attempts < 10 {
-            app.swipeUp()
-            attempts += 1
-        }
-        XCTAssertTrue(card.isHittable)
+        XCTAssertTrue(
+            app.scrollUntilHittable(card),
+            "the report card control was never reachable")
         card.tap()
 
         XCTAssertTrue(

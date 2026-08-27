@@ -250,6 +250,7 @@ final class RunCoordinator {
                 self.stage = .finished(
                     sweeps: trajectory.sweeps.last ?? 0,
                     seconds: Date().timeIntervalSince(started))
+                Haptics.completed()
             } catch let error as JumpjetError {
                 self.stage = .failed(error.message)
             } catch {

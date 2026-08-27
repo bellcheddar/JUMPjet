@@ -58,7 +58,7 @@
 <blockquote>
 <p><strong>Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.</strong></p>
 </blockquote>
-<p><img alt="swift" src="https://img.shields.io/badge/swift-6.3-F05138?logo=swift&amp;logoColor=white"> <img alt="ios" src="https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&amp;logoColor=white"> <img alt="swiftui" src="https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&amp;logoColor=white"> <img alt="scenekit" src="https://img.shields.io/badge/3D-SceneKit-1C244B"> <img alt="charts" src="https://img.shields.io/badge/charts-Swift%20Charts-467FF7"> <img alt="physics" src="https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0"> <img alt="coreml" src="https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0"> <img alt="xcode" src="https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&amp;logoColor=white"> <img alt="spm" src="https://img.shields.io/badge/packages-8%20local%20SPM-FA7343"> <img alt="tests" src="https://img.shields.io/badge/XCTest-224%20passing-00d084"> <img alt="deps" src="https://img.shields.io/badge/third--party%20dependencies-none-00897B"> <img alt="data" src="https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7"> <img alt="phase" src="https://img.shields.io/badge/phase-3%20of%204-467FF7"> <img alt="licence" src="https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
+<p><img alt="swift" src="https://img.shields.io/badge/swift-6.3-F05138?logo=swift&amp;logoColor=white"> <img alt="ios" src="https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&amp;logoColor=white"> <img alt="swiftui" src="https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&amp;logoColor=white"> <img alt="scenekit" src="https://img.shields.io/badge/3D-SceneKit-1C244B"> <img alt="charts" src="https://img.shields.io/badge/charts-Swift%20Charts-467FF7"> <img alt="physics" src="https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0"> <img alt="coreml" src="https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0"> <img alt="xcode" src="https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&amp;logoColor=white"> <img alt="spm" src="https://img.shields.io/badge/packages-9%20local%20SPM-FA7343"> <img alt="tests" src="https://img.shields.io/badge/XCTest-232%20passing-00d084"> <img alt="deps" src="https://img.shields.io/badge/third--party%20dependencies-none-00897B"> <img alt="data" src="https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7"> <img alt="phase" src="https://img.shields.io/badge/phase-4%20of%204-467FF7"> <img alt="licence" src="https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
 <table class="emd-info-table">
 <tr>
 <td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
@@ -167,8 +167,16 @@
 <td data-label="State">✅ Built</td>
 </tr>
 <tr>
-<td data-label="Feature">Trajectory playback and H.264 movie export</td>
-<td data-label="State">🔜 Phase 4</td>
+<td data-label="Feature">Trajectory playback with a scrubber, ghost trail and event ticks</td>
+<td data-label="State">✅ Built</td>
+</tr>
+<tr>
+<td data-label="Feature">H.264 movie export with HUD burn-in and a slow orbit</td>
+<td data-label="State">✅ Built</td>
+</tr>
+<tr>
+<td data-label="Feature">Sortie report card, exportable as PNG</td>
+<td data-label="State">✅ Built</td>
 </tr>
 </tbody>
 </table></div>
@@ -203,8 +211,8 @@
 <td data-label="Technology">Swift Charts, HUD-styled, with the raster and terrain map drawn in a <code>Canvas</code></td>
 </tr>
 <tr>
-<td data-label="Layer">Movie (Phase 4)</td>
-<td data-label="Technology"><code>SCNRenderer</code> offscreen into <code>AVAssetWriter</code></td>
+<td data-label="Layer">Movie</td>
+<td data-label="Technology"><code>SCNRenderer.snapshot</code> offscreen into <code>AVAssetWriter</code>, H.264</td>
 </tr>
 <tr>
 <td data-label="Layer">Language</td>
@@ -213,7 +221,7 @@
 </tbody>
 </table></div>
 <h3>Module graph</h3>
-<p>Eight local Swift packages, acyclic and shallow. The dependency rule is enforced by what each <code>Package.swift</code> is allowed to name.</p>
+<p>Nine local Swift packages, acyclic and shallow. The dependency rule is enforced by what each <code>Package.swift</code> is allowed to name.</p>
 <pre><code class="language-text">JumpjetCore     (nothing)      structure model, chemistry, geometry, bonds
 JumpjetHUD      (nothing)      Night Sortie design system
 JumpjetParse    Core           PDB and mmCIF readers
@@ -222,6 +230,7 @@ JumpjetViewer   Core, HUD      SceneKit renderer
 JumpjetNeural   Core           ESM-2 on Core ML, the flexibility prior
 JumpjetEngine   Core           JetEngine: torsional Monte Carlo
 JumpjetAnalysis Core           the flight recorder
+JumpjetMovie    Core, Viewer   offscreen renderer into AVAssetWriter
 </code></pre>
 <p><code>JumpjetViewer</code> names <code>JumpjetParse</code> in its <strong>test</strong> target only, so the renderer never learns how a file was read while the tests still render real structures rather than hand-built toys.</p>
 <p>Each package declares a macOS platform purely so <code>swift test</code> runs on the host without booting a simulator. That turns the inner loop from tens of seconds into about two.</p>
@@ -341,7 +350,7 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 </table></div>
 <p>The model version is read from the AlphaFold API on every fetch and never hard-coded: the build plan was written when v4 was current and the database was serving v6 by the time the fixtures were recorded. Full attribution in <a href="Docs/ATTRIBUTIONS.md"><code>Docs/ATTRIBUTIONS.md</code></a>.</p>
 <h2>🧪 Tests</h2>
-<p>224 tests across eight packages, host-side, no simulator.</p>
+<p>232 tests across nine packages, host-side, no simulator, plus four interface tests that need a simulator.</p>
 <p>They run in <strong>release</strong>. <code>swift test</code> builds debug by default, and for the physics package that is a factor of thirty-six, which makes the suite unusable and any benchmark meaningless.</p>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
@@ -392,6 +401,11 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 <td data-label="Tests">39</td>
 <td data-label="Covers">Jump and flip detection against planted transitions, PCA, basins</td>
 </tr>
+<tr>
+<td data-label="Package">JumpjetMovie</td>
+<td data-label="Tests">8</td>
+<td data-label="Covers">Presets, and a written file read back with AVFoundation</td>
+</tr>
 </tbody>
 </table></div>
 <p>The strongest tests parse the PDB <strong>and</strong> the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.</p>
@@ -436,15 +450,22 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 </ul>
 <h3>Phase 4: Airshow</h3>
 <ul class="emd-tasklist">
-<li><span class="emd-check">&#11036;</span> <strong>Trajectory playback.</strong> Scrubber, 0.5–4× speed, loop, ghost trail, and jump events flagged as tick marks on the scrub bar</li>
-<li><span class="emd-check">&#11036;</span> <strong>Movie export.</strong> Offscreen <code>SCNRenderer</code> into <code>AVAssetWriter</code>, H.264, 1080p and square 720p at 30 fps, optional HUD burn-in and slow orbit, share sheet and save to Photos</li>
-<li><span class="emd-check">&#11036;</span> <strong>Sortie report card.</strong> Accession, source model, sweeps, jumps, flips, basin count and RMSF hotspots, exportable as a PNG alongside the movie</li>
-<li><span class="emd-check">&#11036;</span> <strong>Polish.</strong> Haptics on jump ticks, accessibility labels throughout, an App Store icon, and a TestFlight archive checklist</li>
+<li><span class="emd-check">&#9989;</span> <strong>Trajectory playback.</strong> Scrubber, transport, 0.5–4× speed, loop and a ghost trail drawn as a thin Cα trace (four full tubes at 30 fps buries the structure it is a trail of)</li>
+<li><span class="emd-check">&#9989;</span> <strong>Event ticks on the scrub bar, but not as specified.</strong> Ticking every frame with a rotamer jump gives a <em>solid amber band</em>, because a 5,000-sweep run has a jump in essentially every stored frame. It now marks every ring flip (67 against 15,889 jumps) and the busiest tenth of jump frames, which leaves marks worth pressing "next event" to reach</li>
+<li><span class="emd-check">&#9989;</span> <strong>Movie export.</strong> Offscreen <code>SCNRenderer.snapshot</code> into <code>AVAssetWriter</code>, H.264, 1080p and square 720 at 30 fps, optional HUD burn-in and slow orbit, share sheet. Verified by reading the written file back with AVFoundation: a video track, the right dimensions, the right duration</li>
+<li><span class="emd-check">&#9989;</span> <strong>Sortie report card</strong> at a fixed 1000×1400, so a card made on a phone and one made on an iPad are the same picture</li>
+<li><span class="emd-check">&#9989;</span> <strong>Haptics on the event ticks</strong>, fired on the crossing rather than on every touch move: a continuous buzz through a drag is noise</li>
+<li><span class="emd-check">&#9989;</span> <strong>Accessibility labels on every custom-drawn view.</strong> The raster, terrain map, transition matrix and scrubber are <code>Canvas</code> and <code>Grid</code> and have no text of their own</li>
+<li><span class="emd-check">&#9989;</span> <strong>TestFlight archive checklist</strong> in <a href="Docs/TESTFLIGHT.md"><code>Docs/TESTFLIGHT.md</code></a>, including what is still blocked</li>
+<li><span class="emd-check">&#11036;</span> <strong>A real app icon.</strong> The 1024 slot is declared and empty; the final icon comes from the <code>marcs-vibe-icon</code> skill</li>
+<li><span class="emd-check">&#11036;</span> <strong>Verify the two-minute end-to-end demo on a device.</strong> On a release simulator build a 1,500-sweep sortie of a 142-residue protein takes about twelve seconds and the export a few more, so the budget looks comfortable. A simulator is not a phone</li>
 </ul>
+<h3>Outstanding decisions</h3>
 <h3>Outstanding decisions</h3>
 <ul class="emd-tasklist">
 <li><span class="emd-check">&#11036;</span> <strong>Choose a licence.</strong> No <code>LICENSE</code> file exists yet and none is claimed anywhere. This is Marc's call and nothing should assume one</li>
 <li><span class="emd-check">&#11036;</span> <strong>Push to GitHub.</strong> The repository is local only; <code>bellcheddar/jumpjet</code> does not exist yet</li>
+<li><span class="emd-check">&#11036;</span> <strong>An Apple Developer team.</strong> <code>CODE_SIGN_STYLE</code> is Automatic with no team set, so <code>xcodebuild archive</code> cannot sign. Needs an account only Marc holds</li>
 </ul>
 <h2>📝 Changes</h2>
 <p>Per-phase detail, including what was deliberately deferred and the bugs found along the way, is in <a href="Docs/CHANGELOG.md"><code>Docs/CHANGELOG.md</code></a>.</p>

@@ -43,13 +43,9 @@ final class FlightRecorderUITests: XCTestCase {
         // 3, 4, 5 and 6, reached by scrolling the instrument column.
         let panels = ["Rotamer jumps", "Ring flips", "Terrain", "Basins"]
         for panel in panels {
-            let element = app.staticTexts[panel]
-            var attempts = 0
-            while !element.exists && attempts < 12 {
-                app.swipeUp()
-                attempts += 1
-            }
-            XCTAssertTrue(element.exists, "the \(panel) panel never appeared")
+            XCTAssertTrue(
+                app.scrollUntilExists(app.staticTexts[panel]),
+                "the \(panel) panel never appeared")
         }
     }
 
@@ -91,11 +87,6 @@ final class FlightRecorderUITests: XCTestCase {
         let element = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label BEGINSWITH %@", prefix))
             .firstMatch
-        var attempts = 0
-        while !element.exists && attempts < 12 {
-            app.swipeUp()
-            attempts += 1
-        }
-        return element.exists
+        return app.scrollUntilExists(element)
     }
 }

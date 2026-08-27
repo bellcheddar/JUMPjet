@@ -18,7 +18,19 @@ struct PlaybackPanel: View {
                     frameCount: run.frameCount,
                     frame: run.pinnedFrame ?? 0,
                     eventFrames: run.eventFrames,
-                    onScrub: { run.show(frame: $0) })
+                    onScrub: { frame in
+                        // Haptics on the event ticks, per the build plan's
+                        // polish list. Fired only when the scrubber CROSSES
+                        // into an event frame, not on every touch move: a
+                        // continuous buzz through a drag is noise, and the
+                        // point is to feel where the events are without
+                        // looking.
+                        let previous = run.pinnedFrame
+                        run.show(frame: frame)
+                        if previous != frame, run.eventFrames.contains(frame) {
+                            Haptics.event()
+                        }
+                    })
                     .frame(height: 34)
 
                 transport

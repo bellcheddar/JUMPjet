@@ -163,6 +163,13 @@ public struct HUDActionButton: View {
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)
+        // An explicit label and identifier. `textCase(.uppercase)` is a DISPLAY
+        // transform, so a control captioned "EXPORT MOVIE" on screen is still
+        // called "Export movie" to anything reading the accessibility tree, and
+        // an interface test querying the visible text finds nothing. Both are
+        // set here so neither a test nor a screen reader has to guess.
+        .accessibilityLabel(title)
+        .accessibilityIdentifier(title)
     }
 }
 

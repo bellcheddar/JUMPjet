@@ -1,5 +1,69 @@
 # Changelog
 
+## Phase 4 — Airshow — 2026-08-27
+
+Playback, movie export, the sortie report card, and the polish list.
+
+### Definition of done
+
+| Requirement | Status |
+|---|---|
+| Playback: scrubber, play/pause, 0.5 to 4x, loop, ghost trail | Met |
+| Jump events flagged on the scrub bar as tick marks | Met, but NOT as specified: see below |
+| Movie export, H.264, 1080p and square 720, 30 fps | Met. Verified by reading the file back with AVFoundation |
+| Optional HUD burn-in and slow orbit | Met |
+| Share sheet | Met. Save to Photos works through it, with the usage string declared |
+| Sortie report card, exportable as PNG | Met |
+| Haptics on jump scrub ticks | Met. On the CROSSING, not on every touch move |
+| Accessibility labels | Met, including every custom-drawn `Canvas` and `Grid` |
+| iPad two-pane layout | Met in Phase 1, and it splits on window SHAPE rather than size class |
+| App Store icon placeholder | Slot declared, image outstanding: the final icon comes from the `marcs-vibe-icon` skill |
+| TestFlight archive checklist | Met: `Docs/TESTFLIGHT.md`, including what is still blocked |
+| **End-to-end demo in under two minutes on device** | **Not verified.** No device to hand. On a release simulator build a 1,500 sweep sortie of a 142-residue protein takes about twelve seconds and the export a few more, so the budget looks comfortable, but a simulator is not a phone |
+
+### The tick marks are not what the plan asked for, and the reason is measured
+
+The build plan says to flag jump events on the scrub bar. Ticking every frame
+containing a rotamer jump gives a **solid amber band**: a 5,000 sweep run has a
+jump in essentially every stored frame, because the sampler proposes rotamer
+moves directly.
+
+A mark that appears everywhere carries no information. So the bar now marks
+every ring flip (67 against 15,889 jumps on the same run) and the busiest tenth
+of jump frames, which leaves marks worth pressing "next event" to reach.
+
+### Decisions worth the words
+
+- **`SCNRenderer.snapshot` rather than a Metal render pass** into the pixel
+  buffer's own texture. The pass version needs a device, a command queue, a
+  texture cache and a command buffer to commit and wait on, and every one of
+  those is a place for a movie export to fail on a device nobody tested.
+- **The orbit moves the camera, not the structure.** The lights live in the
+  scene's frame, so spinning the molecule would carry its own shading round with
+  it and the protein would look flat.
+- **The ghost trail is a Cα trace, thin.** Four full tubes redrawn thirty times
+  a second buries the structure it is a trail of.
+- **One trajectory frame becomes one movie frame.** Interpolating to pad a short
+  run out would invent conformations the sampler never visited.
+- **Ground rule 3 travels with the artefacts.** Both the burnt-in HUD and the
+  report card say "MC sweeps, pseudo-time, crude on-device sampler", because
+  whoever is sent a clip cannot see the About screen.
+
+### Two bugs worth recording
+
+- **`textCase(.uppercase)` is a display transform.** A control captioned
+  "EXPORT MOVIE" on screen is still called "Export movie" to anything reading
+  the accessibility tree, so an interface test querying the visible text finds
+  nothing and a screen reader announces something different from what is drawn.
+  `HUDActionButton` now sets both an explicit label and an identifier.
+- **A full stop is a legal filename character**, so the export filename
+  sanitiser left an accession of ".." intact, and one of pure punctuation
+  produced a file called "JUMPjet-.mp4".
+
+### Numbers
+
+232 tests across nine packages, plus four interface tests that need a simulator.
+
 ## Phase 3 — Flight Recorder — 2026-08-27
 
 The jump analytics that earn the backronym.

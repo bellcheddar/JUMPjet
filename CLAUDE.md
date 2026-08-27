@@ -14,10 +14,13 @@ This file is the short version plus current state.
 
 ## Current state
 
-- **Phase:** 1, 2 and 3 complete. Phase 4 (playback, movie export, polish) not started.
-- **Last completed:** the flight recorder, 2026-08-27 (see `Docs/CHANGELOG.md`)
-- **Blocked on:** nothing.
-- **Tests:** 224 across eight packages, `Tools/test-all.sh`, host-side, no simulator.
+- **Phase:** all four complete. See `Docs/CHANGELOG.md` for what each one did
+  and did not meet.
+- **Last completed:** Phase 4, 2026-08-27
+- **Blocked on:** two decisions that are Marc's, both in `Docs/TESTFLIGHT.md`: a
+  LICENCE (none exists and none is claimed) and an Apple Developer team.
+- **Tests:** 232 across nine packages, `Tools/test-all.sh`, host-side, plus four
+  interface tests that need a simulator.
 - **Open against the plan:** throughput. 22 sweeps/s at 335 residues against a
   target of 100 at 300. See "Performance" below; Metal is the named next lever.
 
@@ -54,7 +57,7 @@ JumpjetViewer   Core, HUD          SceneKit renderer
                 (+ Parse in TESTS ONLY, so the renderer never learns about files)
 ```
 
-Phase 4 adds `JumpjetMovie`. Add them to `PACKAGES` in `Tools/bootstrap-xcodeproj.rb` for the
+All nine packages exist. Add any new one to `PACKAGES` in `Tools/bootstrap-xcodeproj.rb` for the
 record, and to the app target in Xcode.
 
 `JUMPjet.xcodeproj` is committed and is the source of truth. `Tools/bootstrap-xcodeproj.rb`
@@ -220,6 +223,9 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
   already deleted the function a later edit anchored on, so a method was never
   inserted and the failure surfaced as an unrelated `@Bindable` error. Assert the
   anchor exists before replacing.
+- **`textCase(.uppercase)` is a DISPLAY transform.** A control captioned "EXPORT
+  MOVIE" is still called "Export movie" in the accessibility tree, so a test
+  querying the visible text finds nothing. Set an explicit label and identifier.
 - Interface tests build DEBUG, because that is where `@testable` works. A sweep
   count chosen for release makes a two-minute UI test into an hour-long one.
 - Piping a long run through `grep` block-buffers it: the log stays empty until
