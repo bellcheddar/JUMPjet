@@ -305,7 +305,13 @@ def upload_screenshots(auth: str, app: str) -> None:
     import hashlib
     import urllib.request
 
-    root = Path(__file__).resolve().parent.parent / "assets"
+    # This script lives in Tools/appstore/, so the repository root is three
+    # levels up, not two. PfamIE kept it in Tools/ and the inherited path
+    # silently resolved to Tools/assets, which exists nowhere: every set
+    # reported "no captures" and the run still exited 0.
+    root = Path(__file__).resolve().parent.parent.parent / "assets"
+    if not root.is_dir():
+        raise SystemExit(f"no capture root at {root}")
 
     for version in versions(auth, app):
         platform = version["attributes"].get("platform")
