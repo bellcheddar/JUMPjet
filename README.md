@@ -232,16 +232,16 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 - [x] **Haptics on the event ticks**, fired on the crossing rather than on every touch move: a continuous buzz through a drag is noise
 - [x] **Accessibility labels on every custom-drawn view.** The raster, terrain map, transition matrix and scrubber are `Canvas` and `Grid` and have no text of their own
 - [x] **TestFlight archive checklist** in [`Docs/TESTFLIGHT.md`](Docs/TESTFLIGHT.md), including what is still blocked
-- [ ] **A real app icon.** The 1024 slot is declared and empty; the final icon comes from the `marcs-vibe-icon` skill
+- [x] **A real app icon**, drawn by [`Tools/make-app-icon.py`](Tools/make-app-icon.py): a backbone helix passing behind itself with one segment amber, which is the jump. Stamped discs rather than a wide polyline, because PIL's `joint="curve"` fans spikes out of every joint that read as a hatching artefact at icon size. Asserted RGB, since the App Store rejects an alpha channel
+- [x] **A verified App Store archive.** 16 MB bundle, 15.2 MB IPA, signed `Apple Distribution` against the `JUMPjet App Store` profile. [`Tools/appstore/verify-archive.sh`](Tools/appstore/verify-archive.sh) opens the archive and checks the models, both icon variants, the signing authority and the embedded profile: `ARCHIVE SUCCEEDED` says nothing about the contents, and a sibling project's first successful archive was validly signed and contained no models at all
 - [ ] **Verify the two-minute end-to-end demo on a device.** Measured in the simulator after the throughput work: a 335-residue protein, 5,000 sweeps, loaded, sampled and fully analysed with the export panel ready **inside 50 seconds**. A simulator has the Mac's CPU and no Neural Engine, so that figure is optimistic on sampling and pessimistic on the embedding. The number that matters still needs hardware
-
-### Outstanding decisions
 
 ### Outstanding decisions
 
 - [x] **Licence chosen: MIT.** Based on what is actually redistributed: ESM-2's weights are MIT and every build-time dependency is MIT or BSD-3-Clause, so nothing in the chain is copyleft. Bundled data keeps its own terms (AlphaFold-derived files CC BY 4.0, PDB 1BAB CC0) and the licence file says so, because CC BY permits any licence on derivatives only while attribution survives
 - [x] **Pushed to GitHub** at [bellcheddar/JUMPjet](https://github.com/bellcheddar/JUMPjet)
-- [ ] **An Apple Developer team.** `CODE_SIGN_STYLE` is Automatic with no team set, so `xcodebuild archive` cannot sign. Needs an account only Marc holds
+- [x] **Apple Developer team `SYNV8TWB5Z`**, with Release signing manually against `Apple Distribution` and the `JUMPjet App Store` profile, and Debug left automatic so a device build from Xcode still just works. Reapplied idempotently by [`Tools/configure-signing.rb`](Tools/configure-signing.rb)
+- [ ] **The App Store Connect app record**, which is the one remaining step and cannot be automated: `POST /v1/apps` returns 403, "the resource 'apps' does not allow 'CREATE'". It also needs a name decision, since App Store names are globally unique. Fields are listed in [`Docs/TESTFLIGHT.md`](Docs/TESTFLIGHT.md); after that [`Tools/appstore/upload.sh`](Tools/appstore/upload.sh) archives, verifies, exports, validates and uploads in one command
 
 ## 📝 Changes
 

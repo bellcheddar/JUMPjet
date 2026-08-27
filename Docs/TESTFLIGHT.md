@@ -5,19 +5,62 @@ what is NOT true yet.
 
 ## Blocked
 
-- [ ] **A licence.** No `LICENSE` file exists and none is claimed anywhere in
-      the repository. This is Marc's call and nothing should assume one.
-- [ ] **An Apple Developer team.** `CODE_SIGN_STYLE` is `Automatic` and no team
-      is set, so `xcodebuild archive` cannot sign. Needs an account only Marc
-      holds.
-- [ ] **A real app icon.** `Assets.xcassets/AppIcon.appiconset` has the 1024
-      slot declared and no image in it. The build plan says the final icon comes
-      from the `marcs-vibe-icon` skill.
+- [ ] **The App Store Connect app record.** Everything else on the Apple side is
+      done and verified; this one step cannot be automated, and it needs a
+      decision only Marc can make (see below).
+
+Apple does not expose app-record creation over the API. Asked directly:
+
+```
+POST /v1/apps -> HTTP 403 FORBIDDEN_ERROR
+"The resource 'apps' does not allow 'CREATE'.
+ Allowed operations are: GET_COLLECTION, GET_INSTANCE, UPDATE"
+```
+
+So the record is made once, by hand, at
+<https://appstoreconnect.apple.com/apps> -> **+** -> **New App**:
+
+| Field | Value |
+|---|---|
+| Platform | iOS |
+| Name | the App Store name, which must be globally unique. `JUMPjet` may be taken |
+| Primary language | English (UK) |
+| Bundle ID | `com.mdeller.jumpjet` (already registered, id `48SYPC36UH`) |
+| SKU | any private string, e.g. `JUMPJET2026` |
+| User access | Full Access |
+
+Until it exists, upload fails with a message that names the bundle ID rather
+than the missing record, which is worth recognising:
+
+```
+ERROR: Cannot determine the Apple ID from Bundle ID 'com.mdeller.jumpjet'
+       and platform 'IOS'. (19)
+```
+
+Once the record exists, the whole remaining sequence is one command:
+`Tools/appstore/upload.sh`.
 
 ## Ready
 
+- [x] **A licence.** MIT, in `LICENSE`, with the bundled model and data terms
+      itemised separately in `NOTICE`. They are separate files on purpose:
+      GitHub detects a licence by matching the file against a template, so
+      appending a third-party section to `LICENSE` made the repository report
+      no licence at all.
+- [x] **An Apple Developer team.** `SYNV8TWB5Z`. Release builds sign manually
+      against `Apple Distribution` and the `JUMPjet App Store` profile
+      (uuid `933394db-0265-4eaf-b85c-e8e00ba44a92`, expires 2027-08-26);
+      Debug stays automatic so a device build from Xcode still just works.
+      `Tools/configure-signing.rb` reapplies all of it idempotently.
+- [x] **A real app icon.** `Tools/make-app-icon.py` draws it: a backbone helix
+      passing behind itself with one segment amber, which is the jump. Drawn as
+      stamped discs rather than a wide polyline, because PIL's `joint="curve"`
+      fans spikes out of every joint that read as a hatching artefact at icon
+      size. Asserted RGB: the App Store rejects an icon with an alpha channel.
 - [x] **Bundle identifier** `com.mdeller.jumpjet`, set in the project rather
-      than generated.
+      than generated. Registered with Apple as id `48SYPC36UH`. It was
+      `com.marcdeller.jumpjet`, which matched nothing else in the account:
+      BOFFIN ships as `com.mdeller.boffin`.
 - [x] **Deployment target** iOS 17.0, and the Core ML model is converted at
       iOS17 to match. Converting the model at iOS18 would produce a bundle that
       builds and then fails to load the model on the oldest device the app
@@ -74,6 +117,46 @@ closest thing to it that exists without hardware.
    `Tools/coreml/compute_centroids.py` gates the flexibility prior on its own
    effect size.
 4. Bump `MARKETING_VERSION` in the app target.
+
+## Archiving, and what to check in the archive
+
+```bash
+xcodebuild archive -project JUMPjet.xcodeproj -scheme JUMPjet \
+  -configuration Release -destination 'generic/platform=iOS' \
+  -archivePath build/JUMPjet.xcarchive
+xcodebuild -exportArchive -archivePath build/JUMPjet.xcarchive \
+  -exportOptionsPlist Tools/appstore/ExportOptions.plist -exportPath build/export
+```
+
+**Open the archive before uploading it.** BOFFIN's first successful archive was
+7.6 MB and contained not one model: the build succeeded, the signature was
+valid, and the app was useless. `Tools/appstore/verify-archive.sh` checks the
+four things that were silently absent there:
+
+| Check | Expected |
+|---|---|
+| `esm2_t6_8M_UR50D.mlmodelc` | present, about 14 MB |
+| `esm2_t6_8M_UR50D.tokeniser.json` | present |
+| `flexibility_centroids.json`, `torsion_tables.json` | present |
+| `AppIcon60x60@2x.png` and the iPad variant | present at the bundle root |
+| `codesign -dv` authority | `Apple Distribution: Marc Deller (SYNV8TWB5Z)` |
+| `embedded.mobileprovision` name | `JUMPjet App Store` |
+
+Measured for 0.1.0: app bundle 16 MB, exported IPA 15.2 MB.
+
+## Uploading
+
+`altool` looks for the signing key by name in a fixed set of directories, none
+of which is where the key lives, so the directory is passed explicitly:
+
+```bash
+set -a; source ~/.claude/skills/marcs-vibe-coding/credentials.env; set +a
+export API_PRIVATE_KEYS_DIR="$(dirname "$ASC_KEY_PATH")"
+xcrun altool --upload-app -f build/export/JUMPjet.ipa -t ios \
+  --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+```
+
+Nothing here writes a credential into the repository, and nothing should.
 
 ## What to say in the release notes
 

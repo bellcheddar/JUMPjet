@@ -17,8 +17,15 @@ This file is the short version plus current state.
 - **Phase:** all four complete. See `Docs/CHANGELOG.md` for what each one did
   and did not meet.
 - **Last completed:** Phase 4, 2026-08-27
-- **Blocked on:** two decisions that are Marc's, both in `Docs/TESTFLIGHT.md`: a
-  LICENCE (none exists and none is claimed) and an Apple Developer team.
+- **Shipped:** MIT licence (`LICENSE` + `NOTICE`), public repo at
+  `bellcheddar/JUMPjet`, team `SYNV8TWB5Z`, distribution signing, app icon,
+  and a verified App Store archive: 16 MB bundle, 15.2 MB IPA, all four model
+  artefacts present.
+- **Blocked on:** the App Store Connect **app record**. Apple does not allow
+  creating one over the API (`POST /v1/apps` -> 403, "does not allow CREATE"),
+  so it is made by hand once. Fields are in `Docs/TESTFLIGHT.md`. It also needs
+  a decision only Marc can make: the App Store name, which must be globally
+  unique. After that, `Tools/appstore/upload.sh` does the rest.
 - **Tests:** 237 across nine packages, `Tools/test-all.sh`, host-side, plus five
   interface tests that need a simulator.
 - **Open against the plan:** nothing measurable on this machine. Throughput is
@@ -245,6 +252,34 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.mdeller.jump
 - **The jump COUNT is not a kinetic observable** when the sampler proposes
   rotamer changes directly. 15,889 jumps in 5,000 sweeps is the move set
   talking. Rank residues within a run; do not compare rates between runs.
+
+### Distribution
+
+- **Open the archive before uploading it.** `ARCHIVE SUCCEEDED` says nothing
+  about the contents. BOFFIN's first successful archive was 7.6 MB, validly
+  signed, and contained not one model. `Tools/appstore/verify-archive.sh`
+  checks the resources, both icon variants, the signing authority and the
+  embedded profile, and is negative-tested: strip a model and the bundle drops
+  from 16 MB to 1.6 MB, which is the tell.
+- **Apple does not expose app-record creation.** `POST /v1/apps` returns 403
+  `FORBIDDEN_ERROR`, "does not allow CREATE". Worse, the missing record surfaces
+  from `altool` as `Cannot determine the Apple ID from Bundle ID '...'`, which
+  reads like a bundle-ID problem and is not one.
+- **`altool` will not find the signing key.** It looks only in `./private_keys`,
+  `~/private_keys`, `~/.private_keys` and `~/.appstoreconnect/private_keys`.
+  Set `API_PRIVATE_KEYS_DIR` rather than copying the key somewhere.
+- **A `LICENSE` with anything appended to it stops being a licence.** GitHub
+  detects one by matching the file against a template, so `LICENSE` with a
+  third-party section after the MIT text made the API report
+  `licenseInfo: null`. Split: pure template in `LICENSE`, everything else in
+  `NOTICE`.
+- **Under `set -o pipefail`, `awk '{...; exit}'` on a pipe is a failure.** The
+  early exit SIGPIPEs the writer and the script dies with 141, which looks
+  exactly like a failed check rather than a broken one.
+- PIL's `line(..., joint="curve")` fans spikes out of every joint. At icon size
+  that reads as a hatching artefact over the whole mark. Stamp overlapping
+  discs along the path instead. And assert the icon is `RGB`: the App Store
+  rejects an alpha channel.
 
 ### Toolchain
 
