@@ -15,10 +15,12 @@
 		2054A6A7EC43F8813A31EC1F /* InstrumentPanels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */; };
 		367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */; };
 		5FDF6457B0995D2F79539BBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
+		686B0095BB3FA0766D02DC12 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3034942E96838D06321D8EFE /* Haptics.swift */; };
 		7E7680288876DB4BD17C136B /* FlightRecorderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9385E98655AEEA0A29EA4E /* FlightRecorderUITests.swift */; };
 		7FD704402989A6425A490CE0 /* FlightRecorderViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2501D41CF14B01D1E4933DA6 /* FlightRecorderViews.swift */; };
 		865B3668130C719D6B6A925A /* ExportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E264383DB127C67AA0667E5E /* ExportUITests.swift */; };
 		8DECF8F9F9C3C136AD8ABF16 /* esm2_t6_8M_UR50D.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 5F4F5181596011987DF0BAAE /* esm2_t6_8M_UR50D.mlpackage */; };
+		8F77036B8227DE0B826AA7CA /* UITestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EC0646A9DBB83F13EA38D5 /* UITestSupport.swift */; };
 		92B5EAB294113C4645A37572 /* RunCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */; };
 		9F996EB0674A93A7EF54C4F9 /* esm2_t6_8M_UR50D.tokeniser.json in Resources */ = {isa = PBXBuildFile; fileRef = 77BD586C9A220F53FAA261A2 /* esm2_t6_8M_UR50D.tokeniser.json */; };
 		A730E04640EBF3E659794CEE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB419058136043ABDC127E9E /* AppModel.swift */; };
@@ -60,6 +62,7 @@
 		2501D41CF14B01D1E4933DA6 /* FlightRecorderViews.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FlightRecorderViews.swift; path = App/Sources/FlightRecorderViews.swift; sourceTree = "<group>"; };
 		27599206621DD74001DF7C6D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		28B30285D7172CBC0EF35291 /* JUMPJET_BUILD_PLAN.md */ = {isa = PBXFileReference; includeInIndex = 1; name = JUMPJET_BUILD_PLAN.md; path = Docs/JUMPJET_BUILD_PLAN.md; sourceTree = "<group>"; };
+		3034942E96838D06321D8EFE /* Haptics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Haptics.swift; path = App/Sources/Haptics.swift; sourceTree = "<group>"; };
 		3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InstrumentPanels.swift; path = App/Sources/InstrumentPanels.swift; sourceTree = "<group>"; };
 		3BF1B2AAA247149A76D38044 /* AppModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModelTests.swift; path = App/Tests/AppModelTests.swift; sourceTree = "<group>"; };
 		3C004BA11F6FD65D1728D0A9 /* ExportPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExportPanel.swift; path = App/Sources/ExportPanel.swift; sourceTree = "<group>"; };
@@ -72,6 +75,7 @@
 		79C28983B9B7722AECE1304F /* MANIFEST.md */ = {isa = PBXFileReference; includeInIndex = 1; name = MANIFEST.md; path = Fixtures/MANIFEST.md; sourceTree = "<group>"; };
 		7B4B8229CEA372687E2B8098 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = App/Resources/Info.plist; sourceTree = "<group>"; };
 		88B714579B2910031D973FB5 /* JUMPjet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JUMPjet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1EC0646A9DBB83F13EA38D5 /* UITestSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UITestSupport.swift; path = App/UITests/UITestSupport.swift; sourceTree = "<group>"; };
 		A7BF15B8AF34303520262DBD /* EnginePanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnginePanel.swift; path = App/Sources/EnginePanel.swift; sourceTree = "<group>"; };
 		B89D0736E2E7A0A28B6719F6 /* PlaybackPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlaybackPanel.swift; path = App/Sources/PlaybackPanel.swift; sourceTree = "<group>"; };
 		C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RunCoordinator.swift; path = App/Sources/RunCoordinator.swift; sourceTree = "<group>"; };
@@ -166,6 +170,7 @@
 				5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */,
 				EE9385E98655AEEA0A29EA4E /* FlightRecorderUITests.swift */,
 				E264383DB127C67AA0667E5E /* ExportUITests.swift */,
+				A1EC0646A9DBB83F13EA38D5 /* UITestSupport.swift */,
 			);
 			name = UITests;
 			sourceTree = SOURCE_ROOT;
@@ -222,6 +227,7 @@
 				B89D0736E2E7A0A28B6719F6 /* PlaybackPanel.swift */,
 				3C004BA11F6FD65D1728D0A9 /* ExportPanel.swift */,
 				4C0B20ADB5BDF805096096DD /* SortieReportCard.swift */,
+				3034942E96838D06321D8EFE /* Haptics.swift */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -380,6 +386,7 @@
 				D9DFED2C9E87959204F78DA3 /* LaunchUITests.swift in Sources */,
 				7E7680288876DB4BD17C136B /* FlightRecorderUITests.swift in Sources */,
 				865B3668130C719D6B6A925A /* ExportUITests.swift in Sources */,
+				8F77036B8227DE0B826AA7CA /* UITestSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +407,7 @@
 				C9FB51C2EA73014B323E8070 /* PlaybackPanel.swift in Sources */,
 				A86D2541E2AF0363F96D1957 /* ExportPanel.swift in Sources */,
 				BFE563AD40F9FC8ECFC3E90B /* SortieReportCard.swift in Sources */,
+				686B0095BB3FA0766D02DC12 /* Haptics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
