@@ -31,7 +31,32 @@ public enum DihedralPCA {
     /// feature matrix, which adds nothing to the variance and a great deal to
     /// the cost. The threshold is on the circular spread of the angle, so it is
     /// immune to the same wrap problem the sin/cos encoding solves.
-    public static let minimumSpreadDegrees: Float = 8
+    ///
+    /// **One degree, measured.** This was 8, which was always too high and only
+    /// worked because the sampler used to spend 22% of its moves on the
+    /// backbone. Measured on 335 residues after that changed:
+    ///
+    ///     sweeps   max spread   median   above 8 deg   above 2 deg
+    ///        600         7.89     0.06             0            11
+    ///      2,000        11.17     0.22             3            13
+    ///      5,000        15.47     0.40             5            18
+    ///
+    /// At 8 degrees a short run projects nothing at all, and even a full 5,000
+    /// sweep run offers five columns. The median residue moves 0.4 degrees, so
+    /// a floor of 1 excludes the genuinely static core and keeps everything
+    /// that moved.
+    public static let minimumSpreadDegrees: Float = 1
+
+    /// When fewer than this many residues clear the threshold, the most mobile
+    /// are taken anyway.
+    ///
+    /// A panel that refuses on a short run is a panel most users never see. The
+    /// explained variance is displayed beside it, so a projection built from
+    /// residues that barely moved announces itself as one.
+    public static let minimumResidues = 4
+    /// The absolute floor below which a structure is treated as static and the
+    /// projection genuinely refused.
+    public static let staticSpreadDegrees: Float = 0.3
 
     public static func project(
         structure: Structure, trajectory: TrajectoryFrames, maximumResidues: Int = 400
@@ -48,11 +73,16 @@ public enum DihedralPCA {
             (entry.residueIndex, entry.phi, entry.psi,
              max(circularSpread(entry.phi), circularSpread(entry.psi)))
         }
-        let kept = scored
-            .filter { $0.3 >= minimumSpreadDegrees }
-            .sorted { $0.3 > $1.3 }
-            .prefix(maximumResidues)
-            .sorted { $0.0 < $1.0 }
+        let ranked = scored.sorted { $0.3 > $1.3 }
+        var chosen = ranked.filter { $0.3 >= minimumSpreadDegrees }
+        if chosen.count < minimumResidues {
+            // Too few cleared the bar. Take the most mobile anyway rather than
+            // refusing: they are still the most mobile residues in the
+            // structure, and the explained variance shown beside the plot is
+            // what tells the reader how little that means.
+            chosen = Array(ranked.prefix(8).filter { $0.3 >= staticSpreadDegrees })
+        }
+        let kept = chosen.prefix(maximumResidues).sorted { $0.0 < $1.0 }
         guard kept.count >= 2 else { return nil }
 
         let frames = trajectory.frameCount

@@ -2,7 +2,7 @@
 
 > **Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.**
 
-![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-9%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-232%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-4%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-9%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-237%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-4%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -159,7 +159,7 @@ The model version is read from the AlphaFold API on every fetch and never hard-c
 
 ## 🧪 Tests
 
-232 tests across nine packages, host-side, no simulator, plus four interface
+237 tests across nine packages, host-side, no simulator, plus five interface
 tests that need a simulator.
 
 They run in **release**. `swift test` builds debug by default, and for the physics
@@ -174,8 +174,8 @@ benchmark meaningless.
 | JumpjetParse | 25 | Both readers, real files and hand-built edge cases |
 | JumpjetViewer | 34 | Spline, tube sweep, colour scales, scene graph, camera fitting |
 | JumpjetNeural | 13 | Tokeniser, Core ML parity against PyTorch, stride handling, the prior |
-| JumpjetEngine | 33 | Topology, each energy term against hand-computed values, the sampler |
-| JumpjetAnalysis | 39 | Jump and flip detection against planted transitions, PCA, basins |
+| JumpjetEngine | 36 | Topology, each energy term against hand-computed values, the sampler |
+| JumpjetAnalysis | 40 | Jump and flip detection against planted transitions, PCA, basins |
 | JumpjetMovie | 8 | Presets, and a written file read back with AVFoundation |
 
 The strongest tests parse the PDB **and** the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.
@@ -207,7 +207,8 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 - [x] **Metropolis with a mixed move set.** Gaussian perturbations, discrete well-to-well χ1 jumps and 180° ring flips. Without the discrete moves the app's own subject matter is unreachable: a Gaussian small enough to be accepted essentially never crosses a 120° barrier
 - [x] **Live HUD readouts, and the protein visibly moving.** Acceptance as an RPM dial, sweeps per second, RMSD as an altimeter tape, energy, and the viewer following the trajectory as it is generated
 - [x] **Deterministic replay from a seed**, acceptance calibrated to 0.39 inside the required 20–60% band, and a 50,000-sweep stability check on three proteins behind `JUMPJET_LONGRUN=1`
-- [ ] **Hit 100 sweeps/s at 300 residues.** The one Phase 2 requirement **not** met: 130.8 sweeps/s at 142 residues but 22.3 at 335. The cost is structural (a backbone rotation moves a quarter of the atoms and 97% of the time goes on re-testing their neighbourhoods), and two attempts made it worse: a deterministic `concurrentPerform` split was **seven times slower**, and per-cell distance culling was slower *and* silently wrong. Metal is the build plan's own named lever and has not been attempted
+- [x] **Hit 100 sweeps/s at 300 residues.** Met: **506 sweeps/s at 142 residues and 124 at 335**, up from 131 and 22. Not by writing the Metal kernel the plan names, which would not have helped (a Metropolis move needs its energy delta before the next can be proposed, so every dispatch is a synchronous round trip: 7,400 a second against tens of microseconds each). It was the move mix. A backbone pivot costs ~100x a side-chain move, and 22% of proposals were going there; it is now 3%. Measured at equal wall clock, that buys 5.5x the side-chain moves for a quarter fewer backbone ones and 7 points of mid-chain coverage
+- [x] **An optimisation written, measured and switched off.** Cost-weighted backbone selection is legitimate (a rotation is its own reverse, so fixed weights preserve detailed balance) and 2x faster, and it starves the chain: mid-chain coverage 55% down to 36%. It is left in, defaulted off. It looked fine at first because mean displacement barely moved — a mid-chain pivot shifts hundreds of atoms whenever it lands, so a starved torsion and a well-sampled one measure the same. Counting accepted moves is what showed it
 - [ ] **Backbone H-bond term.** A stretch goal in the plan, conditional on the phase running ahead. It did not
 - [ ] **Overdamped Brownian mode.** A later toggle, still later
 

@@ -41,7 +41,7 @@ what is NOT true yet.
 
 ## Before every archive
 
-1. `Tools/test-all.sh` — 232 tests, release build, no simulator.
+1. `Tools/test-all.sh` — 237 tests, release build, no simulator.
 2. `xcodebuild test -only-testing:JUMPjetUITests` — the interface tests, which
    build DEBUG and are the only thing that catches an actor-isolation crash the
    package suites structurally cannot.

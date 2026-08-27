@@ -1,5 +1,96 @@
 # Changelog
 
+## Throughput — 2026-08-27
+
+The build plan's one unmet performance target, met by measurement rather than by
+the lever the plan named.
+
+### Where it lands
+
+| | Before | After |
+|---|---|---|
+| 142 residues | 130.8 sweeps/s | **506.0** |
+| 335 residues | 22.3 sweeps/s | **124.1** |
+| Acceptance | 0.378 | 0.445 |
+
+The target was 100 sweeps per second for a 300-residue protein. It is met at
+335, which is harder.
+
+### It was the move mix, not Metal
+
+A backbone pivot rotates everything on the smaller side of its bond, which is a
+quarter of the protein in mid-chain, so it costs roughly a hundred times what a
+side-chain move costs. The mix spent 22% of its proposals there. It now spends
+3%.
+
+Measured at EQUAL WALL CLOCK, eight seconds per run, three seeds, 335 residues,
+because that is the comparison a user experiences (they wait ten seconds, not
+four hundred sweeps):
+
+| Backbone share | Sweeps in 8 s | Backbone moves | Side-chain moves | Mid-chain coverage |
+|---|---|---|---|---|
+| 22% (was) | 180 | 13,266 | 47,034 | 60.4% |
+| 11% | 344 | 12,676 | 102,563 | 61.2% |
+| 6% | 585 | 11,758 | 184,216 | 55.4% |
+| **3%** | **994** | **9,989** | **323,000** | **53.1%** |
+| 1.5% | 1,542 | 7,748 | 508,821 | 46.0% |
+
+The trade, stated rather than buried: in a fixed eight seconds the new mix does
+**5.5 times as many side-chain moves and about a quarter fewer backbone ones**,
+and mid-chain backbone coverage falls from 60.4% to 53.1%. That is the right way
+round for this app, whose subject is rotamer jumps and ring flips, both
+side-chain events.
+
+Worth noting separately: **11% is strictly better than the original 22% on every
+axis measured** (1.9x throughput, MORE coverage, more displacement). The original
+number was not a considered trade-off, it was simply too high.
+
+### An optimisation that was written, measured, and switched off
+
+Backbone torsions can be selected in proportion to `1/cost`, which is legitimate
+(a rotation is its own reverse and the weights are fixed, so detailed balance
+holds) and fast: 155 sweeps per second against 73 at the same share.
+
+It was defaulted OFF, because it buys that speed by starving the chain:
+mid-chain coverage falls from 55.4% to 35.6%. Reducing the share gets the same
+throughput for a fraction of that cost.
+
+The reason it looked fine at first is the finding worth keeping. Mean
+alpha-carbon displacement barely moved (0.79 against 0.82), because a mid-chain
+pivot shifts hundreds of atoms whenever it lands: **a starved torsion and a
+well-sampled one produce the same displacement.** Counting accepted moves is what
+showed it. The mechanism is left in, defaulted off, as the right lever if
+throughput ever has to be bought again knowingly.
+
+### A threshold that was always wrong
+
+The dihedral PCA dropped residues whose backbone moved less than 8 degrees. With
+7x fewer backbone moves, a short run then projected nothing at all, which is
+what surfaced it. Measured spread on 335 residues:
+
+| Sweeps | Max | Median | Above 8 deg | Above 2 deg |
+|---|---|---|---|---|
+| 600 | 7.89 | 0.06 | 0 | 11 |
+| 2,000 | 11.17 | 0.22 | 3 | 13 |
+| 5,000 | 15.47 | 0.40 | 5 | 18 |
+
+Even a full 5,000 sweep run offered five columns. The threshold is now 1 degree,
+with a fallback to the eight most mobile residues when fewer than four clear it,
+so the panel produces something whenever anything moved and the explained
+variance beside it says how much that is worth.
+
+### Why Metal was not written
+
+The build plan's risk table names a Metal clash grid. It would not have helped,
+and the reason is latency rather than throughput: a Metropolis move needs its
+energy delta **before** the next move can be proposed, so every dispatch is a
+synchronous round trip. At the original mix that is 74 backbone moves per sweep;
+100 sweeps a second is 7,400 round trips a second, against an Apple-silicon
+dispatch-and-wait of tens to hundreds of microseconds. The arithmetic does not
+close even with a free kernel.
+
+Recorded so nobody spends a week discovering it.
+
 ## Phase 4 — Airshow — 2026-08-27
 
 Playback, movie export, the sortie report card, and the polish list.
@@ -62,7 +153,7 @@ of jump frames, which leaves marks worth pressing "next event" to reach.
 
 ### Numbers
 
-232 tests across nine packages, plus four interface tests that need a simulator.
+237 tests across nine packages, plus five interface tests that need a simulator.
 
 ## Phase 3 — Flight Recorder — 2026-08-27
 

@@ -91,6 +91,20 @@ public final class MonteCarloSampler {
 
     private var proposed = 0
     private var accepted = 0
+    /// Accepted moves per torsion, for coverage diagnostics.
+    ///
+    /// Displacement alone cannot answer "is this torsion being sampled": a
+    /// mid-chain pivot moves hundreds of atoms when it lands, so a handful of
+    /// accepted moves produces the same mean displacement as many small ones
+    /// and a starved torsion looks healthy. Counting is the direct question.
+    public private(set) var acceptedPerTorsion: [Int] = []
+
+    /// Backbone torsion indices, and the cumulative selection weights that go
+    /// with them. Built once: a cumulative array plus a binary search is a
+    /// handful of comparisons per move, against a rejection loop that has to
+    /// keep drawing until it lands on a backbone torsion.
+    private let backboneTorsions: [Int]
+    private let backboneCumulativeWeight: [Float]
 
     /// The three staggered chi1 wells, which a rotamer jump proposes between.
     static let rotamerWells: [Float] = [-60, 60, 180]
@@ -116,7 +130,24 @@ public final class MonteCarloSampler {
         self.grid = NeighbourGrid(positions: structure.positions, cutoff: model.stericCutoff)
         self.random = SeededRandom(seed: configuration.seed)
         self.isMoving = [Bool](repeating: false, count: structure.atomCount)
+        self.acceptedPerTorsion = [Int](repeating: 0, count: topology.torsions.count)
         self.seenStamp = [Int32](repeating: 0, count: structure.atomCount)
+        // Weighted backbone selection. See `MoveAmplitudes.backboneCostBias`
+        // for why a fixed non-uniform selection probability leaves detailed
+        // balance intact.
+        var indices: [Int] = []
+        var cumulative: [Float] = []
+        var running: Float = 0
+        for (index, torsion) in topology.torsions.enumerated()
+        where torsion.isBackboneTorsion {
+            let cost = Float(max(1, torsion.movingAtoms.count))
+            running += 1 / pow(cost, amplitudes.backboneCostBias)
+            indices.append(index)
+            cumulative.append(running)
+        }
+        self.backboneTorsions = indices
+        self.backboneCumulativeWeight = cumulative
+
         self.candidates.reserveCapacity(512)
         self.savedPositions.reserveCapacity(structure.atomCount)
     }
@@ -261,7 +292,7 @@ public final class MonteCarloSampler {
         case .sideChainPerturbation: torsionIndex = pickTorsion(backbone: false)
         case .rotamerJump: torsionIndex = pickTorsion(backbone: false, chiOnly: 0)
         case .ringFlip: torsionIndex = pickFlippableRing()
-        case .backbonePerturbation: torsionIndex = pickTorsion(backbone: true)
+        case .backbonePerturbation: torsionIndex = pickBackboneTorsion()
         }
         if torsionIndex == nil, kind != .sideChainPerturbation {
             kind = .sideChainPerturbation
@@ -298,6 +329,24 @@ public final class MonteCarloSampler {
 
         guard abs(delta) > 1e-4 else { return Energy() }
         return apply(torsionIndex: index, delta: delta)
+    }
+
+    /// A backbone torsion, weighted towards the cheap ones.
+    private func pickBackboneTorsion() -> Int? {
+        guard let total = backboneCumulativeWeight.last, total > 0 else { return nil }
+        let target = random.uniform() * total
+        // Binary search for the first cumulative weight at or above the target.
+        var low = 0
+        var high = backboneCumulativeWeight.count - 1
+        while low < high {
+            let middle = (low + high) / 2
+            if backboneCumulativeWeight[middle] < target {
+                low = middle + 1
+            } else {
+                high = middle
+            }
+        }
+        return backboneTorsions[low]
     }
 
     private func pickTorsion(backbone: Bool, chiOnly: Int? = nil) -> Int? {
@@ -363,6 +412,7 @@ public final class MonteCarloSampler {
 
         if keep {
             accepted += 1
+            acceptedPerTorsion[torsionIndex] += 1
         } else {
             for (offset, atom) in torsion.movingAtoms.enumerated() {
                 positions[Int(atom)] = savedPositions[offset]

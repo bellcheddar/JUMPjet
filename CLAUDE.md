@@ -19,10 +19,12 @@ This file is the short version plus current state.
 - **Last completed:** Phase 4, 2026-08-27
 - **Blocked on:** two decisions that are Marc's, both in `Docs/TESTFLIGHT.md`: a
   LICENCE (none exists and none is claimed) and an Apple Developer team.
-- **Tests:** 232 across nine packages, `Tools/test-all.sh`, host-side, plus four
+- **Tests:** 237 across nine packages, `Tools/test-all.sh`, host-side, plus five
   interface tests that need a simulator.
-- **Open against the plan:** throughput. 22 sweeps/s at 335 residues against a
-  target of 100 at 300. See "Performance" below; Metal is the named next lever.
+- **Open against the plan:** nothing measurable on this machine. Throughput is
+  met (124 sweeps/s at 335 residues against a target of 100 at 300). What is
+  unverified needs a DEVICE: the two-minute end-to-end demo and 60 fps at 600
+  residues.
 
 ---
 
@@ -168,9 +170,12 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
 - **Benchmark the shipping configuration.** The first benchmark used
   `TorsionTables.flat()`, which made the sampler look 40% faster and put
   acceptance at 65% instead of 37%. It was flattering itself on both counts.
-- **Where the time goes.** A backbone rotation moves about a quarter of the
-  atoms and each needs its neighbourhood re-tested, which is 97% of the cost.
-  Side-chain moves touch five atoms and are effectively free.
+- **Where the time goes, and what fixed it.** A backbone rotation moves about a
+  quarter of the atoms and each needs its neighbourhood re-tested, which was 97%
+  of the cost. The fix was not a faster kernel, it was proposing fewer of them:
+  the mix went from 22% backbone to 3%, and 335 residues went from 22 to 124
+  sweeps per second. 11% is strictly better than 22% on every axis measured, so
+  the original number was simply too high rather than a considered trade.
 - **Metal is unlikely to be the answer, and the reason is latency not
   throughput.** The build plan's risk table names a Metal clash grid, but a
   Metropolis move needs its energy delta BEFORE the next move can be proposed,
@@ -192,6 +197,27 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
   fixed seed means the energies moved. Culling at cutoff plus one drift margin
   looks right and is not: BOTH atoms drift between rebuilds, so the safe reach
   is cutoff plus two margins, which is wider than a cell.
+- **A column of zeros is not a measurement.** Stopping a run early through the
+  progress callback left only frame 0 stored (the snapshot stride was larger
+  than the run), so "the last frame" was the STARTING structure and every
+  displacement read exactly 0.000. It looked like a metric. If a whole column is
+  identical, especially identically zero, check the plumbing before the physics.
+- **Displacement hides starvation; COVERAGE does not.** A mid-chain pivot moves
+  hundreds of atoms when it lands, so a torsion that is almost never accepted
+  and one that is well sampled produce the same mean displacement. Biasing
+  backbone selection towards cheap torsions kept the displacement ratio at a
+  healthy 0.79 while mid-chain torsion COVERAGE fell from 84.7% to 12.1%. If a
+  metric can be satisfied by a few large events, count the events too.
+- **Compare sampler configurations at equal WALL CLOCK, not equal sweeps.** A
+  user waits ten seconds, not four hundred sweeps. Per-sweep comparison flatters
+  the slow configuration twice: once by giving it as many expensive moves as the
+  cheap one gets cheap ones, and again by hiding that it took seven times longer.
+- **One seed is not a measurement of a displacement.** Throughput is stable
+  across seeds; RMSD and per-region RMSF are not. A single-seed sweep of the
+  backbone cost bias showed outer-third motion RISING from bias 0 to 0.5 and
+  falling again, which is not a mechanism, it is one run. Average the
+  displacements over several seeds before concluding anything from them, and
+  treat a non-monotonic trend in a noisy column as noise until it survives that.
 - **The acceptance ratio is a calibration, not a constant.** `CalibrationTests`
   sweeps the amplitudes and is skipped unless `JUMPJET_CALIBRATE` is set. Re-run
   it whenever the force field changes.

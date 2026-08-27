@@ -50,11 +50,29 @@ public struct MoveMix: Sendable, Hashable, Codable {
     public var ringFlip: Float
     public var backbonePerturbation: Float
 
+    /// The shipping mix, chosen by measurement at EQUAL WALL CLOCK on a
+    /// 335-residue protein over three seeds.
+    ///
+    /// Backbone was 22% and is now 3%, which is what takes the sampler from
+    /// 22.4 sweeps per second to 124.2 and meets the build plan's target of 100
+    /// at 300 residues. The trade, stated rather than buried: in a fixed eight
+    /// seconds the new mix does 5.5 times as many side-chain moves and about a
+    /// quarter fewer backbone ones (9,990 against 13,266), and mid-chain
+    /// backbone coverage falls from 60.4% to 53.1%.
+    ///
+    /// That is the right way round for this app. Rotamer jumps and ring flips
+    /// are its subject, and they are side-chain events; the backbone still gets
+    /// nearly as many proposals per second as before because the sweeps are so
+    /// much cheaper.
+    ///
+    /// Worth knowing: 11% is strictly better than the original 22% on every
+    /// axis measured (1.9x the throughput, MORE coverage, more displacement), so
+    /// the original number was not a considered trade-off, it was too high.
     public init(
-        sideChainPerturbation: Float = 0.50,
-        rotamerJump: Float = 0.22,
-        ringFlip: Float = 0.06,
-        backbonePerturbation: Float = 0.22
+        sideChainPerturbation: Float = 0.622,
+        rotamerJump: Float = 0.274,
+        ringFlip: Float = 0.074,
+        backbonePerturbation: Float = 0.03
     ) {
         self.sideChainPerturbation = sideChainPerturbation
         self.rotamerJump = rotamerJump
@@ -80,6 +98,39 @@ public struct MoveMix: Sendable, Hashable, Codable {
 /// residue the prior calls rigid gets small nudges and a floppy loop gets large
 /// ones.
 public struct MoveAmplitudes: Sendable, Hashable, Codable {
+    /// How strongly backbone torsion selection is biased towards CHEAP
+    /// torsions, as the exponent in `weight = 1 / count^exponent`.
+    ///
+    /// A pivot rotates everything on the smaller side of its bond, so its cost
+    /// ranges from a handful of atoms near a terminus to a quarter of the
+    /// protein in the middle: 1 to 1,267 atoms on a 335-residue structure. With
+    /// uniform selection the expensive ones dominate the wall clock while
+    /// contributing no more sampling than the cheap ones.
+    ///
+    /// **This does not break detailed balance.** The proposal is its own
+    /// reverse (the same torsion rotated by the opposite amount), and the
+    /// selection probability is FIXED rather than state-dependent, so the
+    /// forward and reverse proposal densities are equal and the Metropolis
+    /// criterion is unchanged. The equilibrium ensemble is identical; what
+    /// changes is how often each torsion is visited, and sweeps are pseudo-time
+    /// already.
+    ///
+    /// **Default 0: measured, and not worth it.** The mechanism works and is
+    /// fast (bias 1.0 gives 155 sweeps per second against 73), and it buys that
+    /// speed by genuinely starving the chain: at equal wall clock, mid-chain
+    /// torsion coverage falls from 55.4% to 35.6%. Reducing the backbone SHARE
+    /// gets the same throughput for a fraction of that cost, so it does.
+    ///
+    /// The trap worth remembering is why this looked fine at first. Mean
+    /// alpha-carbon displacement barely moved (ratio 0.79 against 0.82),
+    /// because a mid-chain pivot shifts hundreds of atoms whenever it lands: a
+    /// starved torsion and a well-sampled one produce the same displacement.
+    /// Counting accepted moves is what showed it.
+    ///
+    /// Left in, defaulted off, because it is the right lever if throughput ever
+    /// has to be bought again and coverage can be given up knowingly.
+    public var backboneCostBias: Float = 0
+
     public var sideChainBase: Float
     public var sideChainFlexible: Float
     /// The jitter added to a well-to-well rotamer proposal, so it lands near
@@ -96,8 +147,10 @@ public struct MoveAmplitudes: Sendable, Hashable, Codable {
         sideChainFlexible: Float = 60,
         rotamerJitter: Float = 10,
         backboneBase: Float = 1.8,
-        backboneFlexible: Float = 9.0
+        backboneFlexible: Float = 9.0,
+        backboneCostBias: Float = 0
     ) {
+        self.backboneCostBias = backboneCostBias
         self.sideChainBase = sideChainBase
         self.sideChainFlexible = sideChainFlexible
         self.rotamerJitter = rotamerJitter
