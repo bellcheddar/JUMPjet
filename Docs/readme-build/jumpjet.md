@@ -233,7 +233,7 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 - [x] **Accessibility labels on every custom-drawn view.** The raster, terrain map, transition matrix and scrubber are `Canvas` and `Grid` and have no text of their own
 - [x] **TestFlight archive checklist** in [`Docs/TESTFLIGHT.md`](Docs/TESTFLIGHT.md), including what is still blocked
 - [ ] **A real app icon.** The 1024 slot is declared and empty; the final icon comes from the `marcs-vibe-icon` skill
-- [ ] **Verify the two-minute end-to-end demo on a device.** On a release simulator build a 1,500-sweep sortie of a 142-residue protein takes about twelve seconds and the export a few more, so the budget looks comfortable. A simulator is not a phone
+- [ ] **Verify the two-minute end-to-end demo on a device.** Measured in the simulator after the throughput work: a 335-residue protein, 5,000 sweeps, loaded, sampled and fully analysed with the export panel ready **inside 50 seconds**. A simulator has the Mac's CPU and no Neural Engine, so that figure is optimistic on sampling and pessimistic on the embedding. The number that matters still needs hardware
 
 ### Outstanding decisions
 

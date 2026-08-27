@@ -110,7 +110,7 @@ Playback, movie export, the sortie report card, and the polish list.
 | iPad two-pane layout | Met in Phase 1, and it splits on window SHAPE rather than size class |
 | App Store icon placeholder | Slot declared, image outstanding: the final icon comes from the `marcs-vibe-icon` skill |
 | TestFlight archive checklist | Met: `Docs/TESTFLIGHT.md`, including what is still blocked |
-| **End-to-end demo in under two minutes on device** | **Not verified.** No device to hand. On a release simulator build a 1,500 sweep sortie of a 142-residue protein takes about twelve seconds and the export a few more, so the budget looks comfortable, but a simulator is not a phone |
+| **End-to-end demo in under two minutes on device** | **Not verified on a device**, and measured in the simulator: a 335-residue protein, 5,000 sweeps, loaded, sampled and fully analysed with the export ready inside 50 seconds. See `Docs/TESTFLIGHT.md` |
 
 ### The tick marks are not what the plan asked for, and the reason is measured
 

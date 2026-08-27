@@ -39,6 +39,30 @@ what is NOT true yet.
       map, transition matrix and scrubber are `Canvas` and `Grid`, which have no
       text of their own, so a label is the only way anything can describe them.
 
+## The two-minute demo
+
+The build plan's Phase 4 definition of done is an end-to-end demo in under two
+minutes on device: accession in, 5,000 sweeps, review the analytics, export the
+movie, share it.
+
+**Not verified on a device.** What is measured, on a release build:
+
+| Step | 142 residues | 335 residues |
+|---|---|---|
+| Fetch and parse (cached) | under 1 s | under 1 s |
+| 5,000 sweeps | 9.9 s | 40.3 s |
+| Flight recorder | 0.005 s | 0.02 s |
+| Movie export, 1080p, 201 frames | about 10 s | about 10 s |
+
+Observed end to end in the simulator: a 335-residue protein, 5,000 sweeps, was
+loaded, sampled and fully analysed with the export panel ready **inside 50
+seconds**, leaving seventy seconds of the budget for the export and the share.
+
+A simulator is not a phone. It has the Mac's CPU and no thermal ceiling, so the
+sampling figure is optimistic; it has no Neural Engine, so the embedding figure
+is pessimistic. The number that matters is still unmeasured, and this is the
+closest thing to it that exists without hardware.
+
 ## Before every archive
 
 1. `Tools/test-all.sh` — 237 tests, release build, no simulator.
