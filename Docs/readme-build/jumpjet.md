@@ -251,7 +251,8 @@ Findings worth not rediscovering (the dihedral sign convention, Kabsch on rank-d
 
 ## 📄 Licence
 
-**MIT**, in [`LICENSE`](LICENSE). Chosen to match what the repository actually
+**MIT**, in [`LICENSE`](LICENSE), with the bundled models and data itemised in
+[`NOTICE`](NOTICE). Chosen to match what the repository actually
 redistributes rather than by habit: the only third-party artefact shipped here is
 a Core ML conversion of ESM-2, which is itself MIT, and every build-time
 dependency (fair-esm, PyTorch, coremltools, NumPy) is MIT or BSD-3-Clause.
