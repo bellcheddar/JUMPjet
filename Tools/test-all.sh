@@ -3,6 +3,17 @@
 #
 # The packages carry a macOS platform purely so this works without booting a
 # simulator, which turns the inner loop from tens of seconds into one.
+#
+# RELEASE, not debug. `swift test` defaults to debug, and for JumpjetEngine that
+# is a factor of THIRTY-SIX: the same twenty Monte Carlo sweeps take 4.9 s debug
+# and 0.14 s release. A physics suite that has to run thousands of moves is
+# unusable at that speed, and worse, a benchmark run in debug measures the
+# optimiser being switched off rather than anything about the code. An entire
+# optimisation pass here was aimed at debug-build numbers before that was
+# noticed.
+#
+# The cost is that `assert` is compiled out. Nothing in these packages relies on
+# it; the invariants that matter use `precondition`, which survives.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,7 +22,7 @@ total=0
 for package in Packages/*/; do
     name="$(basename "$package")"
     printf '\n=== %s ===\n' "$name"
-    output="$(cd "$package" && swift test 2>&1)"
+    output="$(cd "$package" && swift test -c release 2>&1)"
     line="$(printf '%s' "$output" | grep -E '^\s+Executed [0-9]+ tests' | tail -1)"
     if printf '%s' "$output" | grep -qE 'error:|with [1-9][0-9]* failure'; then
         printf '%s' "$output" | grep -E 'error:|failed -' | head -20
