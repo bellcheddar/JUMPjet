@@ -2,12 +2,12 @@
 <blockquote>
 <p><strong>Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.</strong></p>
 </blockquote>
-<p><img alt="swift" src="https://img.shields.io/badge/swift-6.3-F05138?logo=swift&amp;logoColor=white"> <img alt="ios" src="https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&amp;logoColor=white"> <img alt="swiftui" src="https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&amp;logoColor=white"> <img alt="scenekit" src="https://img.shields.io/badge/3D-SceneKit-1C244B"> <img alt="charts" src="https://img.shields.io/badge/charts-Swift%20Charts-467FF7"> <img alt="physics" src="https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0"> <img alt="coreml" src="https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0"> <img alt="xcode" src="https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&amp;logoColor=white"> <img alt="spm" src="https://img.shields.io/badge/packages-9%20local%20SPM-FA7343"> <img alt="tests" src="https://img.shields.io/badge/XCTest-237%20passing-00d084"> <img alt="deps" src="https://img.shields.io/badge/third--party%20dependencies-none-00897B"> <img alt="data" src="https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7"> <img alt="phase" src="https://img.shields.io/badge/phase-4%20of%204-467FF7"> <img alt="licence" src="https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
+<p><img alt="swift" src="https://img.shields.io/badge/swift-6.3-F05138?logo=swift&amp;logoColor=white"> <img alt="ios" src="https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&amp;logoColor=white"> <img alt="swiftui" src="https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&amp;logoColor=white"> <img alt="scenekit" src="https://img.shields.io/badge/3D-SceneKit-1C244B"> <img alt="charts" src="https://img.shields.io/badge/charts-Swift%20Charts-467FF7"> <img alt="physics" src="https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0"> <img alt="coreml" src="https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0"> <img alt="xcode" src="https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&amp;logoColor=white"> <img alt="spm" src="https://img.shields.io/badge/packages-9%20local%20SPM-FA7343"> <img alt="tests" src="https://img.shields.io/badge/XCTest-237%20passing-00d084"> <img alt="deps" src="https://img.shields.io/badge/third--party%20dependencies-none-00897B"> <img alt="data" src="https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7"> <img alt="phase" src="https://img.shields.io/badge/phase-4%20of%204-467FF7"> <img alt="licence" src="https://img.shields.io/badge/licence-MIT-00897B"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
 <table class="emd-info-table">
 <tr>
 <td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
 <td>✉️ <b>Contact</b></td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
-<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/jumpjet" target="_blank" rel="noopener noreferrer">bellcheddar/jumpjet</a></td>
+<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/JUMPjet" target="_blank" rel="noopener noreferrer">bellcheddar/JUMPjet</a></td>
 </tr>
 </table>
 
@@ -206,7 +206,7 @@ JumpjetMovie    Core, Viewer   offscreen renderer into AVAssetWriter
 </tbody>
 </table></div>
 <h2>🚀 Usage</h2>
-<pre><code class="language-bash">git clone https://github.com/bellcheddar/jumpjet.git
+<pre><code class="language-bash">git clone https://github.com/bellcheddar/JUMPjet.git
 cd jumpjet
 
 # Every package's tests, on the host, no simulator, about two seconds
@@ -408,15 +408,16 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 <h3>Outstanding decisions</h3>
 <h3>Outstanding decisions</h3>
 <ul class="emd-tasklist">
-<li><span class="emd-check">&#11036;</span> <strong>Choose a licence.</strong> No <code>LICENSE</code> file exists yet and none is claimed anywhere. This is Marc's call and nothing should assume one</li>
-<li><span class="emd-check">&#11036;</span> <strong>Push to GitHub.</strong> The repository is local only; <code>bellcheddar/jumpjet</code> does not exist yet</li>
+<li><span class="emd-check">&#9989;</span> <strong>Licence chosen: MIT.</strong> Based on what is actually redistributed: ESM-2's weights are MIT and every build-time dependency is MIT or BSD-3-Clause, so nothing in the chain is copyleft. Bundled data keeps its own terms (AlphaFold-derived files CC BY 4.0, PDB 1BAB CC0) and the licence file says so, because CC BY permits any licence on derivatives only while attribution survives</li>
+<li><span class="emd-check">&#9989;</span> <strong>Pushed to GitHub</strong> at <a href="https://github.com/bellcheddar/JUMPjet">bellcheddar/JUMPjet</a></li>
 <li><span class="emd-check">&#11036;</span> <strong>An Apple Developer team.</strong> <code>CODE_SIGN_STYLE</code> is Automatic with no team set, so <code>xcodebuild archive</code> cannot sign. Needs an account only Marc holds</li>
 </ul>
 <h2>📝 Changes</h2>
 <p>Per-phase detail, including what was deliberately deferred and the bugs found along the way, is in <a href="Docs/CHANGELOG.md"><code>Docs/CHANGELOG.md</code></a>.</p>
 <p>Findings worth not rediscovering (the dihedral sign convention, Kabsch on rank-deficient point sets, why <code>"abc".contains("")</code> is false, and four separate camera bugs that were invisible until the app was on a real screen) are recorded in <a href="CLAUDE.md"><code>CLAUDE.md</code></a>.</p>
 <h2>📄 Licence</h2>
-<p>No licence is declared yet. One will be added before any release.</p>
+<p><strong>MIT</strong>, in <a href="LICENSE"><code>LICENSE</code></a>. Chosen to match what the repository actually redistributes rather than by habit: the only third-party artefact shipped here is a Core ML conversion of ESM-2, which is itself MIT, and every build-time dependency (fair-esm, PyTorch, coremltools, NumPy) is MIT or BSD-3-Clause. Nothing in the chain is copyleft or share-alike.</p>
+<p>The bundled DATA is not code and keeps its own terms, which the licence file spells out: the AlphaFold-derived torsion tables, flexibility centroids and fixture structures are CC BY 4.0, so attribution has to travel with them, and PDB entry 1BAB is CC0. CC BY 4.0 permits derivative works under any licence provided that attribution is preserved, which is what makes MIT on the code and CC BY on the data a coherent pair rather than a conflict.</p>
 <hr>
 <h2>👤 Author</h2>
 <p><strong>Marc C. Deller, D.Phil.</strong><br>
@@ -425,6 +426,6 @@ Structural biologist &amp; drug discovery scientist  </p>
 <tr>
 <td>🌐</td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
 <td>✉️</td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
-<td>🐙</td><td><a href="https://github.com/bellcheddar/jumpjet" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/jumpjet</a></td>
+<td>🐙</td><td><a href="https://github.com/bellcheddar/JUMPjet" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/JUMPjet</a></td>
 </tr>
 </table>

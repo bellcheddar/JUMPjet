@@ -2,13 +2,13 @@
 
 > **Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.**
 
-![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-9%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-237%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-4%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-9%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-237%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-4%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-MIT-00897B) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
 <td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
 <td>✉️ <b>Contact</b></td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
-<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/jumpjet" target="_blank" rel="noopener noreferrer">bellcheddar/jumpjet</a></td>
+<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/JUMPjet" target="_blank" rel="noopener noreferrer">bellcheddar/JUMPjet</a></td>
 </tr>
 </table>
 
@@ -102,7 +102,7 @@ Each package declares a macOS platform purely so `swift test` runs on the host w
 ## 🚀 Usage
 
 ```bash
-git clone https://github.com/bellcheddar/jumpjet.git
+git clone https://github.com/bellcheddar/JUMPjet.git
 cd jumpjet
 
 # Every package's tests, on the host, no simulator, about two seconds
@@ -239,8 +239,8 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 
 ### Outstanding decisions
 
-- [ ] **Choose a licence.** No `LICENSE` file exists yet and none is claimed anywhere. This is Marc's call and nothing should assume one
-- [ ] **Push to GitHub.** The repository is local only; `bellcheddar/jumpjet` does not exist yet
+- [x] **Licence chosen: MIT.** Based on what is actually redistributed: ESM-2's weights are MIT and every build-time dependency is MIT or BSD-3-Clause, so nothing in the chain is copyleft. Bundled data keeps its own terms (AlphaFold-derived files CC BY 4.0, PDB 1BAB CC0) and the licence file says so, because CC BY permits any licence on derivatives only while attribution survives
+- [x] **Pushed to GitHub** at [bellcheddar/JUMPjet](https://github.com/bellcheddar/JUMPjet)
 - [ ] **An Apple Developer team.** `CODE_SIGN_STYLE` is Automatic with no team set, so `xcodebuild archive` cannot sign. Needs an account only Marc holds
 
 ## 📝 Changes
@@ -251,7 +251,18 @@ Findings worth not rediscovering (the dihedral sign convention, Kabsch on rank-d
 
 ## 📄 Licence
 
-No licence is declared yet. One will be added before any release.
+**MIT**, in [`LICENSE`](LICENSE). Chosen to match what the repository actually
+redistributes rather than by habit: the only third-party artefact shipped here is
+a Core ML conversion of ESM-2, which is itself MIT, and every build-time
+dependency (fair-esm, PyTorch, coremltools, NumPy) is MIT or BSD-3-Clause.
+Nothing in the chain is copyleft or share-alike.
+
+The bundled DATA is not code and keeps its own terms, which the licence file
+spells out: the AlphaFold-derived torsion tables, flexibility centroids and
+fixture structures are CC BY 4.0, so attribution has to travel with them, and
+PDB entry 1BAB is CC0. CC BY 4.0 permits derivative works under any licence
+provided that attribution is preserved, which is what makes MIT on the code and
+CC BY on the data a coherent pair rather than a conflict.
 
 ---
 
@@ -264,6 +275,6 @@ Structural biologist & drug discovery scientist
 <tr>
 <td>🌐</td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
 <td>✉️</td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
-<td>🐙</td><td><a href="https://github.com/bellcheddar/jumpjet" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/jumpjet</a></td>
+<td>🐙</td><td><a href="https://github.com/bellcheddar/JUMPjet" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/JUMPjet</a></td>
 </tr>
 </table>
