@@ -14,8 +14,10 @@ let package = Package(
         .package(path: "../JumpjetCore"),
         .package(path: "../JumpjetViewer"),
         .package(path: "../JumpjetHUD"),
-        // TEST ONLY: exporting a real trajectory needs a real structure.
+        // TEST ONLY: exporting a real trajectory needs a real structure, and
+        // the demo export needs a real sampler to make one.
         .package(path: "../JumpjetParse"),
+        .package(path: "../JumpjetEngine"),
     ],
     targets: [
         .target(
@@ -25,7 +27,7 @@ let package = Package(
         ),
         .testTarget(
             name: "JumpjetMovieTests",
-            dependencies: ["JumpjetMovie", "JumpjetParse"],
+            dependencies: ["JumpjetMovie", "JumpjetParse", "JumpjetEngine"],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
     ]
