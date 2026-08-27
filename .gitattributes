@@ -1,0 +1,3 @@
+*.pbxproj -text merge=union linguist-generated=true
+*.pdb    -text
+*.cif    -text

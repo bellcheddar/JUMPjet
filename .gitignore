@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/*/.build/
+Packages/*/.swiftpm/
+
+# Session transcripts and scratch (never commit these)
+*.jsonl
+scratch/
+scratchpad/
+
+# Fetched structure cache used during development
+Fixtures/cache/
+
+# Core ML intermediates (Phase 2)
+*.mlmodelc
+Tools/coreml/.venv/

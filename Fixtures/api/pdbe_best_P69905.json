@@ -1,0 +1,64 @@
+{
+ "P69905": [
+  {
+   "pdb_id": "1bab",
+   "chain_id": "A",
+   "experimental_method": "X-ray diffraction",
+   "resolution": 1.5,
+   "tax_id": 9606,
+   "unp_start": 1,
+   "unp_end": 142,
+   "start": 2,
+   "end": 143,
+   "coverage": 1.0
+  },
+  {
+   "pdb_id": "1bab",
+   "chain_id": "C",
+   "experimental_method": "X-ray diffraction",
+   "resolution": 1.5,
+   "tax_id": 9606,
+   "unp_start": 1,
+   "unp_end": 142,
+   "start": 2,
+   "end": 143,
+   "coverage": 1.0
+  },
+  {
+   "pdb_id": "1bz1",
+   "chain_id": "A",
+   "experimental_method": "X-ray diffraction",
+   "resolution": 1.59,
+   "tax_id": 9606,
+   "unp_start": 1,
+   "unp_end": 142,
+   "start": 1,
+   "end": 142,
+   "coverage": 1.0
+  },
+  {
+   "pdb_id": "1bz1",
+   "chain_id": "C",
+   "experimental_method": "X-ray diffraction",
+   "resolution": 1.59,
+   "tax_id": 9606,
+   "unp_start": 1,
+   "unp_end": 142,
+   "start": 1,
+   "end": 142,
+   "coverage": 1.0
+  },
+  {
+   "pdb_id": "7qu4",
+   "chain_id": "A",
+   "experimental_method": "X-ray diffraction",
+   "resolution": 1.66,
+   "tax_id": 9606,
+   "unp_start": 1,
+   "unp_end": 142,
+   "start": 1,
+   "end": 142,
+   "coverage": 1.0
+  }
+ ]
+}

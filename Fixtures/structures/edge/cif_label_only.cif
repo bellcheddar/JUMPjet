@@ -1,0 +1,24 @@
+data_LABELONLY
+#
+# An mmCIF with NO auth_* columns at all. The reader must fall back to the
+# label_* numbering rather than producing a structure with no residues.
+#
+_entry.id   LABELONLY
+loop_
+_atom_site.group_PDB
+_atom_site.id
+_atom_site.type_symbol
+_atom_site.label_atom_id
+_atom_site.label_comp_id
+_atom_site.label_asym_id
+_atom_site.label_seq_id
+_atom_site.Cartn_x
+_atom_site.Cartn_y
+_atom_site.Cartn_z
+_atom_site.occupancy
+_atom_site.B_iso_or_equiv
+_atom_site.pdbx_PDB_model_num
+ATOM 1 N N  ALA B 7 1.000 0.000 0.000 1.00 12.00 1
+ATOM 2 C CA ALA B 7 2.000 0.000 0.000 1.00 12.00 1
+ATOM 3 C C  ALA B 7 3.000 0.000 0.000 1.00 12.00 1
+ATOM 4 O O  ALA B 7 4.000 0.000 0.000 1.00 12.00 1
