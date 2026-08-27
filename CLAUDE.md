@@ -21,7 +21,8 @@ This file is the short version plus current state.
   `bellcheddar/JUMPjet`, distribution signing, app icon, privacy and support
   pages on GitHub Pages, and the App Store Connect listing in full: app record
   `JUMPjet ANE` (id `6806044657`), copy, categories, age rating, free pricing,
-  15 screenshots across three sizes, and the 1.0 build uploaded.
+  15 screenshots across three sizes, and build 2 of 1.0 attached to the
+  version.
 - **Blocked on:** **App Privacy**, which Apple does not expose over the API and
   which needs one answer from Marc in the App Store Connect UI. Everything else
   is done. See `Docs/TESTFLIGHT.md`.

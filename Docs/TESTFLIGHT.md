@@ -35,7 +35,8 @@ must provide information about the app's privacy practices"*.
       `COMPLETE` with no errors. Both iPhone sizes deliberately: App Store
       Connect derives one from the other and renders the derived slot dimmed
       and unclickable, while the API still reports every asset fine.
-- [x] **The build uploaded**, 15.2 MB, verified before upload.
+- [x] **The build uploaded and attached**, 15.2 MB, build 2 of train 1.0,
+      verified before upload.
 - [x] **A licence.** MIT, in `LICENSE`, with the bundled model and data terms
       itemised separately in `NOTICE`. They are separate files on purpose:
       GitHub detects a licence by matching the file against a template, so
