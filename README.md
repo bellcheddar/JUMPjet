@@ -1,0 +1,237 @@
+# 🛩️ JUMPjet
+
+> **Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.**
+
+![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![metal](https://img.shields.io/badge/compute-Metal-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20phase%202-fcb900) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-5%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-139%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-1%20of%204%20complete-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+
+<table>
+<tr>
+<td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
+<td>✉️ <b>Contact</b></td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
+<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/jumpjet" target="_blank" rel="noopener noreferrer">bellcheddar/jumpjet</a></td>
+</tr>
+</table>
+
+---
+
+**J**ust-in-time **U**nified **M**odelling of **P**rotein **J**umps, **E**nsembles and **T**ransitions.
+
+JUMPjet is a native Swift app for iPhone and iPad. Type a UniProt accession, and it pulls the best available structure, runs a crude short-timescale conformational simulation entirely on the device, and renders the trajectory as an interactive 3D playback plus an exportable movie. The scientific focus is discrete conformational events: rotamer jumps, aromatic ring flips, basin hopping and jump-diffusion statistics. That focus is what separates it from a generic structure viewer.
+
+**Why it matters:** almost every tool that tells you how a protein moves needs a queue, a GPU node, or a subscription, and the answer arrives long after the question was interesting. A phone in your pocket has a capable GPU, a neural engine and no scheduler, and a torsion-space sampler is cheap enough to run there in seconds. The trade is honest and stated everywhere in the interface: this is crude sampling in pseudo-time, not femtosecond integration. It is useful for: building intuition about which loops and side chains are mobile before committing cluster hours, sanity-checking a predicted model's floppy regions against its own confidence, teaching conformational dynamics without a computing allocation, and producing a shareable movie of a protein breathing in under two minutes.
+
+## 🧭 Context
+
+JUMPjet is one of three related apps, and they deliberately do not overlap.
+
+| App | Lane | Look |
+|---|---|---|
+| **BOFFIN** | Static analysis suite: variants, constructs, embeddings, viewing | Native light iOS |
+| **FlexAppeal** | Heavyweight MD pipeline, OpenMM on a server GPU | marcdeller.com blue, web |
+| **JUMPjet** | Fast crude dynamics on device, jump and transition analytics | Dark cockpit HUD |
+
+Anything static-analysis flavoured belongs in BOFFIN's backlog, not here.
+
+## ✨ Features
+
+Phase 1 is complete and shipping the airframe.
+
+| Feature | State |
+|---|---|
+| UniProt accession entry with live validity checking | ✅ Built |
+| AlphaFold DB structures with per-residue pLDDT | ✅ Built |
+| PDBe experimental structures as a fallback | ✅ Built |
+| On-disk model cache keyed by accession, source and version | ✅ Built |
+| PDB and mmCIF readers with a full CIF tokeniser | ✅ Built |
+| SceneKit backbone tube, side-chain sticks, five colour modes | ✅ Built |
+| Multi-chain handling with a chain picker | ✅ Built |
+| Night Sortie HUD design system | ✅ Built |
+| `JetEngine` torsional Monte Carlo sampler | 🔜 Phase 2 |
+| ESM-2 flexibility prior on the Neural Engine | 🔜 Phase 2 |
+| Rotamer jumps, ring flips, basins, dwell times | 🔜 Phase 3 |
+| Trajectory playback and H.264 movie export | 🔜 Phase 4 |
+
+## 🧱 Stack
+
+Pure Apple platform. No third-party dependency manager, nothing vendored, nothing to `pod install`.
+
+| Layer | Technology |
+|---|---|
+| Interface | SwiftUI, Observation framework, async/await |
+| 3D | SceneKit, per-vertex colour geometry built from raw buffers |
+| Physics (Phase 2) | Swift and Metal, written from scratch as `JetEngine` |
+| Machine learning (Phase 2) | Core ML, ESM-2 t6-8M on the Apple Neural Engine |
+| Charts (Phase 3) | Swift Charts |
+| Movie (Phase 4) | `SCNRenderer` offscreen into `AVAssetWriter` |
+| Language | Swift 6 language mode, complete strict concurrency |
+
+### Module graph
+
+Five local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
+
+```
+JumpjetCore     (nothing)      structure model, chemistry, geometry, bonds
+JumpjetHUD      (nothing)      Night Sortie design system
+JumpjetParse    Core           PDB and mmCIF readers
+JumpjetFetch    Core, Parse    UniProt, AlphaFold DB, PDBe, model cache
+JumpjetViewer   Core, HUD      SceneKit renderer
+```
+
+`JumpjetViewer` names `JumpjetParse` in its **test** target only, so the renderer never learns how a file was read while the tests still render real structures rather than hand-built toys.
+
+Each package declares a macOS platform purely so `swift test` runs on the host without booting a simulator. That turns the inner loop from tens of seconds into about two.
+
+## 📋 Requirements
+
+| Requirement | Version |
+|---|---|
+| Xcode | 26.6 or later |
+| Swift toolchain | 6.3 (packages build in Swift 6 language mode) |
+| Deployment target | iOS / iPadOS 17.0 |
+| Ruby `xcodeproj` gem | Only to inspect the project bootstrap, never to re-run it |
+
+## 🚀 Usage
+
+```bash
+git clone https://github.com/bellcheddar/jumpjet.git
+cd jumpjet
+
+# Every package's tests, on the host, no simulator, about two seconds
+Tools/test-all.sh
+
+# Build the app
+xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+```
+
+Open `JUMPjet.xcodeproj` in Xcode and run. Type an accession (`P69905`, `P04406`, `P07900` are the three test flights offered on the standby screen) and press LAUNCH.
+
+### Loading an accession without touching the keyboard
+
+`JUMPJET_AUTOLOAD` loads a structure on launch, which is how a screenshot or an interface test reaches a loaded structure without driving the keyboard (the flakiest part of any iOS UI test). Under `simctl` the variable needs the child prefix:
+
+```bash
+SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.jumpjet
+```
+
+## 🎨 Design system: "Night Sortie"
+
+Deliberately differentiated from its siblings: a dark cockpit rather than a light native app or a blue web dashboard.
+
+| Token | Hex | Use |
+|---|---|---|
+| Background | `#0A0E14` | Near-black night flight |
+| Panel | `#111826` | Instrument face, `#1E293B` 1 px border |
+| Primary | `#00E676` | Phosphor green: live data, traces, running state |
+| Accent | `#FFB300` | Afterburner amber: jump events, warnings, the RUN control |
+| Text | `#E6EDF3` | Muted `#8B99A9` |
+
+Numeric readouts use monospaced digits, because instruments do not use proportional figures: a value that jitters sideways as it counts is a value nobody can read at a glance. Gauges are thin-line dials and tape gauges (RMSD as an altimeter tape, acceptance ratio as engine RPM, temperature as a throttle lever), restrained rather than arcade.
+
+Semantics never rely on colour alone. Every status role carries a distinct SF Symbol as well as a distinct colour, and that is a test rather than an intention.
+
+## 🔬 Honesty about timescales
+
+This is the ground rule the whole project is shaped around, and it is worth stating in the README rather than only in the code.
+
+`JetEngine` is a torsion-space Monte Carlo and Brownian hybrid. **Frames are pseudo-time, not femtosecond integration.** The interface labels the axis "MC sweeps" or "effective time (arb.)", never picoseconds, and dwell times and jump rates are reported in sweeps. The About screen says "crude on-device sampler" in those words.
+
+The same principle runs through Phase 1. The parser reports everything it discarded (waters, ligands, alternate locations, extra models) instead of quietly showing two thirds of a file. The confidence colour scale is offered only for predicted structures, because putting a 1.5 Å crystal structure's B-factors on a prediction's certainty axis is a category error. And every structure carries its provenance in the sortie panel: JUMPjet never shows a model without saying which one it is and where it came from.
+
+## 📊 Data sources
+
+| Source | Used for | Licence |
+|---|---|---|
+| [AlphaFold DB](https://alphafold.ebi.ac.uk) | Predicted structures, per-residue pLDDT | CC BY 4.0 |
+| [PDBe](https://www.ebi.ac.uk/pdbe/) | Best-structure mappings, experimental mmCIF | CC0 for entries |
+| [UniProtKB](https://www.uniprot.org) | Protein name, organism, sequence | CC BY 4.0 |
+
+The model version is read from the AlphaFold API on every fetch and never hard-coded: the build plan was written when v4 was current and the database was serving v6 by the time the fixtures were recorded. Full attribution in [`Docs/ATTRIBUTIONS.md`](Docs/ATTRIBUTIONS.md).
+
+## 🧪 Tests
+
+139 tests across five packages, host-side, no simulator, about two seconds.
+
+| Package | Tests | Covers |
+|---|---|---|
+| JumpjetCore | 39 | Dihedrals, Kabsch, RMSD, chemistry tables, bond inference |
+| JumpjetFetch | 25 | Client decoding, fallback chain, cache, offline, version busting |
+| JumpjetHUD | 16 | Gauge scales, tick generation, formatting, accessibility roles |
+| JumpjetParse | 25 | Both readers, real files and hand-built edge cases |
+| JumpjetViewer | 34 | Spline, tube sweep, colour scales, scene graph, camera fitting |
+
+The strongest tests parse the PDB **and** the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.
+
+The fetch suite runs with no network at all: a recorded transport answers from fixtures, so the suite passes in a tunnel, and a test that depended on what EBI was serving this morning would tell you about EBI rather than about JUMPjet.
+
+## ✅ To Do
+
+Roadmap for JUMPjet, in dependency order (a phased build reads better that way). Full specification in [`Docs/JUMPJET_BUILD_PLAN.md`](Docs/JUMPJET_BUILD_PLAN.md).
+
+### Phase 1: Airframe (complete)
+
+- [x] **Project scaffold as local Swift packages.** Five modules with an acyclic dependency graph enforced by the manifests, and a macOS platform on each so `swift test` runs on the host with no simulator. `JUMPjet.xcodeproj` is committed and is the source of truth; `Tools/bootstrap-xcodeproj.rb` records its origin and must never be re-run to regenerate it
+- [x] **Night Sortie HUD design system.** The build plan's six hex values, monospaced-digit readouts, tape and dial gauges, the amber RUN control. The gauge maths lives in plain values rather than in the view, because a gauge that mislabels its ticks lies quietly and no screenshot catches it
+- [x] **Fetch module: UniProt, AlphaFold DB, PDBe.** Behind an injectable transport, with an actor-backed disk cache keyed by accession, source **and** version. Keying on the accession alone would serve a superseded prediction for as long as the app stays installed, and say nothing about it
+- [x] **Accession validation before the first request.** Against the UniProtKB grammar, so a typo costs no network. Isoform suffixes are split off and kept rather than rejected
+- [x] **PDB and mmCIF readers.** PDB by fixed column, mmCIF by a real tokeniser handling quoting, semicolon text fields, comments and nulls. One builder applies every dropping policy for both and reports what it dropped
+- [x] **SceneKit viewer.** Catmull-Rom backbone tube swept with a parallel-transport frame, side chains merged into a single geometry, five colour modes including the official AlphaFold pLDDT bands
+- [x] **Cockpit layout for iPhone and iPad.** Splits side-by-side when the window is wider than it is tall and stacks otherwise. Size class was the wrong signal: an iPad is `.regular` in both orientations, and a portrait split leaves the viewer a pane twice as tall as it is wide
+- [ ] **Measure 60 fps on an A16 at 600 residues.** The build plan's frame-rate target is the one part of Phase 1's definition of done that is **not** met: there was no device to hand, and a simulator frame rate says nothing about a phone. Carried into Phase 2, where the profiling pass happens anyway
+
+### Phase 2: Engines
+
+- [ ] **Convert ESM-2 t6-8M to Core ML.** fp16, fixed length 1,200 with attention masking, roughly a 16 MB `.mlpackage` in the bundle. Fixed shapes and no dynamic control flow, because that is what keeps layers on the Neural Engine
+- [ ] **Flexibility prior, trained on nothing for v1.** Normalised inverse pLDDT and an embedding-derived disorder proxy, weighted 70/30, documented as a heuristic so a learned head can replace it later without anyone mistaking the current one for a model
+- [ ] **Verify ANE dispatch in Instruments, and report it truthfully.** An "ANE ✓" indicator when the compiled plan maps to the Neural Engine, "GPU/CPU fallback" when it does not. Partial mapping is acceptable; claiming it without checking is not
+- [ ] **`JetEngine`: all-atom, torsional degrees of freedom only.** φ, ψ and χ with bond lengths and angles fixed, which keeps rotamers and ring flips first-class citizens in a way a Cα-only model cannot
+- [ ] **Energy terms.** Cα elastic network with spring constants scaled *down* by the flexibility prior so loops move and cores hold; soft-sphere sterics on a Metal spatial hash grid; a compact Dunbrack-style rotamer table and a Ramachandran bias. Backbone H-bonds only if the phase runs ahead
+- [ ] **Metropolis sampler with a mixed move set.** Small Gaussian torsion perturbations, discrete well-to-well χ1 jumps, and 180° χ2 ring flips for Phe and Tyr. Monte Carlo is the v1 workhorse because its correctness is easy to test
+- [ ] **Live HUD readouts during a run.** Acceptance ratio, energy, RMSD from start, sweeps per second, all on the instrument gauges that already exist
+- [ ] **Deterministic replay from a seed**, plus an energy-conservation sanity check across 50k sweeps and an acceptance ratio between 20 and 60% at default throttle
+
+### Phase 3: Flight recorder
+
+- [ ] **Per-trajectory basics.** RMSD against frame 0 by Kabsch superposition, radius of gyration, per-residue RMSF. The geometry for all three already exists and is tested
+- [ ] **Validation panel: RMSF against the ANE flexibility prior**, per residue with Spearman ρ shown. If the engine and the prior disagree wildly that should be visible, not hidden
+- [ ] **Rotamer jump detection.** χ1 state assignment into g−/g+/t wells with 30° tolerance bands, frames in no-man's-land inheriting the previous state. Transition counts, a residue-by-sweep jump raster, the ten most jump-happy residues
+- [ ] **Symmetry-aware ring-flip detection.** Phe and Tyr only: histidine and tryptophan rings look aromatic but are not symmetric, so treating them as flippable would erase real conformational changes. The chemistry tables already encode which is which
+- [ ] **Basins and jump diffusion.** Dihedral PCA on sin/cos(φ, ψ), a −ln(density) terrain map over PC1/PC2, k-means basins with k chosen by silhouette and capped at 5, dwell-time histograms and a basin-to-basin jump matrix. All rates in sweeps
+- [ ] **Tap-through from any analysis element to the residue and frame** in the 3D viewer
+
+### Phase 4: Airshow
+
+- [ ] **Trajectory playback.** Scrubber, 0.5–4× speed, loop, ghost trail, and jump events flagged as tick marks on the scrub bar
+- [ ] **Movie export.** Offscreen `SCNRenderer` into `AVAssetWriter`, H.264, 1080p and square 720p at 30 fps, optional HUD burn-in and slow orbit, share sheet and save to Photos
+- [ ] **Sortie report card.** Accession, source model, sweeps, jumps, flips, basin count and RMSF hotspots, exportable as a PNG alongside the movie
+- [ ] **Polish.** Haptics on jump ticks, accessibility labels throughout, an App Store icon, and a TestFlight archive checklist
+
+### Outstanding decisions
+
+- [ ] **Choose a licence.** No `LICENSE` file exists yet and none is claimed anywhere. This is Marc's call and nothing should assume one
+- [ ] **Push to GitHub.** The repository is local only; `bellcheddar/jumpjet` does not exist yet
+
+## 📝 Changes
+
+Per-phase detail, including what was deliberately deferred and the bugs found along the way, is in [`Docs/CHANGELOG.md`](Docs/CHANGELOG.md).
+
+Findings worth not rediscovering (the dihedral sign convention, Kabsch on rank-deficient point sets, why `"abc".contains("")` is false, and four separate camera bugs that were invisible until the app was on a real screen) are recorded in [`CLAUDE.md`](CLAUDE.md).
+
+## 📄 Licence
+
+No licence is declared yet. One will be added before any release.
+
+---
+
+## 👤 Author
+
+**Marc C. Deller, D.Phil.**  
+Structural biologist & drug discovery scientist  
+
+<table>
+<tr>
+<td>🌐</td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
+<td>✉️</td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
+<td>🐙</td><td><a href="https://github.com/bellcheddar/jumpjet" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/jumpjet</a></td>
+</tr>
+</table>

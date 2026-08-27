@@ -1,0 +1,3 @@
+# The polished copy is byte-identical to jumpjet.md, which is itself a copy of
+# README.md. Keeping a third copy in git would guarantee they drift.
+jumpjet.polished.md
