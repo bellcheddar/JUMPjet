@@ -13,15 +13,27 @@ public struct StructureViewer: View {
     private let structure: Structure
     private let options: ViewerOptions
     private let flexibility: [Float]?
+    private let frameVersion: Int
 
-    public init(structure: Structure, options: ViewerOptions, flexibility: [Float]? = nil) {
+    /// - Parameter frameVersion: bump this when only the COORDINATES changed.
+    ///   An identifier and an atom count are identical between two frames of one
+    ///   trajectory, so without a counter the geometry key compares equal and
+    ///   the protein never appears to move.
+    public init(
+        structure: Structure, options: ViewerOptions, flexibility: [Float]? = nil,
+        frameVersion: Int = 0
+    ) {
         self.structure = structure
         self.options = options
         self.flexibility = flexibility
+        self.frameVersion = frameVersion
     }
 
     public var body: some View {
-        SceneKitContainer(structure: structure, options: options, flexibility: flexibility)
+        SceneKitContainer(
+            structure: structure, options: options, flexibility: flexibility,
+            frameVersion: frameVersion)
+            .id(structure.identifier)
             .background(HUDPalette.background)
             .accessibilityLabel("Three dimensional structure of \(structure.identifier)")
             .accessibilityHint("Drag to rotate, pinch to zoom, two fingers to pan.")
@@ -36,13 +48,15 @@ private struct GeometryKey: Equatable {
     let colourMode: ColourMode
     let showsSideChains: Bool
     let visibleChains: Set<Int>
+    let frameVersion: Int
 
-    init(_ structure: Structure, _ options: ViewerOptions) {
+    init(_ structure: Structure, _ options: ViewerOptions, _ frameVersion: Int) {
         self.identifier = structure.identifier
         self.atomCount = structure.atomCount
         self.colourMode = options.colourMode
         self.showsSideChains = options.showsSideChains
         self.visibleChains = options.visibleChains
+        self.frameVersion = frameVersion
     }
 }
 
@@ -53,6 +67,7 @@ private struct GeometryKey: Equatable {
         let structure: Structure
         let options: ViewerOptions
         let flexibility: [Float]?
+        let frameVersion: Int
 
         func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -72,7 +87,7 @@ private struct GeometryKey: Equatable {
             // to act on, so every reframe silently does nothing.
             view.pointOfView = view.scene?.rootNode.childNode(
                 withName: StructureScene.NodeName.camera, recursively: false)
-            context.coordinator.key = GeometryKey(structure, options)
+            context.coordinator.key = GeometryKey(structure, options, frameVersion)
             context.coordinator.boundingRadius = structure.boundingRadius
             // Framing is driven by LAYOUT, not by this call. The view has no
             // bounds yet here, and on iPad the pane it ends up in is a very
@@ -86,7 +101,7 @@ private struct GeometryKey: Equatable {
         }
 
         func updateUIView(_ view: FramingSCNView, context: Context) {
-            let key = GeometryKey(structure, options)
+            let key = GeometryKey(structure, options, frameVersion)
             guard key != context.coordinator.key else { return }
             let isNewStructure = context.coordinator.key?.identifier != key.identifier
             context.coordinator.key = key
@@ -173,6 +188,7 @@ private struct GeometryKey: Equatable {
         let structure: Structure
         let options: ViewerOptions
         let flexibility: [Float]?
+        let frameVersion: Int
 
         func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -182,12 +198,12 @@ private struct GeometryKey: Equatable {
                 structure: structure, options: options, flexibility: flexibility)
             view.allowsCameraControl = true
             view.autoenablesDefaultLighting = false
-            context.coordinator.key = GeometryKey(structure, options)
+            context.coordinator.key = GeometryKey(structure, options, frameVersion)
             return view
         }
 
         func updateNSView(_ view: SCNView, context: Context) {
-            let key = GeometryKey(structure, options)
+            let key = GeometryKey(structure, options, frameVersion)
             guard key != context.coordinator.key else { return }
             context.coordinator.key = key
             guard let root = view.scene?.rootNode.childNode(

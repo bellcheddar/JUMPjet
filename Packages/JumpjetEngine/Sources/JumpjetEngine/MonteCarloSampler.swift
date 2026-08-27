@@ -10,9 +10,28 @@ public struct RunProgress: Sendable, Hashable {
     public var energy: Energy
     public var rmsdFromStart: Float
     public var sweepsPerSecond: Float
+    /// The frame just stored, superposed onto the start, when this sweep landed
+    /// on the snapshot stride. Carried here so a live view can show the protein
+    /// moving without the sampler knowing anything about a view: it is the
+    /// frame that was going to be written anyway, handed over rather than
+    /// copied a second time.
+    public var snapshot: [SIMD3<Float>]?
 
     public var fraction: Double {
         totalSweeps > 0 ? Double(sweep) / Double(totalSweeps) : 0
+    }
+
+    public init(
+        sweep: Int, totalSweeps: Int, acceptanceRatio: Float, energy: Energy,
+        rmsdFromStart: Float, sweepsPerSecond: Float, snapshot: [SIMD3<Float>]? = nil
+    ) {
+        self.snapshot = snapshot
+        self.sweep = sweep
+        self.totalSweeps = totalSweeps
+        self.acceptanceRatio = acceptanceRatio
+        self.energy = energy
+        self.rmsdFromStart = rmsdFromStart
+        self.sweepsPerSecond = sweepsPerSecond
     }
 }
 
@@ -125,6 +144,7 @@ public final class MonteCarloSampler {
 
         storeFrame(&frames, &frameSweeps, &frameEnergies, sweep: 0, energy: energy)
 
+        var latestFrame: [SIMD3<Float>]?
         var sweep = 0
         while sweep < configuration.sweeps {
             sweep += 1
@@ -150,6 +170,7 @@ public final class MonteCarloSampler {
 
             if sweep % configuration.snapshotStride == 0 {
                 storeFrame(&frames, &frameSweeps, &frameEnergies, sweep: sweep, energy: energy)
+                latestFrame = Array(frames.suffix(structure.atomCount))
             }
 
             if let progress {
@@ -159,7 +180,9 @@ public final class MonteCarloSampler {
                     acceptanceRatio: acceptanceRatio, energy: energy,
                     rmsdFromStart: Geometry.superposedRMSD(
                         moving: positions, onto: startPositions),
-                    sweepsPerSecond: elapsed > 0 ? Float(sweep) / elapsed : 0)
+                    sweepsPerSecond: elapsed > 0 ? Float(sweep) / elapsed : 0,
+                    snapshot: latestFrame)
+                latestFrame = nil
                 if !progress(report) { break }
             }
         }

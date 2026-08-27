@@ -41,7 +41,11 @@ struct ContentView: View {
                         viewerArea
                             .frame(maxHeight: .infinity)
                         ScrollView { instruments }
-                            .frame(maxHeight: sizeClass == .regular ? 380 : 260)
+                            // Taller since Phase 2 added the engine panel: at
+                            // 260 the RUN control was below the fold on a
+                            // phone, which made the app look like it had no
+                            // engines at all.
+                            .frame(maxHeight: sizeClass == .regular ? 420 : 330)
                     }
                 }
                 .padding(HUDMetrics.panelSpacing)
@@ -65,7 +69,11 @@ struct ContentView: View {
                 case .failed(let error):
                     FailureView(error: error) { model.load() }
                 case .loaded(let loaded):
-                    StructureViewer(structure: loaded.structure, options: model.options)
+                    StructureViewer(
+                        structure: model.run.liveStructure ?? loaded.structure,
+                        options: model.options,
+                        flexibility: model.run.flexibilityValues,
+                        frameVersion: model.run.frameVersion)
                         .clipShape(RoundedRectangle(cornerRadius: HUDMetrics.cornerRadius - 4))
                         .overlay(alignment: .bottomLeading) {
                             ColourLegend(mode: model.options.colourMode, structure: loaded.structure)
@@ -83,7 +91,16 @@ struct ContentView: View {
     private var instruments: some View {
         VStack(spacing: HUDMetrics.panelSpacing) {
             if let loaded = model.status.model {
-                SortiePanel(model: loaded)
+                // The engines come first once they are doing something. A run
+                // in progress is the thing the user is watching, and on a phone
+                // the instrument column scrolls, so third place means offscreen.
+                if model.run.stage.isBusy || model.run.trajectory != nil {
+                    EnginePanel(model: model)
+                    SortiePanel(model: loaded)
+                } else {
+                    SortiePanel(model: loaded)
+                    EnginePanel(model: model)
+                }
                 DisplayPanel(model: model, structure: loaded.structure)
                 if !loaded.report.summary.isEmpty {
                     HUDPanel("Parser") {

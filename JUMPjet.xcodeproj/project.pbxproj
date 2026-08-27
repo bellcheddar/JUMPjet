@@ -7,16 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C84522D303D03BCCB3373AF /* torsion_tables.json in Resources */ = {isa = PBXBuildFile; fileRef = CAF99B196BC11D2C4547FF8A /* torsion_tables.json */; };
 		0F4101BD3FB9B59327277BC8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A77372F6CC773C8A8AF38A /* Assets.xcassets */; };
 		12F005D3346CEB9A442E0FD3 /* AccessionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */; };
 		1D3A5A1CA75ACE16335CC942 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
 		2054A6A7EC43F8813A31EC1F /* InstrumentPanels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */; };
 		367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */; };
 		5FDF6457B0995D2F79539BBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
+		8DECF8F9F9C3C136AD8ABF16 /* esm2_t6_8M_UR50D.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 5F4F5181596011987DF0BAAE /* esm2_t6_8M_UR50D.mlpackage */; };
+		92B5EAB294113C4645A37572 /* RunCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */; };
+		9F996EB0674A93A7EF54C4F9 /* esm2_t6_8M_UR50D.tokeniser.json in Resources */ = {isa = PBXBuildFile; fileRef = 77BD586C9A220F53FAA261A2 /* esm2_t6_8M_UR50D.tokeniser.json */; };
 		A730E04640EBF3E659794CEE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB419058136043ABDC127E9E /* AppModel.swift */; };
 		B8668F4D02F9C13FC022E139 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D62F4B5EC2DA6211E768642 /* ContentView.swift */; };
 		BCF38D92F434A57CF9A9A058 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF1B2AAA247149A76D38044 /* AppModelTests.swift */; };
+		C02C05C6E4B9213D65060C6C /* EnginePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BF15B8AF34303520262DBD /* EnginePanel.swift */; };
 		D9DFED2C9E87959204F78DA3 /* LaunchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */; };
+		DB75BADCD9AE9C1539B9A63C /* flexibility_centroids.json in Resources */ = {isa = PBXBuildFile; fileRef = 1CB5E2BEC3A4302E567932E4 /* flexibility_centroids.json */; };
 		FED12CD5AF3C51166182D496 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -41,15 +47,21 @@
 		02A77372F6CC773C8A8AF38A /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = App/Resources/Assets.xcassets; sourceTree = "<group>"; };
 		0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AccessionBar.swift; path = App/Sources/AccessionBar.swift; sourceTree = "<group>"; };
 		1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JUMPjetApp.swift; path = App/Sources/JUMPjetApp.swift; sourceTree = "<group>"; };
+		1CB5E2BEC3A4302E567932E4 /* flexibility_centroids.json */ = {isa = PBXFileReference; includeInIndex = 1; name = flexibility_centroids.json; path = Models/flexibility_centroids.json; sourceTree = "<group>"; };
 		27599206621DD74001DF7C6D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		28B30285D7172CBC0EF35291 /* JUMPJET_BUILD_PLAN.md */ = {isa = PBXFileReference; includeInIndex = 1; name = JUMPJET_BUILD_PLAN.md; path = Docs/JUMPJET_BUILD_PLAN.md; sourceTree = "<group>"; };
 		3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InstrumentPanels.swift; path = App/Sources/InstrumentPanels.swift; sourceTree = "<group>"; };
 		3BF1B2AAA247149A76D38044 /* AppModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModelTests.swift; path = App/Tests/AppModelTests.swift; sourceTree = "<group>"; };
 		5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LaunchUITests.swift; path = App/UITests/LaunchUITests.swift; sourceTree = "<group>"; };
+		5F4F5181596011987DF0BAAE /* esm2_t6_8M_UR50D.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; name = esm2_t6_8M_UR50D.mlpackage; path = Models/esm2_t6_8M_UR50D.mlpackage; sourceTree = "<group>"; };
 		6D62F4B5EC2DA6211E768642 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/Sources/ContentView.swift; sourceTree = "<group>"; };
+		77BD586C9A220F53FAA261A2 /* esm2_t6_8M_UR50D.tokeniser.json */ = {isa = PBXFileReference; includeInIndex = 1; name = esm2_t6_8M_UR50D.tokeniser.json; path = Models/esm2_t6_8M_UR50D.tokeniser.json; sourceTree = "<group>"; };
 		79C28983B9B7722AECE1304F /* MANIFEST.md */ = {isa = PBXFileReference; includeInIndex = 1; name = MANIFEST.md; path = Fixtures/MANIFEST.md; sourceTree = "<group>"; };
 		7B4B8229CEA372687E2B8098 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = App/Resources/Info.plist; sourceTree = "<group>"; };
 		88B714579B2910031D973FB5 /* JUMPjet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JUMPjet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7BF15B8AF34303520262DBD /* EnginePanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnginePanel.swift; path = App/Sources/EnginePanel.swift; sourceTree = "<group>"; };
+		C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RunCoordinator.swift; path = App/Sources/RunCoordinator.swift; sourceTree = "<group>"; };
+		CAF99B196BC11D2C4547FF8A /* torsion_tables.json */ = {isa = PBXFileReference; includeInIndex = 1; name = torsion_tables.json; path = Models/torsion_tables.json; sourceTree = "<group>"; };
 		ECE5C811AD6CBF8E22F9F138 /* JUMPjetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JUMPjetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFDC331CA809B86B402364F2 /* JUMPjetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JUMPjetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB419058136043ABDC127E9E /* AppModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModel.swift; path = App/Sources/AppModel.swift; sourceTree = "<group>"; };
@@ -121,6 +133,17 @@
 			name = Tests;
 			sourceTree = SOURCE_ROOT;
 		};
+		7E5C64B211F3F3D92B7943AE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5F4F5181596011987DF0BAAE /* esm2_t6_8M_UR50D.mlpackage */,
+				77BD586C9A220F53FAA261A2 /* esm2_t6_8M_UR50D.tokeniser.json */,
+				1CB5E2BEC3A4302E567932E4 /* flexibility_centroids.json */,
+				CAF99B196BC11D2C4547FF8A /* torsion_tables.json */,
+			);
+			name = Models;
+			sourceTree = SOURCE_ROOT;
+		};
 		B11A100746A4D3BFF912E306 /* UITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,6 +167,7 @@
 				E85B3611CDEB4B47C3CB5F6F /* Frameworks */,
 				5D990271D298E7DC07AE9317 /* App */,
 				71B35B01C02C78DB7CAB7EFF /* Documentation */,
+				7E5C64B211F3F3D92B7943AE /* Models */,
 			);
 			sourceTree = "<group>";
 		};
@@ -172,6 +196,8 @@
 				6D62F4B5EC2DA6211E768642 /* ContentView.swift */,
 				3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */,
 				1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */,
+				C8CF7F189D47A6E1F902FFF3 /* RunCoordinator.swift */,
+				A7BF15B8AF34303520262DBD /* EnginePanel.swift */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -216,6 +242,8 @@
 				52F035207B8A7B7953DD3B14 /* JumpjetParse */,
 				AF07D1A03A66CE01822C9F13 /* JumpjetFetch */,
 				A7A598D7034DC70D16E6CA66 /* JumpjetViewer */,
+				13EF67724CDECFACA8A58D51 /* JumpjetNeural */,
+				E9D3FC3CB74D0610CB5090DF /* JumpjetEngine */,
 			);
 			productName = JUMPjet;
 			productReference = 88B714579B2910031D973FB5 /* JUMPjet.app */;
@@ -264,6 +292,8 @@
 				C5C4B593EF9CA85D639F9241 /* XCLocalSwiftPackageReference "JumpjetParse" */,
 				28A6773F9CA9014E13A3CEC9 /* XCLocalSwiftPackageReference "JumpjetFetch" */,
 				59EDAA33AE3D45A20563DC08 /* XCLocalSwiftPackageReference "JumpjetViewer" */,
+				D1C72BC85FDDBF3BF5545E03 /* XCLocalSwiftPackageReference "JumpjetNeural" */,
+				33F1FFEE35E29A4E9FCB6508 /* XCLocalSwiftPackageReference "JumpjetEngine" */,
 			);
 			preferredProjectObjectVersion = 100;
 			productRefGroup = 2DD0C8EB9259CC885E0E6177 /* Products */;
@@ -290,6 +320,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F4101BD3FB9B59327277BC8 /* Assets.xcassets in Resources */,
+				8DECF8F9F9C3C136AD8ABF16 /* esm2_t6_8M_UR50D.mlpackage in Resources */,
+				9F996EB0674A93A7EF54C4F9 /* esm2_t6_8M_UR50D.tokeniser.json in Resources */,
+				DB75BADCD9AE9C1539B9A63C /* flexibility_centroids.json in Resources */,
+				0C84522D303D03BCCB3373AF /* torsion_tables.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,6 +362,8 @@
 				B8668F4D02F9C13FC022E139 /* ContentView.swift in Sources */,
 				2054A6A7EC43F8813A31EC1F /* InstrumentPanels.swift in Sources */,
 				367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */,
+				92B5EAB294113C4645A37572 /* RunCoordinator.swift in Sources */,
+				C02C05C6E4B9213D65060C6C /* EnginePanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,6 +670,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/JumpjetFetch;
 		};
+		33F1FFEE35E29A4E9FCB6508 /* XCLocalSwiftPackageReference "JumpjetEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetEngine;
+		};
 		59EDAA33AE3D45A20563DC08 /* XCLocalSwiftPackageReference "JumpjetViewer" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/JumpjetViewer;
@@ -641,6 +681,10 @@
 		C5C4B593EF9CA85D639F9241 /* XCLocalSwiftPackageReference "JumpjetParse" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/JumpjetParse;
+		};
+		D1C72BC85FDDBF3BF5545E03 /* XCLocalSwiftPackageReference "JumpjetNeural" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetNeural;
 		};
 		F4A250DC874A15B1BDB24533 /* XCLocalSwiftPackageReference "JumpjetCore" */ = {
 			isa = XCLocalSwiftPackageReference;
@@ -653,6 +697,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0C0D29B38DE196916D9056E3 /* XCLocalSwiftPackageReference "JumpjetHUD" */;
 			productName = JumpjetHUD;
+		};
+		13EF67724CDECFACA8A58D51 /* JumpjetNeural */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1C72BC85FDDBF3BF5545E03 /* XCLocalSwiftPackageReference "JumpjetNeural" */;
+			productName = JumpjetNeural;
 		};
 		52F035207B8A7B7953DD3B14 /* JumpjetParse */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -673,6 +722,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F4A250DC874A15B1BDB24533 /* XCLocalSwiftPackageReference "JumpjetCore" */;
 			productName = JumpjetCore;
+		};
+		E9D3FC3CB74D0610CB5090DF /* JumpjetEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 33F1FFEE35E29A4E9FCB6508 /* XCLocalSwiftPackageReference "JumpjetEngine" */;
+			productName = JumpjetEngine;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

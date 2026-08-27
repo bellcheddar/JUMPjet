@@ -1,6 +1,8 @@
 import Foundation
 import JumpjetCore
+import JumpjetEngine
 import JumpjetFetch
+import JumpjetNeural
 import JumpjetViewer
 import Observation
 
@@ -36,6 +38,9 @@ final class AppModel {
     /// The chain the viewer is framed on. `nil` means every chain.
     var focusedChain: Int?
     private(set) var recentAccessions: [String] = []
+    /// Phase 2's engines. Owned here so a new structure resets them: a prior
+    /// and a trajectory belong to the protein they were computed for.
+    let run = RunCoordinator()
 
     private let service: StructureService
     private let defaults: UserDefaults
@@ -58,9 +63,22 @@ final class AppModel {
     var structure: Structure? { status.model?.structure }
 
     /// Colour modes that say something about the structure in hand.
+    ///
+    /// Flexibility becomes available only once the neural prior has actually
+    /// been computed. Offering it before then would give the user a colour
+    /// scale with nothing behind it.
     var availableColourModes: [ColourMode] {
         guard let structure else { return [.chainbow] }
-        return ColourMode.allCases.filter { $0.isAvailable(for: structure) }
+        return ColourMode.allCases.filter {
+            if $0 == .flexibility { return run.flexibilityValues != nil }
+            return $0.isAvailable(for: structure)
+        }
+    }
+
+    /// Start a run on the currently loaded structure.
+    func launchEngines() {
+        guard let model = status.model else { return }
+        run.run(structure: model.structure, chainIndex: focusedChain)
     }
 
     func load() {
@@ -107,6 +125,7 @@ final class AppModel {
 
     private func apply(_ model: LoadedModel) {
         status = .loaded(model)
+        run.reset()
         accessionText = model.accession.value
 
         // Open on the longest chain, as the build plan asks, with the rest
