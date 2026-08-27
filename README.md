@@ -2,7 +2,7 @@
 
 > **Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.**
 
-![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-7%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-177%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-2%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![charts](https://img.shields.io/badge/charts-Swift%20Charts-467FF7) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-8%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-224%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-3%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -49,7 +49,9 @@ Phase 1 is complete and shipping the airframe.
 | `JetEngine` torsional Monte Carlo sampler | ✅ Built |
 | ESM-2 flexibility prior on the Neural Engine | ✅ Built |
 | Live run instruments and a protein you can watch move | ✅ Built |
-| Rotamer jumps, ring flips, basins, dwell times | 🔜 Phase 3 |
+| Rotamer jumps, ring flips, basins, dwell times | ✅ Built |
+| Validation panel: RMSF against the neural prior | ✅ Built |
+| Tap-through from any analysis element to the 3D view | ✅ Built |
 | Trajectory playback and H.264 movie export | 🔜 Phase 4 |
 
 ## 🧱 Stack
@@ -62,13 +64,13 @@ Pure Apple platform. No third-party dependency manager, nothing vendored, nothin
 | 3D | SceneKit, per-vertex colour geometry built from raw buffers |
 | Physics | Swift, written from scratch as `JetEngine`. Metal is the named next lever, not yet used |
 | Machine learning | Core ML, ESM-2 t6-8M, 98% of operations planned on the Apple Neural Engine |
-| Charts (Phase 3) | Swift Charts |
+| Charts | Swift Charts, HUD-styled, with the raster and terrain map drawn in a `Canvas` |
 | Movie (Phase 4) | `SCNRenderer` offscreen into `AVAssetWriter` |
 | Language | Swift 6 language mode, complete strict concurrency |
 
 ### Module graph
 
-Seven local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
+Eight local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
 
 ```
 JumpjetCore     (nothing)      structure model, chemistry, geometry, bonds
@@ -78,6 +80,7 @@ JumpjetFetch    Core, Parse    UniProt, AlphaFold DB, PDBe, model cache
 JumpjetViewer   Core, HUD      SceneKit renderer
 JumpjetNeural   Core           ESM-2 on Core ML, the flexibility prior
 JumpjetEngine   Core           JetEngine: torsional Monte Carlo
+JumpjetAnalysis Core           the flight recorder
 ```
 
 `JumpjetViewer` names `JumpjetParse` in its **test** target only, so the renderer never learns how a file was read while the tests still render real structures rather than hand-built toys.
@@ -153,7 +156,7 @@ The model version is read from the AlphaFold API on every fetch and never hard-c
 
 ## 🧪 Tests
 
-177 tests across seven packages, host-side, no simulator.
+224 tests across eight packages, host-side, no simulator.
 
 They run in **release**. `swift test` builds debug by default, and for the physics
 package that is a factor of thirty-six, which makes the suite unusable and any
@@ -167,7 +170,8 @@ benchmark meaningless.
 | JumpjetParse | 25 | Both readers, real files and hand-built edge cases |
 | JumpjetViewer | 34 | Spline, tube sweep, colour scales, scene graph, camera fitting |
 | JumpjetNeural | 13 | Tokeniser, Core ML parity against PyTorch, stride handling, the prior |
-| JumpjetEngine | 25 | Topology, each energy term against hand-computed values, the sampler |
+| JumpjetEngine | 33 | Topology, each energy term against hand-computed values, the sampler |
+| JumpjetAnalysis | 39 | Jump and flip detection against planted transitions, PCA, basins |
 
 The strongest tests parse the PDB **and** the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.
 
@@ -204,12 +208,14 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 
 ### Phase 3: Flight recorder
 
-- [ ] **Per-trajectory basics.** RMSD against frame 0 by Kabsch superposition, radius of gyration, per-residue RMSF. The geometry for all three already exists and is tested
-- [ ] **Validation panel: RMSF against the ANE flexibility prior**, per residue with Spearman ρ shown. If the engine and the prior disagree wildly that should be visible, not hidden
-- [ ] **Rotamer jump detection.** χ1 state assignment into g−/g+/t wells with 30° tolerance bands, frames in no-man's-land inheriting the previous state. Transition counts, a residue-by-sweep jump raster, the ten most jump-happy residues
-- [ ] **Symmetry-aware ring-flip detection.** Phe and Tyr only: histidine and tryptophan rings look aromatic but are not symmetric, so treating them as flippable would erase real conformational changes. The chemistry tables already encode which is which
-- [ ] **Basins and jump diffusion.** Dihedral PCA on sin/cos(φ, ψ), a −ln(density) terrain map over PC1/PC2, k-means basins with k chosen by silhouette and capped at 5, dwell-time histograms and a basin-to-basin jump matrix. All rates in sweeps
-- [ ] **Tap-through from any analysis element to the residue and frame** in the 3D viewer
+- [x] **Per-trajectory basics.** RMSD against frame 0 by Kabsch superposition, radius of gyration, per-residue RMSF. Every frame is superposed first, because the sampler rotates whichever side of a torsion is smaller and the molecule therefore tumbles in the lab frame
+- [x] **Validation panel with Spearman ρ.** Rank correlation, not Pearson: RMSF is in angstroms and the prior is on 0 to 1, and there is no reason they should be linearly related. It reports whatever it finds (0.19 on one run, 0.38 on another), because the build plan asked for a disagreement to be visible
+- [x] **Rotamer jump detection with a raster.** χ1 into g−/g+/t with 30° tolerance bands. A frame in no-man's-land **inherits the previous state**, without which a side chain rattling in the gap reports hundreds of jumps having never changed rotamer. There is a test that does exactly that rattling and expects zero
+- [x] **Symmetry-aware ring flips.** Phe and Tyr only. The same 180° that IS a flip is NOT a rotamer jump, and both facts come from one symmetry, so one module owns both
+- [x] **Basins, dihedral PCA, terrain map, dwell times, jump matrix.** PCA on sin and cos of φ and ψ, because a residue oscillating about 180° gives values near +180 and near −180 and a linear method calls that the largest motion in the protein (4° circular against 150° linear on the same data). k by silhouette, capped at 5. Everything deterministic
+- [x] **Tap-through to the residue or frame** in the 3D viewer, with the tapped residue drawn in the HUD's amber
+- [x] **All six panels in 0.02 s** for 335 residues and 201 frames, against a five-second budget
+- [ ] **Interpret the jump rate honestly in the docs as well as the app.** 5,000 sweeps of a 335-residue protein gives 15,889 jumps, which is the sampler proposing rotamer moves 22% of the time rather than thermal barrier hopping. The panel says so; a future round should decide whether a jump statistic is worth reporting at all when the move set proposes the jumps
 
 ### Phase 4: Airshow
 

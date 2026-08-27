@@ -14,10 +14,10 @@ This file is the short version plus current state.
 
 ## Current state
 
-- **Phase:** 1 complete. Phase 2's two engines built (`JumpjetNeural`, `JumpjetEngine`); app wiring outstanding.
-- **Last completed:** JetEngine's sampler, 2026-08-27 (see `Docs/CHANGELOG.md`)
+- **Phase:** 1, 2 and 3 complete. Phase 4 (playback, movie export, polish) not started.
+- **Last completed:** the flight recorder, 2026-08-27 (see `Docs/CHANGELOG.md`)
 - **Blocked on:** nothing.
-- **Tests:** 177 across seven packages, `Tools/test-all.sh`, host-side, no simulator.
+- **Tests:** 224 across eight packages, `Tools/test-all.sh`, host-side, no simulator.
 - **Open against the plan:** throughput. 22 sweeps/s at 335 residues against a
   target of 100 at 300. See "Performance" below; Metal is the named next lever.
 
@@ -54,8 +54,7 @@ JumpjetViewer   Core, HUD          SceneKit renderer
                 (+ Parse in TESTS ONLY, so the renderer never learns about files)
 ```
 
-Phases 2 to 4 add `JumpjetEngine`, `JumpjetNeural`, `JumpjetAnalysis` and
-`JumpjetMovie`. Add them to `PACKAGES` in `Tools/bootstrap-xcodeproj.rb` for the
+Phase 4 adds `JumpjetMovie`. Add them to `PACKAGES` in `Tools/bootstrap-xcodeproj.rb` for the
 record, and to the app target in Xcode.
 
 `JUMPjet.xcodeproj` is committed and is the source of truth. `Tools/bootstrap-xcodeproj.rb`
@@ -188,6 +187,26 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
   rigid-body transform. Frames are superposed onto frame 0 before display, which
   is where that difference goes.
 
+### Analysis
+
+- **A detector validated on its own engine's output agrees with itself.**
+  `JumpjetAnalysis` depends on Core only, so every detector is tested against
+  synthetic tracks with planted transitions and the expected answer is known
+  exactly.
+- **No-man's-land must inherit the previous state.** Otherwise a side chain
+  rattling in the gap between two wells reports hundreds of jumps having never
+  changed rotamer.
+- **A ring flip is not a rotamer jump**, and both come from one symmetry. His
+  and Trp rings only LOOK symmetric.
+- **Circular data needs circular methods.** A residue oscillating about 180
+  degrees has a linear standard deviation of 150 and a circular one of 4.
+- **Determinism is a feature.** Random k-means starts give different labels, a
+  different k, and a transition matrix whose rows mean something else, from a
+  trajectory that has not changed.
+- **The jump COUNT is not a kinetic observable** when the sampler proposes
+  rotamer changes directly. 15,889 jumps in 5,000 sweeps is the move set
+  talking. Rank residues within a run; do not compare rates between runs.
+
 ### Toolchain
 
 - The type checker gives up on a one-line Catmull-Rom: every literal and operator
@@ -197,6 +216,14 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
 - There is no double-to-float matrix conversion in `simd`; narrow column by column.
 - `Character` is not `Codable`.
 - `NSLock` is unavailable from an async context. Use an actor.
+- `str.replace` with a missing anchor is a SILENT no-op. An earlier edit had
+  already deleted the function a later edit anchored on, so a method was never
+  inserted and the failure surfaced as an unrelated `@Bindable` error. Assert the
+  anchor exists before replacing.
+- Interface tests build DEBUG, because that is where `@testable` works. A sweep
+  count chosen for release makes a two-minute UI test into an hour-long one.
+- Piping a long run through `grep` block-buffers it: the log stays empty until
+  the process exits, so a monitor sees nothing. Redirect to a file instead.
 - The iPad Pro 13-inch (M5) simulator kept shutting down under `simctl`; the iPad
   Air 11-inch (M4) was stable. Never `killall CoreSimulatorService`: it unmounts
   the runtime cryptex and only a reboot restores it.

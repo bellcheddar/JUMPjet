@@ -1,5 +1,78 @@
 # Changelog
 
+## Phase 3 — Flight Recorder — 2026-08-27
+
+The jump analytics that earn the backronym.
+
+### Definition of done
+
+| Requirement | Status |
+|---|---|
+| RMSD, radius of gyration, per-residue RMSF | Met |
+| Validation panel: RMSF against the ANE prior, with Spearman rho | Met. Reports whatever it finds: 0.19 on one run, 0.38 on another |
+| Rotamer jumps, transition counts, raster, top ten | Met |
+| Symmetry-aware ring flips | Met. Phe and Tyr only; His and Trp rings only look symmetric |
+| Basins, dPCA, terrain map, dwell times, jump matrix | Met. k chosen by silhouette, capped at 5 |
+| Tap-through to the residue or frame in the viewer | Met |
+| **All six panels in under 5 s for a 5,000 sweep run of a 300-residue protein** | **Met: 0.02 s** for 335 residues and 201 frames |
+| Jump detection tested against a synthetic trajectory with planted transitions | Met. Twelve planted changes found at exactly the twelve frames they were planted at |
+| Symmetry-aware ring-flip test | Met, including the rule that the same 180 degrees is a flip and NOT a jump |
+
+### The number that needs a caveat, and gets one in the interface
+
+A 5,000 sweep run of a 335-residue protein reports **15,889 rotamer jumps**.
+
+That is not a protein hopping barriers thermally. The sampler proposes discrete
+well-to-well moves 22% of the time and has about 38% of them accepted, so the
+jump rate measures the move set at least as much as the molecule. The ranking of
+residues is informative and the absolute rate is not a kinetic observable, and
+the panel says so where the number appears rather than in a footnote.
+
+This is the same discipline as ground rule 3: the app is allowed to be crude and
+is not allowed to imply otherwise.
+
+### Design decisions that decide whether the numbers mean anything
+
+- **No-man's-land inherits the previous state.** Without it a side chain
+  rattling in the 30 degree gap between two wells reports hundreds of jumps
+  having never changed rotamer. There is a test that does exactly that rattling
+  and expects zero.
+- **A ring flip is not a rotamer jump.** Both facts come from the same twofold
+  symmetry, so one module owns both. Aspartate and glutamate terminal groups are
+  excluded from jump counting for the same reason.
+- **The PCA is on sin and cos of phi and psi.** A residue oscillating about 180
+  degrees produces values near +180 and near -180, and a linear method reads
+  that as the largest motion in the protein. Measured on the same data: 4
+  degrees circular against 150 linear.
+- **The Gram trick.** There are always far fewer frames than features (201
+  frames against 1,200 columns for 300 mobile residues), and the frames-by-frames
+  matrix has the same non-zero eigenvalues as the feature covariance. Thirty-six
+  times less work for the same answer.
+- **Everything is deterministic.** k-means starts from a fixed seed point,
+  eigenvector signs are pinned, and the rotamer tie-break is stable. Two runs of
+  the same analysis on the same trajectory must give the same picture, and a
+  random start gives different labels, possibly a different k, and a jump matrix
+  whose rows mean something else.
+
+### A bug the tests caught
+
+The occupancy landscape subtracted its minimum from **every** bin including the
+unsampled ones, so empty space reported 5.24 instead of the ceiling of 8, and
+how empty a region looked depended on how deep the deepest well happened to be.
+Found by an assertion that the emptiest bin should be at the ceiling.
+
+### Deliberately deferred
+
+- **The jump raster is capped at 24 rows.** A 300-residue protein has more
+  jump-happy residues than fit on a phone. The busiest get the space and the
+  caption says how many were left out, rather than silently truncating.
+- **Dwell times are floored by the snapshot stride.** Anything shorter is
+  invisible and every dwell is a multiple of it. Said in the panel.
+
+### Numbers
+
+224 tests across eight packages.
+
 ## Phase 2 — Engines — 2026-08-27
 
 The neural flexibility prior and the `JetEngine` sampler, wired into the app.

@@ -209,6 +209,11 @@ struct FlightRecorderPanel: View {
 
     @ViewBuilder
     private var landscapePanel: some View {
+        // A panel that VANISHES when it has nothing to show reads as a bug. The
+        // projection is legitimately unavailable on a short run: fewer than two
+        // residues clear the eight degree threshold for having moved at all, so
+        // there is no plane to project onto. Saying that is information; an
+        // absence is not.
         if let landscape = record.landscape, let projection = record.projection {
             HUDPanel(
                 "Terrain",
@@ -227,6 +232,17 @@ struct FlightRecorderPanel: View {
                     .foregroundStyle(HUDPalette.muted)
                     .fixedSize(horizontal: false, vertical: true)
                 }
+            }
+        } else {
+            HUDPanel("Terrain", trailing: "NO PROJECTION") {
+                Text(
+                    "Too little backbone motion to project. Fewer than two residues "
+                        + "moved by more than eight degrees, so there is no plane to "
+                        + "draw a landscape on. Run more sweeps, or raise the throttle."
+                )
+                .font(HUDTypography.body(11))
+                .foregroundStyle(HUDPalette.muted)
+                .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -268,6 +284,18 @@ struct FlightRecorderPanel: View {
                         .foregroundStyle(HUDPalette.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+            }
+        } else {
+            HUDPanel("Basins", trailing: "NOT CLUSTERED") {
+                Text(
+                    record.projection == nil
+                        ? "No projection to cluster: see the terrain panel."
+                        : "The trajectory did not separate into basins. Either it never "
+                            + "left one, or there are too few frames to tell."
+                )
+                .font(HUDTypography.body(11))
+                .foregroundStyle(HUDPalette.muted)
+                .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

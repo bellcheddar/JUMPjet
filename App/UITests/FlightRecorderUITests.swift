@@ -61,19 +61,41 @@ final class FlightRecorderUITests: XCTestCase {
         XCTAssertTrue(
             app.staticTexts["Flight data"].waitForExistence(timeout: 300))
 
-        let descriptions = [
-            "Rotamer state raster", "Conformational landscape", "Basin transition matrix",
-        ]
-        for description in descriptions {
-            let element = app.descendants(matching: .any)
-                .matching(NSPredicate(format: "label BEGINSWITH %@", description))
-                .firstMatch
-            var attempts = 0
-            while !element.exists && attempts < 12 {
-                app.swipeUp()
-                attempts += 1
-            }
-            XCTAssertTrue(element.exists, "no accessible element for \(description)")
+        // The raster is there whenever anything jumped, which over 300 sweeps
+        // it always does.
+        XCTAssertTrue(
+            scrollToElement(app, labelStartingWith: "Rotamer state raster"),
+            "the jump raster has no accessible description")
+
+        // The landscape and the transition matrix are CONDITIONAL, and the
+        // condition is real rather than a flaky test: a short run may not move
+        // two residues by eight degrees, in which case there is no plane to
+        // project onto. The panel then says so, and this asserts one or the
+        // other rather than pretending the absence is a failure.
+        let hasLandscape = scrollToElement(app, labelStartingWith: "Conformational landscape")
+        if !hasLandscape {
+            XCTAssertTrue(
+                app.staticTexts["NO PROJECTION"].exists,
+                "no landscape and no explanation of why not")
+        } else {
+            XCTAssertTrue(
+                scrollToElement(app, labelStartingWith: "Basin transition matrix"),
+                "a landscape but no transition matrix")
         }
+    }
+
+    /// Scroll the instrument column looking for an element by label prefix.
+    private func scrollToElement(
+        _ app: XCUIApplication, labelStartingWith prefix: String
+    ) -> Bool {
+        let element = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label BEGINSWITH %@", prefix))
+            .firstMatch
+        var attempts = 0
+        while !element.exists && attempts < 12 {
+            app.swipeUp()
+            attempts += 1
+        }
+        return element.exists
     }
 }
