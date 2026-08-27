@@ -2,7 +2,7 @@
 <blockquote>
 <p><strong>Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.</strong></p>
 </blockquote>
-<p><img alt="swift" src="https://img.shields.io/badge/swift-6.3-F05138?logo=swift&amp;logoColor=white"> <img alt="ios" src="https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&amp;logoColor=white"> <img alt="swiftui" src="https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&amp;logoColor=white"> <img alt="scenekit" src="https://img.shields.io/badge/3D-SceneKit-1C244B"> <img alt="metal" src="https://img.shields.io/badge/compute-Metal-9b51e0"> <img alt="coreml" src="https://img.shields.io/badge/ML-Core%20ML%20phase%202-fcb900"> <img alt="xcode" src="https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&amp;logoColor=white"> <img alt="spm" src="https://img.shields.io/badge/packages-5%20local%20SPM-FA7343"> <img alt="tests" src="https://img.shields.io/badge/XCTest-139%20passing-00d084"> <img alt="deps" src="https://img.shields.io/badge/third--party%20dependencies-none-00897B"> <img alt="data" src="https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7"> <img alt="phase" src="https://img.shields.io/badge/phase-1%20of%204%20complete-467FF7"> <img alt="licence" src="https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
+<p><img alt="swift" src="https://img.shields.io/badge/swift-6.3-F05138?logo=swift&amp;logoColor=white"> <img alt="ios" src="https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&amp;logoColor=white"> <img alt="swiftui" src="https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&amp;logoColor=white"> <img alt="scenekit" src="https://img.shields.io/badge/3D-SceneKit-1C244B"> <img alt="physics" src="https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0"> <img alt="coreml" src="https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0"> <img alt="xcode" src="https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&amp;logoColor=white"> <img alt="spm" src="https://img.shields.io/badge/packages-7%20local%20SPM-FA7343"> <img alt="tests" src="https://img.shields.io/badge/XCTest-177%20passing-00d084"> <img alt="deps" src="https://img.shields.io/badge/third--party%20dependencies-none-00897B"> <img alt="data" src="https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7"> <img alt="phase" src="https://img.shields.io/badge/phase-2%20of%204-467FF7"> <img alt="licence" src="https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey"> <img alt="author" src="https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B"></p>
 <table class="emd-info-table">
 <tr>
 <td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
@@ -88,11 +88,15 @@
 </tr>
 <tr>
 <td data-label="Feature"><code>JetEngine</code> torsional Monte Carlo sampler</td>
-<td data-label="State">🔜 Phase 2</td>
+<td data-label="State">✅ Built</td>
 </tr>
 <tr>
 <td data-label="Feature">ESM-2 flexibility prior on the Neural Engine</td>
-<td data-label="State">🔜 Phase 2</td>
+<td data-label="State">✅ Built</td>
+</tr>
+<tr>
+<td data-label="Feature">Live run instruments and a protein you can watch move</td>
+<td data-label="State">✅ Built</td>
 </tr>
 <tr>
 <td data-label="Feature">Rotamer jumps, ring flips, basins, dwell times</td>
@@ -123,12 +127,12 @@
 <td data-label="Technology">SceneKit, per-vertex colour geometry built from raw buffers</td>
 </tr>
 <tr>
-<td data-label="Layer">Physics (Phase 2)</td>
-<td data-label="Technology">Swift and Metal, written from scratch as <code>JetEngine</code></td>
+<td data-label="Layer">Physics</td>
+<td data-label="Technology">Swift, written from scratch as <code>JetEngine</code>. Metal is the named next lever, not yet used</td>
 </tr>
 <tr>
-<td data-label="Layer">Machine learning (Phase 2)</td>
-<td data-label="Technology">Core ML, ESM-2 t6-8M on the Apple Neural Engine</td>
+<td data-label="Layer">Machine learning</td>
+<td data-label="Technology">Core ML, ESM-2 t6-8M, 98% of operations planned on the Apple Neural Engine</td>
 </tr>
 <tr>
 <td data-label="Layer">Charts (Phase 3)</td>
@@ -145,12 +149,14 @@
 </tbody>
 </table></div>
 <h3>Module graph</h3>
-<p>Five local Swift packages, acyclic and shallow. The dependency rule is enforced by what each <code>Package.swift</code> is allowed to name.</p>
+<p>Seven local Swift packages, acyclic and shallow. The dependency rule is enforced by what each <code>Package.swift</code> is allowed to name.</p>
 <pre><code class="language-text">JumpjetCore     (nothing)      structure model, chemistry, geometry, bonds
 JumpjetHUD      (nothing)      Night Sortie design system
 JumpjetParse    Core           PDB and mmCIF readers
 JumpjetFetch    Core, Parse    UniProt, AlphaFold DB, PDBe, model cache
 JumpjetViewer   Core, HUD      SceneKit renderer
+JumpjetNeural   Core           ESM-2 on Core ML, the flexibility prior
+JumpjetEngine   Core           JetEngine: torsional Monte Carlo
 </code></pre>
 <p><code>JumpjetViewer</code> names <code>JumpjetParse</code> in its <strong>test</strong> target only, so the renderer never learns how a file was read while the tests still render real structures rather than hand-built toys.</p>
 <p>Each package declares a macOS platform purely so <code>swift test</code> runs on the host without booting a simulator. That turns the inner loop from tens of seconds into about two.</p>
@@ -270,7 +276,8 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 </table></div>
 <p>The model version is read from the AlphaFold API on every fetch and never hard-coded: the build plan was written when v4 was current and the database was serving v6 by the time the fixtures were recorded. Full attribution in <a href="Docs/ATTRIBUTIONS.md"><code>Docs/ATTRIBUTIONS.md</code></a>.</p>
 <h2>🧪 Tests</h2>
-<p>139 tests across five packages, host-side, no simulator, about two seconds.</p>
+<p>177 tests across seven packages, host-side, no simulator.</p>
+<p>They run in <strong>release</strong>. <code>swift test</code> builds debug by default, and for the physics package that is a factor of thirty-six, which makes the suite unusable and any benchmark meaningless.</p>
 <div class="emd-table-wrap"><table class="emd-data-table">
 <thead>
 <tr>
@@ -305,6 +312,16 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 <td data-label="Tests">34</td>
 <td data-label="Covers">Spline, tube sweep, colour scales, scene graph, camera fitting</td>
 </tr>
+<tr>
+<td data-label="Package">JumpjetNeural</td>
+<td data-label="Tests">13</td>
+<td data-label="Covers">Tokeniser, Core ML parity against PyTorch, stride handling, the prior</td>
+</tr>
+<tr>
+<td data-label="Package">JumpjetEngine</td>
+<td data-label="Tests">25</td>
+<td data-label="Covers">Topology, each energy term against hand-computed values, the sampler</td>
+</tr>
 </tbody>
 </table></div>
 <p>The strongest tests parse the PDB <strong>and</strong> the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.</p>
@@ -320,18 +337,21 @@ xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
 <li><span class="emd-check">&#9989;</span> <strong>PDB and mmCIF readers.</strong> PDB by fixed column, mmCIF by a real tokeniser handling quoting, semicolon text fields, comments and nulls. One builder applies every dropping policy for both and reports what it dropped</li>
 <li><span class="emd-check">&#9989;</span> <strong>SceneKit viewer.</strong> Catmull-Rom backbone tube swept with a parallel-transport frame, side chains merged into a single geometry, five colour modes including the official AlphaFold pLDDT bands</li>
 <li><span class="emd-check">&#9989;</span> <strong>Cockpit layout for iPhone and iPad.</strong> Splits side-by-side when the window is wider than it is tall and stacks otherwise. Size class was the wrong signal: an iPad is <code>.regular</code> in both orientations, and a portrait split leaves the viewer a pane twice as tall as it is wide</li>
-<li><span class="emd-check">&#11036;</span> <strong>Measure 60 fps on an A16 at 600 residues.</strong> The build plan's frame-rate target is the one part of Phase 1's definition of done that is <strong>not</strong> met: there was no device to hand, and a simulator frame rate says nothing about a phone. Carried into Phase 2, where the profiling pass happens anyway</li>
+<li><span class="emd-check">&#11036;</span> <strong>Measure 60 fps on an A16 at 600 residues.</strong> The build plan's frame-rate target is the one part of Phase 1's definition of done that is <strong>not</strong> met: there was no device to hand, and a simulator frame rate says nothing about a phone</li>
 </ul>
 <h3>Phase 2: Engines</h3>
 <ul class="emd-tasklist">
-<li><span class="emd-check">&#11036;</span> <strong>Convert ESM-2 t6-8M to Core ML.</strong> fp16, fixed length 1,200 with attention masking, roughly a 16 MB <code>.mlpackage</code> in the bundle. Fixed shapes and no dynamic control flow, because that is what keeps layers on the Neural Engine</li>
-<li><span class="emd-check">&#11036;</span> <strong>Flexibility prior, trained on nothing for v1.</strong> Normalised inverse pLDDT and an embedding-derived disorder proxy, weighted 70/30, documented as a heuristic so a learned head can replace it later without anyone mistaking the current one for a model</li>
-<li><span class="emd-check">&#11036;</span> <strong>Verify ANE dispatch in Instruments, and report it truthfully.</strong> An "ANE ✓" indicator when the compiled plan maps to the Neural Engine, "GPU/CPU fallback" when it does not. Partial mapping is acceptable; claiming it without checking is not</li>
-<li><span class="emd-check">&#11036;</span> <strong><code>JetEngine</code>: all-atom, torsional degrees of freedom only.</strong> φ, ψ and χ with bond lengths and angles fixed, which keeps rotamers and ring flips first-class citizens in a way a Cα-only model cannot</li>
-<li><span class="emd-check">&#11036;</span> <strong>Energy terms.</strong> Cα elastic network with spring constants scaled <em>down</em> by the flexibility prior so loops move and cores hold; soft-sphere sterics on a Metal spatial hash grid; a compact Dunbrack-style rotamer table and a Ramachandran bias. Backbone H-bonds only if the phase runs ahead</li>
-<li><span class="emd-check">&#11036;</span> <strong>Metropolis sampler with a mixed move set.</strong> Small Gaussian torsion perturbations, discrete well-to-well χ1 jumps, and 180° χ2 ring flips for Phe and Tyr. Monte Carlo is the v1 workhorse because its correctness is easy to test</li>
-<li><span class="emd-check">&#11036;</span> <strong>Live HUD readouts during a run.</strong> Acceptance ratio, energy, RMSD from start, sweeps per second, all on the instrument gauges that already exist</li>
-<li><span class="emd-check">&#11036;</span> <strong>Deterministic replay from a seed</strong>, plus an energy-conservation sanity check across 50k sweeps and an acceptance ratio between 20 and 60% at default throttle</li>
+<li><span class="emd-check">&#9989;</span> <strong>Converted ESM-2 t6-8M to Core ML.</strong> 15.0 MB against a ~16 MB target, fp16, enumerated shapes over six sequence buckets. Three tracing traps were inherited from the sibling BOFFIN project rather than rediscovered, and each produces a model that converts, saves and predicts while returning wrong numbers: a padding branch baked out by tracing on an unpadded example, rotary tables frozen at the traced length, and <code>EnumeratedShapes</code> over a batch dimension</li>
+<li><span class="emd-check">&#9989;</span> <strong>Flexibility prior, trained on nothing.</strong> Normalised inverse pLDDT and an embedding disorder proxy, 70/30. <strong>The proxy is not the one the plan specified</strong>: Euclidean distance to the nearer centroid separates nothing (Cohen's d −0.023), because the two centroids are 1.32 apart against a within-class spread of 4.60 and the measurement is swamped by a global mean every residue shares. Removing that mean and comparing directions gives d +1.024 and AUC 0.801</li>
+<li><span class="emd-check">&#9989;</span> <strong>ANE dispatch checked and reported truthfully.</strong> 382 of 391 operations planned on the Neural Engine, none on the GPU. The HUD says "ANE 98% planned", because <code>MLComputePlan</code> answers "can these run there" and not "how fast". In the simulator it correctly reads "GPU/CPU fallback": a simulator has no Neural Engine</li>
+<li><span class="emd-check">&#9989;</span> <strong><code>JetEngine</code>: all-atom, torsional degrees of freedom only.</strong> Topology derived by splitting the bond graph, which gets proline's ring-locked φ and disulfide-bonded cysteines right for free. The smaller side of each torsion rotates, which is free because every energy term is a function of internal coordinates</li>
+<li><span class="emd-check">&#9989;</span> <strong>Energy terms, each tested against a hand-computed value.</strong> Elastic network softened by the prior, soft-sphere sterics on a spatial hash grid, and Ramachandran and χ tables derived from 55 AlphaFold models rather than hand-placed. Property tests do not catch a wrong constant</li>
+<li><span class="emd-check">&#9989;</span> <strong>Metropolis with a mixed move set.</strong> Gaussian perturbations, discrete well-to-well χ1 jumps and 180° ring flips. Without the discrete moves the app's own subject matter is unreachable: a Gaussian small enough to be accepted essentially never crosses a 120° barrier</li>
+<li><span class="emd-check">&#9989;</span> <strong>Live HUD readouts, and the protein visibly moving.</strong> Acceptance as an RPM dial, sweeps per second, RMSD as an altimeter tape, energy, and the viewer following the trajectory as it is generated</li>
+<li><span class="emd-check">&#9989;</span> <strong>Deterministic replay from a seed</strong>, acceptance calibrated to 0.39 inside the required 20–60% band, and a 50,000-sweep stability check on three proteins behind <code>JUMPJET_LONGRUN=1</code></li>
+<li><span class="emd-check">&#11036;</span> <strong>Hit 100 sweeps/s at 300 residues.</strong> The one Phase 2 requirement <strong>not</strong> met: 130.8 sweeps/s at 142 residues but 22.3 at 335. The cost is structural (a backbone rotation moves a quarter of the atoms and 97% of the time goes on re-testing their neighbourhoods), and two attempts made it worse: a deterministic <code>concurrentPerform</code> split was <strong>seven times slower</strong>, and per-cell distance culling was slower <em>and</em> silently wrong. Metal is the build plan's own named lever and has not been attempted</li>
+<li><span class="emd-check">&#11036;</span> <strong>Backbone H-bond term.</strong> A stretch goal in the plan, conditional on the phase running ahead. It did not</li>
+<li><span class="emd-check">&#11036;</span> <strong>Overdamped Brownian mode.</strong> A later toggle, still later</li>
 </ul>
 <h3>Phase 3: Flight recorder</h3>
 <ul class="emd-tasklist">

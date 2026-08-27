@@ -2,7 +2,7 @@
 
 > **Vertical take-off molecular dynamics: UniProt ID in, conformational movie out. No cluster, no queue, no cloud.**
 
-![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![metal](https://img.shields.io/badge/compute-Metal-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20phase%202-fcb900) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-5%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-139%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-1%20of%204%20complete-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
+![swift](https://img.shields.io/badge/swift-6.3-F05138?logo=swift&logoColor=white) ![ios](https://img.shields.io/badge/iOS%20%7C%20iPadOS-17%2B-000000?logo=apple&logoColor=white) ![swiftui](https://img.shields.io/badge/UI-SwiftUI-0071E3?logo=swift&logoColor=white) ![scenekit](https://img.shields.io/badge/3D-SceneKit-1C244B) ![physics](https://img.shields.io/badge/physics-torsional%20Monte%20Carlo-9b51e0) ![coreml](https://img.shields.io/badge/ML-Core%20ML%20%C2%B7%20ESM--2%20t6--8M-9b51e0) ![xcode](https://img.shields.io/badge/Xcode-26.6-1575F9?logo=xcode&logoColor=white) ![spm](https://img.shields.io/badge/packages-7%20local%20SPM-FA7343) ![tests](https://img.shields.io/badge/XCTest-177%20passing-00d084) ![deps](https://img.shields.io/badge/third--party%20dependencies-none-00897B) ![data](https://img.shields.io/badge/data-AlphaFold%20DB%20%C2%B7%20PDBe%20%C2%B7%20UniProt-467FF7) ![phase](https://img.shields.io/badge/phase-2%20of%204-467FF7) ![licence](https://img.shields.io/badge/licence-not%20yet%20declared-lightgrey) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller%2C%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -46,8 +46,9 @@ Phase 1 is complete and shipping the airframe.
 | SceneKit backbone tube, side-chain sticks, five colour modes | ✅ Built |
 | Multi-chain handling with a chain picker | ✅ Built |
 | Night Sortie HUD design system | ✅ Built |
-| `JetEngine` torsional Monte Carlo sampler | 🔜 Phase 2 |
-| ESM-2 flexibility prior on the Neural Engine | 🔜 Phase 2 |
+| `JetEngine` torsional Monte Carlo sampler | ✅ Built |
+| ESM-2 flexibility prior on the Neural Engine | ✅ Built |
+| Live run instruments and a protein you can watch move | ✅ Built |
 | Rotamer jumps, ring flips, basins, dwell times | 🔜 Phase 3 |
 | Trajectory playback and H.264 movie export | 🔜 Phase 4 |
 
@@ -59,15 +60,15 @@ Pure Apple platform. No third-party dependency manager, nothing vendored, nothin
 |---|---|
 | Interface | SwiftUI, Observation framework, async/await |
 | 3D | SceneKit, per-vertex colour geometry built from raw buffers |
-| Physics (Phase 2) | Swift and Metal, written from scratch as `JetEngine` |
-| Machine learning (Phase 2) | Core ML, ESM-2 t6-8M on the Apple Neural Engine |
+| Physics | Swift, written from scratch as `JetEngine`. Metal is the named next lever, not yet used |
+| Machine learning | Core ML, ESM-2 t6-8M, 98% of operations planned on the Apple Neural Engine |
 | Charts (Phase 3) | Swift Charts |
 | Movie (Phase 4) | `SCNRenderer` offscreen into `AVAssetWriter` |
 | Language | Swift 6 language mode, complete strict concurrency |
 
 ### Module graph
 
-Five local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
+Seven local Swift packages, acyclic and shallow. The dependency rule is enforced by what each `Package.swift` is allowed to name.
 
 ```
 JumpjetCore     (nothing)      structure model, chemistry, geometry, bonds
@@ -75,6 +76,8 @@ JumpjetHUD      (nothing)      Night Sortie design system
 JumpjetParse    Core           PDB and mmCIF readers
 JumpjetFetch    Core, Parse    UniProt, AlphaFold DB, PDBe, model cache
 JumpjetViewer   Core, HUD      SceneKit renderer
+JumpjetNeural   Core           ESM-2 on Core ML, the flexibility prior
+JumpjetEngine   Core           JetEngine: torsional Monte Carlo
 ```
 
 `JumpjetViewer` names `JumpjetParse` in its **test** target only, so the renderer never learns how a file was read while the tests still render real structures rather than hand-built toys.
@@ -150,7 +153,11 @@ The model version is read from the AlphaFold API on every fetch and never hard-c
 
 ## 🧪 Tests
 
-139 tests across five packages, host-side, no simulator, about two seconds.
+177 tests across seven packages, host-side, no simulator.
+
+They run in **release**. `swift test` builds debug by default, and for the physics
+package that is a factor of thirty-six, which makes the suite unusable and any
+benchmark meaningless.
 
 | Package | Tests | Covers |
 |---|---|---|
@@ -159,6 +166,8 @@ The model version is read from the AlphaFold API on every fetch and never hard-c
 | JumpjetHUD | 16 | Gauge scales, tick generation, formatting, accessibility roles |
 | JumpjetParse | 25 | Both readers, real files and hand-built edge cases |
 | JumpjetViewer | 34 | Spline, tube sweep, colour scales, scene graph, camera fitting |
+| JumpjetNeural | 13 | Tokeniser, Core ML parity against PyTorch, stride handling, the prior |
+| JumpjetEngine | 25 | Topology, each energy term against hand-computed values, the sampler |
 
 The strongest tests parse the PDB **and** the mmCIF of the same entry and compare them atom for atom, on both an AlphaFold prediction and a four-chain crystal structure. They check one reader against the other rather than against a number somebody wrote down, so a mistake in either surfaces without anyone having to predict it.
 
@@ -177,18 +186,21 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 - [x] **PDB and mmCIF readers.** PDB by fixed column, mmCIF by a real tokeniser handling quoting, semicolon text fields, comments and nulls. One builder applies every dropping policy for both and reports what it dropped
 - [x] **SceneKit viewer.** Catmull-Rom backbone tube swept with a parallel-transport frame, side chains merged into a single geometry, five colour modes including the official AlphaFold pLDDT bands
 - [x] **Cockpit layout for iPhone and iPad.** Splits side-by-side when the window is wider than it is tall and stacks otherwise. Size class was the wrong signal: an iPad is `.regular` in both orientations, and a portrait split leaves the viewer a pane twice as tall as it is wide
-- [ ] **Measure 60 fps on an A16 at 600 residues.** The build plan's frame-rate target is the one part of Phase 1's definition of done that is **not** met: there was no device to hand, and a simulator frame rate says nothing about a phone. Carried into Phase 2, where the profiling pass happens anyway
+- [ ] **Measure 60 fps on an A16 at 600 residues.** The build plan's frame-rate target is the one part of Phase 1's definition of done that is **not** met: there was no device to hand, and a simulator frame rate says nothing about a phone
 
 ### Phase 2: Engines
 
-- [ ] **Convert ESM-2 t6-8M to Core ML.** fp16, fixed length 1,200 with attention masking, roughly a 16 MB `.mlpackage` in the bundle. Fixed shapes and no dynamic control flow, because that is what keeps layers on the Neural Engine
-- [ ] **Flexibility prior, trained on nothing for v1.** Normalised inverse pLDDT and an embedding-derived disorder proxy, weighted 70/30, documented as a heuristic so a learned head can replace it later without anyone mistaking the current one for a model
-- [ ] **Verify ANE dispatch in Instruments, and report it truthfully.** An "ANE ✓" indicator when the compiled plan maps to the Neural Engine, "GPU/CPU fallback" when it does not. Partial mapping is acceptable; claiming it without checking is not
-- [ ] **`JetEngine`: all-atom, torsional degrees of freedom only.** φ, ψ and χ with bond lengths and angles fixed, which keeps rotamers and ring flips first-class citizens in a way a Cα-only model cannot
-- [ ] **Energy terms.** Cα elastic network with spring constants scaled *down* by the flexibility prior so loops move and cores hold; soft-sphere sterics on a Metal spatial hash grid; a compact Dunbrack-style rotamer table and a Ramachandran bias. Backbone H-bonds only if the phase runs ahead
-- [ ] **Metropolis sampler with a mixed move set.** Small Gaussian torsion perturbations, discrete well-to-well χ1 jumps, and 180° χ2 ring flips for Phe and Tyr. Monte Carlo is the v1 workhorse because its correctness is easy to test
-- [ ] **Live HUD readouts during a run.** Acceptance ratio, energy, RMSD from start, sweeps per second, all on the instrument gauges that already exist
-- [ ] **Deterministic replay from a seed**, plus an energy-conservation sanity check across 50k sweeps and an acceptance ratio between 20 and 60% at default throttle
+- [x] **Converted ESM-2 t6-8M to Core ML.** 15.0 MB against a ~16 MB target, fp16, enumerated shapes over six sequence buckets. Three tracing traps were inherited from the sibling BOFFIN project rather than rediscovered, and each produces a model that converts, saves and predicts while returning wrong numbers: a padding branch baked out by tracing on an unpadded example, rotary tables frozen at the traced length, and `EnumeratedShapes` over a batch dimension
+- [x] **Flexibility prior, trained on nothing.** Normalised inverse pLDDT and an embedding disorder proxy, 70/30. **The proxy is not the one the plan specified**: Euclidean distance to the nearer centroid separates nothing (Cohen's d −0.023), because the two centroids are 1.32 apart against a within-class spread of 4.60 and the measurement is swamped by a global mean every residue shares. Removing that mean and comparing directions gives d +1.024 and AUC 0.801
+- [x] **ANE dispatch checked and reported truthfully.** 382 of 391 operations planned on the Neural Engine, none on the GPU. The HUD says "ANE 98% planned", because `MLComputePlan` answers "can these run there" and not "how fast". In the simulator it correctly reads "GPU/CPU fallback": a simulator has no Neural Engine
+- [x] **`JetEngine`: all-atom, torsional degrees of freedom only.** Topology derived by splitting the bond graph, which gets proline's ring-locked φ and disulfide-bonded cysteines right for free. The smaller side of each torsion rotates, which is free because every energy term is a function of internal coordinates
+- [x] **Energy terms, each tested against a hand-computed value.** Elastic network softened by the prior, soft-sphere sterics on a spatial hash grid, and Ramachandran and χ tables derived from 55 AlphaFold models rather than hand-placed. Property tests do not catch a wrong constant
+- [x] **Metropolis with a mixed move set.** Gaussian perturbations, discrete well-to-well χ1 jumps and 180° ring flips. Without the discrete moves the app's own subject matter is unreachable: a Gaussian small enough to be accepted essentially never crosses a 120° barrier
+- [x] **Live HUD readouts, and the protein visibly moving.** Acceptance as an RPM dial, sweeps per second, RMSD as an altimeter tape, energy, and the viewer following the trajectory as it is generated
+- [x] **Deterministic replay from a seed**, acceptance calibrated to 0.39 inside the required 20–60% band, and a 50,000-sweep stability check on three proteins behind `JUMPJET_LONGRUN=1`
+- [ ] **Hit 100 sweeps/s at 300 residues.** The one Phase 2 requirement **not** met: 130.8 sweeps/s at 142 residues but 22.3 at 335. The cost is structural (a backbone rotation moves a quarter of the atoms and 97% of the time goes on re-testing their neighbourhoods), and two attempts made it worse: a deterministic `concurrentPerform` split was **seven times slower**, and per-cell distance culling was slower *and* silently wrong. Metal is the build plan's own named lever and has not been attempted
+- [ ] **Backbone H-bond term.** A stretch goal in the plan, conditional on the phase running ahead. It did not
+- [ ] **Overdamped Brownian mode.** A later toggle, still later
 
 ### Phase 3: Flight recorder
 
