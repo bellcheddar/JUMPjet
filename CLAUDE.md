@@ -18,7 +18,8 @@ This file is the short version plus current state.
   and did not meet.
 - **Last completed:** Phase 4, 2026-08-27
 - **Shipped:** MIT licence (`LICENSE` + `NOTICE`), public repo at
-  `bellcheddar/JUMPjet`, team `SYNV8TWB5Z`, distribution signing, app icon,
+  `bellcheddar/JUMPjet`, the Apple team from `$APPLE_TEAM_ID`, distribution
+  signing, app icon,
   and a verified App Store archive: 16 MB bundle, 15.2 MB IPA, all four model
   artefacts present.
 - **Blocked on:** the App Store Connect **app record**. Apple does not allow
@@ -280,6 +281,42 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.mdeller.jump
   that reads as a hatching artefact over the whole mark. Stamp overlapping
   discs along the path instead. And assert the icon is `RGB`: the App Store
   rejects an alpha channel.
+
+### Building and capturing inside an iCloud folder
+
+- **DerivedData must not live inside this repository.** `~/Documents` is
+  iCloud-synced, and `fileproviderd` stamps `com.apple.FinderInfo` on the
+  directories it manages. codesign then fails the whole build with *"resource
+  fork, Finder information, or similar detritus not allowed"*, naming the .app
+  rather than the attribute or the cause. `xattr -cr` does not fix it: the
+  attributes come straight back. `Tools/appstore/archive.sh` puts DerivedData
+  in `$TMPDIR`. The default Xcode location is already outside iCloud, which is
+  why the first archive of the day worked and an explicit
+  `-derivedDataPath build/dd` broke it.
+- **iCloud also writes conflict copies into output directories.** A capture run
+  left `1-standby 2.png` beside `1-standby.png`, which would have uploaded as a
+  duplicate screenshot. Sweep `find ... -name "* [0-9].png"` before uploading
+  anything captured under `Documents`.
+- **Capture screenshots from a RELEASE build.** The same 36x factor as
+  `swift test`: a Debug simulator build reached sweep 391 of 5,000 in the time
+  a Release build finished the run, so every "sortie" screenshot showed a
+  half-finished progress panel and an amber GPU/CPU FALLBACK badge instead of
+  the flight recorder. `CODE_SIGNING_ALLOWED=NO` lets Release build for a
+  simulator. The environment seams are not behind `#if DEBUG`, so they still
+  work.
+- **Check what the app SAYS in a screenshot, not just that it rendered.** The
+  standby screen still advertised the sampler as arriving "in Phase 2", and
+  described the app as "molecular dynamics", which is the one claim this
+  project exists not to make. Both were about to become App Store screenshots.
+
+### GitHub Pages for the privacy policy
+
+- **`Docs` is not `docs`.** They are the same directory on a case-insensitive
+  Mac and different ones on GitHub, so Pages cannot be pointed at `/docs` here.
+  This repo serves Pages from the root instead.
+- **Jekyll silently refuses to publish any path beginning with an underscore**,
+  so a stylesheet called `_style.css` 404s while the page around it works.
+  `.nojekyll` at the root turns the whole pipeline off.
 
 ### Toolchain
 

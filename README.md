@@ -240,7 +240,7 @@ Roadmap for JUMPjet, in dependency order (a phased build reads better that way).
 
 - [x] **Licence chosen: MIT.** Based on what is actually redistributed: ESM-2's weights are MIT and every build-time dependency is MIT or BSD-3-Clause, so nothing in the chain is copyleft. Bundled data keeps its own terms (AlphaFold-derived files CC BY 4.0, PDB 1BAB CC0) and the licence file says so, because CC BY permits any licence on derivatives only while attribution survives
 - [x] **Pushed to GitHub** at [bellcheddar/JUMPjet](https://github.com/bellcheddar/JUMPjet)
-- [x] **Apple Developer team `SYNV8TWB5Z`**, with Release signing manually against `Apple Distribution` and the `JUMPjet App Store` profile, and Debug left automatic so a device build from Xcode still just works. Reapplied idempotently by [`Tools/configure-signing.rb`](Tools/configure-signing.rb)
+- [x] **Apple Developer team**, taken from `$APPLE_TEAM_ID` and written to a gitignored `Config/Signing.xcconfig` so no account identifier sits in this public repo, with Release signing manually against `Apple Distribution` and the `JUMPjet App Store` profile, and Debug left automatic so a device build from Xcode still just works. Reapplied idempotently by [`Tools/configure-signing.rb`](Tools/configure-signing.rb)
 - [ ] **The App Store Connect app record**, which is the one remaining step and cannot be automated: `POST /v1/apps` returns 403, "the resource 'apps' does not allow 'CREATE'". It also needs a name decision, since App Store names are globally unique. Fields are listed in [`Docs/TESTFLIGHT.md`](Docs/TESTFLIGHT.md); after that [`Tools/appstore/upload.sh`](Tools/appstore/upload.sh) archives, verifies, exports, validates and uploads in one command
 
 ## 📝 Changes

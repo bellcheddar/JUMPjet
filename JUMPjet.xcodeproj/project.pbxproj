@@ -55,6 +55,7 @@
 
 /* Begin PBXFileReference section */
 		02A77372F6CC773C8A8AF38A /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = App/Resources/Assets.xcassets; sourceTree = "<group>"; };
+		037493A44B9DFCDD23F47B91 /* Signing.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		08EE32BA8EACD75C7167E581 /* FlightRecorderPanel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FlightRecorderPanel.swift; path = App/Sources/FlightRecorderPanel.swift; sourceTree = "<group>"; };
 		0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AccessionBar.swift; path = App/Sources/AccessionBar.swift; sourceTree = "<group>"; };
 		1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JUMPjetApp.swift; path = App/Sources/JUMPjetApp.swift; sourceTree = "<group>"; };
@@ -125,6 +126,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5AC5CFBEB99A8BFF819F40DE /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				037493A44B9DFCDD23F47B91 /* Signing.xcconfig */,
+			);
+			name = Config;
+			path = Config;
+			sourceTree = "<group>";
+		};
 		5D990271D298E7DC07AE9317 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,6 +201,7 @@
 				5D990271D298E7DC07AE9317 /* App */,
 				71B35B01C02C78DB7CAB7EFF /* Documentation */,
 				7E5C64B211F3F3D92B7943AE /* Models */,
+				5AC5CFBEB99A8BFF819F40DE /* Config */,
 			);
 			sourceTree = "<group>";
 		};
@@ -431,6 +442,7 @@
 /* Begin XCBuildConfiguration section */
 		07571E68E1C87508531C4B84 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 037493A44B9DFCDD23F47B91 /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -500,7 +512,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SYNV8TWB5Z;
+				DEVELOPMENT_TEAM = "$(APPLE_TEAM_ID)";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -523,7 +535,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SYNV8TWB5Z;
+				DEVELOPMENT_TEAM = "$(APPLE_TEAM_ID)";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mdeller.jumpjet.tests;
@@ -543,7 +555,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = SYNV8TWB5Z;
+				DEVELOPMENT_TEAM = "$(APPLE_TEAM_ID)";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -564,7 +576,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SYNV8TWB5Z;
+				DEVELOPMENT_TEAM = "$(APPLE_TEAM_ID)";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mdeller.jumpjet.tests;
@@ -577,6 +589,7 @@
 		};
 		EA2749ED4E09517BF4DFC89B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 037493A44B9DFCDD23F47B91 /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -648,7 +661,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SYNV8TWB5Z;
+				DEVELOPMENT_TEAM = "$(APPLE_TEAM_ID)";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mdeller.jumpjet.uitests;
@@ -666,7 +679,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SYNV8TWB5Z;
+				DEVELOPMENT_TEAM = "$(APPLE_TEAM_ID)";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mdeller.jumpjet.uitests;

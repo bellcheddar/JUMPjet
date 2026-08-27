@@ -47,7 +47,8 @@ Once the record exists, the whole remaining sequence is one command:
       GitHub detects a licence by matching the file against a template, so
       appending a third-party section to `LICENSE` made the repository report
       no licence at all.
-- [x] **An Apple Developer team.** `SYNV8TWB5Z`. Release builds sign manually
+- [x] **An Apple Developer team**, read from `$APPLE_TEAM_ID` rather than
+      written down here. Release builds sign manually
       against `Apple Distribution` and the `JUMPjet App Store` profile
       (uuid `933394db-0265-4eaf-b85c-e8e00ba44a92`, expires 2027-08-26);
       Debug stays automatic so a device build from Xcode still just works.
@@ -139,7 +140,7 @@ four things that were silently absent there:
 | `esm2_t6_8M_UR50D.tokeniser.json` | present |
 | `flexibility_centroids.json`, `torsion_tables.json` | present |
 | `AppIcon60x60@2x.png` and the iPad variant | present at the bundle root |
-| `codesign -dv` authority | `Apple Distribution: Marc Deller (SYNV8TWB5Z)` |
+| `codesign -dv` authority | `Apple Distribution` for the configured team |
 | `embedded.mobileprovision` name | `JUMPjet App Store` |
 
 Measured for 0.1.0: app bundle 16 MB, exported IPA 15.2 MB.

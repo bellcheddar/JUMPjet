@@ -1,49 +1,40 @@
 #!/usr/bin/env bash
-# Build release archives for the App Store.
+# Build the release archive for the App Store, then check what is in it.
 #
-# The iOS scheme embeds the watch app and its widget extension, so one archive
-# covers iPhone, iPad, Watch and the complication. macOS and visionOS archive
-# separately.
+# JUMPjet is one iOS target covering iPhone and iPad. There is no watch app, no
+# macOS and no visionOS leg, so there is only one archive.
 #
-#   ./Tools/archive.sh          # iOS (default)
-#   ./Tools/archive.sh macos
-#   ./Tools/archive.sh visionos
+#   ./Tools/appstore/archive.sh
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
-PLATFORM="${1:-ios}"
-OUT="build/archives"
-mkdir -p "$OUT"
-
-case "$PLATFORM" in
-  ios)      SCHEME="PfamIE";           DEST="generic/platform=iOS" ;;
-  macos)    SCHEME="PfamIE-macOS";     DEST="generic/platform=macOS" ;;
-  visionos) SCHEME="PfamIE-visionOS";  DEST="generic/platform=visionOS" ;;
-  *) echo "usage: archive.sh [ios|macos|visionos]" >&2; exit 2 ;;
-esac
-
-ARCHIVE="$OUT/PfamIE-$PLATFORM.xcarchive"
+ARCHIVE="build/JUMPjet.xcarchive"
+LOG="build/archive.log"
+mkdir -p build
 rm -rf "$ARCHIVE"
 
-# Regenerate first: the .xcodeproj is derived, and archiving a stale one is a
-# quiet way to ship yesterday's configuration.
-./Tools/generate-project.sh >/dev/null
+# NOT regenerated from Tools/bootstrap-xcodeproj.rb: JUMPjet's .xcodeproj is
+# committed and is the source of truth. That script records its origin only,
+# and re-running it discards every change made in Xcode since.
 
-echo "Archiving $SCHEME for $PLATFORM..."
+# DerivedData must live outside this directory. The repository is under an
+# iCloud-synced ~/Documents, and fileproviderd stamps com.apple.FinderInfo on
+# directories it manages, which makes codesign fail the whole build with
+# "resource fork, Finder information, or similar detritus not allowed".
+# xattr -cr does not stick: the attributes come straight back.
+DERIVED="${DERIVED_DATA:-${TMPDIR:-/tmp}/jumpjet-dd}"
+
+echo "Archiving (DerivedData: $DERIVED)..."
 xcodebuild archive \
-    -project PfamIE.xcodeproj \
-    -scheme "$SCHEME" \
+    -project JUMPjet.xcodeproj \
+    -scheme JUMPjet \
     -configuration Release \
-    -destination "$DEST" \
+    -destination 'generic/platform=iOS' \
     -archivePath "$ARCHIVE" \
-    | grep -E "error:|warning: .*(signing|provisioning)|\*\* ARCHIVE" || true
-
-if [ ! -d "$ARCHIVE" ]; then
-    echo "No archive was produced." >&2
-    exit 1
-fi
+    -derivedDataPath "$DERIVED" \
+    > "$LOG" 2>&1 \
+  || { echo "ARCHIVE FAILED, tail of $LOG:"; tail -25 "$LOG"; exit 1; }
+grep -c "ARCHIVE SUCCEEDED" "$LOG" >/dev/null && echo "  ARCHIVE SUCCEEDED"
 
 echo
-echo "Archive: $ARCHIVE"
-echo "Now verify it. ARCHIVE SUCCEEDED says nothing about the contents:"
-echo "  ./Tools/verify-archive.sh $ARCHIVE"
+"$(dirname "$0")/verify-archive.sh" "$ARCHIVE"
