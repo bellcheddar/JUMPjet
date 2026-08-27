@@ -18,15 +18,13 @@ This file is the short version plus current state.
   and did not meet.
 - **Last completed:** Phase 4, 2026-08-27
 - **Shipped:** MIT licence (`LICENSE` + `NOTICE`), public repo at
-  `bellcheddar/JUMPjet`, the Apple team from `$APPLE_TEAM_ID`, distribution
-  signing, app icon,
-  and a verified App Store archive: 16 MB bundle, 15.2 MB IPA, all four model
-  artefacts present.
-- **Blocked on:** the App Store Connect **app record**. Apple does not allow
-  creating one over the API (`POST /v1/apps` -> 403, "does not allow CREATE"),
-  so it is made by hand once. Fields are in `Docs/TESTFLIGHT.md`. It also needs
-  a decision only Marc can make: the App Store name, which must be globally
-  unique. After that, `Tools/appstore/upload.sh` does the rest.
+  `bellcheddar/JUMPjet`, distribution signing, app icon, privacy and support
+  pages on GitHub Pages, and the App Store Connect listing in full: app record
+  `JUMPjet ANE` (id `6806044657`), copy, categories, age rating, free pricing,
+  15 screenshots across three sizes, and the 1.0 build uploaded.
+- **Blocked on:** **App Privacy**, which Apple does not expose over the API and
+  which needs one answer from Marc in the App Store Connect UI. Everything else
+  is done. See `Docs/TESTFLIGHT.md`.
 - **Tests:** 237 across nine packages, `Tools/test-all.sh`, host-side, plus five
   interface tests that need a simulator.
 - **Open against the plan:** nothing measurable on this machine. Throughput is

@@ -5,43 +5,37 @@ what is NOT true yet.
 
 ## Blocked
 
-- [ ] **The App Store Connect app record.** Everything else on the Apple side is
-      done and verified; this one step cannot be automated, and it needs a
-      decision only Marc can make (see below).
+- [ ] **App Privacy.** The one remaining step, and the API cannot do it: there
+      is no privacy relationship on `/apps`, and the documented `appDataUsages`
+      resources 404. Not a permissions problem, since the same key can read
+      `/users`, which only an Admin key can. App Store Connect -> JUMPjet ->
+      App Privacy -> "No, we do not collect data from this app" -> Publish.
+      JUMPjet genuinely collects nothing, so it is one answer.
 
-Apple does not expose app-record creation over the API. Asked directly:
-
-```
-POST /v1/apps -> HTTP 403 FORBIDDEN_ERROR
-"The resource 'apps' does not allow 'CREATE'.
- Allowed operations are: GET_COLLECTION, GET_INSTANCE, UPDATE"
-```
-
-So the record is made once, by hand, at
-<https://appstoreconnect.apple.com/apps> -> **+** -> **New App**:
-
-| Field | Value |
-|---|---|
-| Platform | iOS |
-| Name | the App Store name, which must be globally unique. `JUMPjet` may be taken |
-| Primary language | English (UK) |
-| Bundle ID | `com.mdeller.jumpjet` (already registered, id `48SYPC36UH`) |
-| SKU | any private string, e.g. `JUMPJET2026` |
-| User access | Full Access |
-
-Until it exists, upload fails with a message that names the bundle ID rather
-than the missing record, which is worth recognising:
-
-```
-ERROR: Cannot determine the Apple ID from Bundle ID 'com.mdeller.jumpjet'
-       and platform 'IOS'. (19)
-```
-
-Once the record exists, the whole remaining sequence is one command:
-`Tools/appstore/upload.sh`.
+Until it is answered, App Store Connect refuses to start review with *"An Admin
+must provide information about the app's privacy practices"*.
 
 ## Ready
 
+- [x] **The App Store Connect app record.** `JUMPjet ANE`, app id
+      `6806044657`, bundle `com.mdeller.jumpjet`. Created by hand, because
+      `POST /v1/apps` returns 403 FORBIDDEN_ERROR, "the resource 'apps' does
+      not allow 'CREATE'". Recognise the symptom when it is missing: `altool`
+      reports `Cannot determine the Apple ID from Bundle ID`, which reads like
+      a bundle-ID problem and is not one.
+- [x] **The listing.** Categories, subtitle, description, keywords, promotional
+      text, support and marketing URLs, privacy policy URL, copyright, age
+      rating, free pricing in 175 territories, the licence agreement and the
+      App Review contact. All scripted in
+      `Tools/appstore/store_metadata.py`.
+- [x] **Privacy policy and support pages**, on GitHub Pages and returning 200
+      before being handed to Apple, which rejects a URL that does not resolve.
+- [x] **Fifteen screenshots**, five each at 1320x2868 (`APP_IPHONE_67`),
+      1242x2688 (`APP_IPHONE_65`) and 2064x2752 (`APP_IPAD_PRO_3GEN_129`), all
+      `COMPLETE` with no errors. Both iPhone sizes deliberately: App Store
+      Connect derives one from the other and renders the derived slot dimmed
+      and unclickable, while the API still reports every asset fine.
+- [x] **The build uploaded**, 15.2 MB, verified before upload.
 - [x] **A licence.** MIT, in `LICENSE`, with the bundled model and data terms
       itemised separately in `NOTICE`. They are separate files on purpose:
       GitHub detects a licence by matching the file against a template, so
