@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support | JUMPjet</title>
+<meta name="description" content="Support for JUMPjet: what the app does, how to use it, what its numbers mean, and how to get help.">
+<meta name="author" content="Marc C. Deller, D.Phil.">
+<link rel="stylesheet" href="./jumpjet.css">
+</head>
+<body>
+<header class="bar"><div class="bar-inner">
+    <a class="brand" href="https://marcdeller.com" target="_blank" rel="noopener noreferrer"><span class="dot"></span><span>Marc C. Deller, D.Phil.</span></a>
+    <div class="bar-title">JUMPjet</div>
+    <div class="bar-links">
+      <a href="./index.html">Support</a>
+      <a href="./privacy.html">Privacy</a>
+      <a href="https://github.com/bellcheddar/JUMPjet" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </div>
+  </div></header>
+<div class="wrap">
+<h1>JUMPjet Support</h1>
+<p class="sub">Just-in-time Unified Modelling of Protein Jumps, Ensembles and Transitions</p>
+
+<div class="card">
+<p>Type a UniProt accession, watch the protein move. JUMPjet fetches a structure, runs a torsional
+Monte Carlo sampler on your device, and shows you which parts of the molecule are mobile: as a 3D
+animation you can scrub, as per-residue analytics, and as a movie you can export.</p>
+</div>
+
+<h2>Getting started</h2>
+<p>Enter a UniProt accession such as <code>P69905</code> (human haemoglobin alpha) or
+<code>P00698</code> (hen lysozyme), or a PDB entry such as <code>1BAB</code>. Press Run. A few
+thousand sweeps take seconds to a minute depending on the size of the protein and your device.
+Then scrub the timeline, open the flight recorder for per-residue detail, or export a movie.</p>
+
+<h2>What the numbers mean, and what they do not</h2>
+<p>This matters more than anything else on this page, so it is stated plainly here and in the app
+itself:</p>
+<div class="card">
+<p><span class="key">Frames are Monte Carlo sweeps, not femtoseconds.</span> JUMPjet is not a
+molecular dynamics engine and does not compute a trajectory in time. There is no timestep, and no
+frame count corresponds to any number of nanoseconds.</p>
+<p><span class="key">Jump rates reflect the sampler's move set as much as the protein.</span> The
+sampler proposes rotamer jumps at a fixed rate, so the number of jumps a residue makes is partly a
+property of how the sampler was configured. Rank residues against each other <em>within</em> one
+run; do not compare rates <em>between</em> runs, and do not read them as kinetics.</p>
+<p>JUMPjet is for building intuition about which parts of a structure are mobile. It is not for
+computing thermodynamics or kinetics, and it does not claim to be.</p>
+</div>
+
+<h2>Common questions</h2>
+<table>
+<tr><th>Question</th><th>Answer</th></tr>
+<tr><td>Does it need an internet connection?</td><td>Only to fetch a structure. Once one is loaded, sampling, analysis and export are entirely on device, and airplane mode changes nothing.</td></tr>
+<tr><td>An accession will not load.</td><td>Check it is a UniProt accession (like <code>P69905</code>) rather than a gene name or an entry name. If the AlphaFold database has no model for it, JUMPjet falls back to an experimental structure through PDBe, and some entries have neither.</td></tr>
+<tr><td>A large protein is slow.</td><td>Cost grows with the number of residues. A few hundred residues is comfortable on a recent device; several thousand will be slow. Reduce the sweep count for a first look.</td></tr>
+<tr><td>Where do the structures come from?</td><td>AlphaFold DB and UniProtKB, with experimental structures from PDBe. Attribution and licences are listed in the repository.</td></tr>
+<tr><td>Is there a Mac version?</td><td>Not currently. JUMPjet is iPhone and iPad only, because the sampler was tuned and measured for a phone's thermal envelope.</td></tr>
+</table>
+
+<h2>Reporting a problem</h2>
+<p>The fastest route is a GitHub issue at
+<a href="https://github.com/bellcheddar/JUMPjet/issues" target="_blank" rel="noopener noreferrer">bellcheddar/JUMPjet</a>,
+which is also where the source lives. If you would rather not use GitHub, email
+<a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a>. Please say which device and iOS
+version you are on, and which accession you were loading.</p>
+
+<h2>Privacy</h2>
+<p>JUMPjet collects nothing. The full policy is at <a href="./privacy.html">privacy.html</a>.</p>
+
+<footer>JUMPjet is open source under the MIT licence. Built by <a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">Marc C. Deller, D.Phil.</a> &middot; <a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></footer>
+</div>
+</body>
+</html>
