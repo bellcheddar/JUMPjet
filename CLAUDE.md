@@ -14,10 +14,12 @@ This file is the short version plus current state.
 
 ## Current state
 
-- **Phase:** 1 complete (airframe: fetch, parse, view). Phase 2 not started.
-- **Last completed:** Phase 1's definition of done, 2026-08-27 (see `Docs/CHANGELOG.md`)
+- **Phase:** 1 complete. Phase 2's two engines built (`JumpjetNeural`, `JumpjetEngine`); app wiring outstanding.
+- **Last completed:** JetEngine's sampler, 2026-08-27 (see `Docs/CHANGELOG.md`)
 - **Blocked on:** nothing.
-- **Tests:** 139 across five packages, `Tools/test-all.sh`, host-side, no simulator.
+- **Tests:** 177 across seven packages, `Tools/test-all.sh`, host-side, no simulator.
+- **Open against the plan:** throughput. 22 sweeps/s at 335 residues against a
+  target of 100 at 300. See "Performance" below; Metal is the named next lever.
 
 ---
 
@@ -154,6 +156,37 @@ SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.j
 - **Split on window shape, not size class.** An iPad is `.regular` in both
   orientations, and a portrait side-by-side split leaves the viewer a pane twice
   as tall as it is wide.
+
+### Physics and performance
+
+- **`swift test` builds DEBUG.** For `JumpjetEngine` that is a factor of THIRTY-SIX:
+  twenty sweeps take 4.9 s debug and 0.14 s release. An entire optimisation pass
+  was aimed at debug numbers before this was noticed. `Tools/test-all.sh` runs
+  `-c release` for exactly this reason.
+- **Benchmark the shipping configuration.** The first benchmark used
+  `TorsionTables.flat()`, which made the sampler look 40% faster and put
+  acceptance at 65% instead of 37%. It was flattering itself on both counts.
+- **Where the time goes.** A backbone rotation moves about a quarter of the
+  atoms and each needs its neighbourhood re-tested, which is 97% of the cost.
+  Side-chain moves touch five atoms and are effectively free.
+- **Parallelism made it SEVEN TIMES SLOWER.** A deterministic
+  `concurrentPerform` split (disjoint stamp buffers, fixed-order reduction,
+  bit-identical acceptance) took 335 residues from 19.6 sweeps/s to 3.1. The
+  dispatch waits on worker threads that a loaded machine does not have. It was
+  removed rather than kept behind a flag, because the target is a phone: two
+  performance cores and a thermal budget.
+- **Per-cell distance culling was slower AND wrong.** Candidates fell 63 to 52
+  and throughput fell with them, and the acceptance ratio moved, which for a
+  fixed seed means the energies moved. Culling at cutoff plus one drift margin
+  looks right and is not: BOTH atoms drift between rebuilds, so the safe reach
+  is cutoff plus two margins, which is wider than a cell.
+- **The acceptance ratio is a calibration, not a constant.** `CalibrationTests`
+  sweeps the amplitudes and is skipped unless `JUMPJET_CALIBRATE` is set. Re-run
+  it whenever the force field changes.
+- **Rotate the smaller side of a torsion.** Free, because every energy term is a
+  function of internal coordinates, so the two choices differ only by a
+  rigid-body transform. Frames are superposed onto frame 0 before display, which
+  is where that difference goes.
 
 ### Toolchain
 

@@ -91,6 +91,21 @@ public struct NeighbourGrid: Sendable {
     }
 
     /// Append every atom in the 27 cells around `position` to `output`.
+    ///
+    /// All 27, with no per-cell culling. Culling on the distance from the query
+    /// point to each cell's nearest face was tried and REVERTED, for two
+    /// reasons that arrived together.
+    ///
+    /// It was slower: candidates per query fell from 63 to 52 and throughput
+    /// fell with them, because the culling arithmetic costs more per cell than
+    /// the handful of distance tests it saves.
+    ///
+    /// And it was wrong. The acceptance ratio moved, which for an identical
+    /// seed means the energies moved. Culling at cutoff plus one drift margin
+    /// looks right and is not: BOTH atoms drift between rebuilds, the moving
+    /// one away from the position being queried and the neighbour away from the
+    /// cell it was binned into. The safe reach is cutoff plus two margins,
+    /// which is wider than a cell and leaves nothing to cull.
     public func appendNeighbours(of position: SIMD3<Float>, into output: inout [Int32]) {
         let relative = (position - origin) / cellSize
         let cx = min(Int(dimensions.x) - 1, max(0, Int(relative.x)))

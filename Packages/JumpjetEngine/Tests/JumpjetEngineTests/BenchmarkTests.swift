@@ -27,11 +27,20 @@ final class BenchmarkTests: XCTestCase {
         let structure = try PDBParser.parse(
             Fixtures.text("structures/\(fixture)"), source: .alphaFold
         ).structure
-        let prior = [Float](repeating: 0.4, count: structure.residueCount)
+        // The REAL tables and a varying prior. Measured against
+        // `TorsionTables.flat()` this ran 40% faster and accepted 65% of moves
+        // instead of 37%, so it was measuring a configuration that does not
+        // ship and flattering itself on both counts.
+        let prior = (0..<structure.residueCount).map { index -> Float in
+            0.15 + 0.7 * (sin(Float(index) / 20) * 0.5 + 0.5)
+        }
+        let models = Fixtures.root.deletingLastPathComponent()
+            .appendingPathComponent("Models")
+        let tables = try TorsionTables.load(
+            from: models.appendingPathComponent("torsion_tables.json"))
         let topology = TorsionTopology(structure: structure)
         let model = EnergyModel(
-            structure: structure, topology: topology, flexibility: prior,
-            tables: TorsionTables.flat())
+            structure: structure, topology: topology, flexibility: prior, tables: tables)
         let positions = structure.positions
 
         print("\n--- structure ---")
@@ -83,9 +92,9 @@ final class BenchmarkTests: XCTestCase {
             _ = Geometry.superposedRMSD(moving: positions, onto: positions)
         }
 
-        let sweeps = 20
+        let sweeps = 40
         let sampler = MonteCarloSampler(
-            structure: structure, flexibility: prior, tables: TorsionTables.flat(),
+            structure: structure, flexibility: prior, tables: tables,
             configuration: RunConfiguration(sweeps: sweeps, snapshotStride: 1000, seed: 1))
         var elapsed = Date()
         let trajectory = sampler.run()
