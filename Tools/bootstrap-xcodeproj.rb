@@ -30,13 +30,15 @@ DEPLOYMENT_TARGET = "17.0"
 BUNDLE_ID = "com.marcdeller.jumpjet"
 SWIFT_VERSION = "6.2"
 
-# Phase 1's five. JetEngine, Neural, Analysis and Movie join in later phases.
+# Phase 1's five plus Phase 2's neural layer. JetEngine, Analysis and Movie
+# join in later phases.
 PACKAGES = %w[
   JumpjetCore
   JumpjetHUD
   JumpjetParse
   JumpjetFetch
   JumpjetViewer
+  JumpjetNeural
 ].freeze
 
 BASE_SETTINGS = {

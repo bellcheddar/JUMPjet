@@ -1,0 +1,22 @@
+# Pinned conversion environment for the ESM-2 flexibility prior.
+#
+# These pins are copied deliberately from BOFFIN's Tools/coreml/requirements.txt,
+# which is a conversion pipeline that has actually been run end to end on this
+# machine and produced a working .mlpackage. They are not aspirational.
+#
+# Python 3.12 specifically: coremltools ships no wheel for 3.14, which is this
+# machine's default interpreter. Create the environment with
+#   /opt/homebrew/bin/python3.12 -m venv Tools/coreml/.venv
+#
+# torch is pinned to 2.7.0 deliberately: it is the most recent version
+# coremltools 9.0 has been tested against, and it warns loudly on anything
+# newer. A conversion pipeline running outside its tested matrix can fail
+# subtly rather than loudly, which for a model whose output nobody can eyeball
+# is the worst available outcome.
+#
+# These pins are in the repository because a conversion that cannot be
+# reproduced is a model nobody can audit.
+torch==2.7.0
+coremltools==9.0
+fair-esm==2.0.0
+numpy==2.1.3

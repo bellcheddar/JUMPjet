@@ -31,3 +31,12 @@ Fixtures/cache/
 # Core ML intermediates (Phase 2)
 *.mlmodelc
 Tools/coreml/.venv/
+
+# Compiled Core ML, derived from the .mlpackage by `xcrun coremlcompiler`.
+Models/*.mlmodelc/
+
+# Download cache for the centroid reference structures. Reproducible from
+# compute_centroids.py, and its own AlphaFold API call.
+Fixtures/centroid-cache/
+__pycache__/
+*.pyc
