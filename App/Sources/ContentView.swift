@@ -85,7 +85,8 @@ struct ContentView: View {
                         structure: model.run.liveStructure ?? loaded.structure,
                         options: model.options,
                         flexibility: model.run.flexibilityValues,
-                        frameVersion: model.run.frameVersion)
+                        frameVersion: model.run.frameVersion,
+                        ghosts: model.run.ghostFrames)
                         .clipShape(RoundedRectangle(cornerRadius: HUDMetrics.cornerRadius - 4))
                         .overlay(alignment: .bottomLeading) {
                             ColourLegend(mode: model.options.colourMode, structure: loaded.structure)
@@ -108,6 +109,10 @@ struct ContentView: View {
                 // worth reading changes as a sortie progresses: the engines
                 // while they are running, the flight recorder once they stop.
                 if let record = model.run.record {
+                    // Playback above the analysis: the analysis is what to look
+                    // at, and the transport is how you look at it.
+                    PlaybackPanel(run: model.run)
+                    ExportPanel(model: model)
                     FlightRecorderPanel(
                         record: record, structure: loaded.structure,
                         // Written as a closure, not `model.select`: `model` is

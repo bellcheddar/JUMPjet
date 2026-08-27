@@ -27,6 +27,12 @@ public struct ViewerOptions: Sendable, Hashable {
     /// Afterburner amber, the same colour a jump event gets everywhere else in
     /// the app. Reusing it here is deliberate: one colour, one meaning.
     public static let highlightColour = SIMD3<Float>(1.0, 0xB3 / 255.0, 0)
+
+    /// How many trailing frames the ghost trail draws.
+    public var ghostCount = 0
+    /// Radius of a ghost's tube. Much thinner than the real one: a trail drawn
+    /// at full thickness hides the structure it is a trail of.
+    public var ghostRadius: Float = 0.14
 }
 
 /// Builds a SceneKit scene from a structure.
@@ -42,10 +48,12 @@ public enum StructureScene {
         public static let camera = "camera"
         public static let sticks = "sticks"
         public static func tube(_ chainIndex: Int) -> String { "tube.\(chainIndex)" }
+        public static func ghost(_ index: Int) -> String { "ghost.\(index)" }
     }
 
     public static func make(
-        structure: Structure, options: ViewerOptions, flexibility: [Float]? = nil
+        structure: Structure, options: ViewerOptions, flexibility: [Float]? = nil,
+        ghosts: [[SIMD3<Float>]] = []
     ) -> SCNScene {
         let scene = SCNScene()
         scene.background.contents = PlatformColour(
@@ -61,7 +69,9 @@ public enum StructureScene {
         // arrives half outside the panel.
         scene.rootNode.addChildNode(root)
 
-        rebuildGeometry(in: root, structure: structure, options: options, flexibility: flexibility)
+        rebuildGeometry(
+            in: root, structure: structure, options: options, flexibility: flexibility,
+            ghosts: ghosts)
         addLighting(to: scene, radius: structure.boundingRadius)
         addCamera(to: scene, radius: structure.boundingRadius)
         return scene
@@ -69,7 +79,8 @@ public enum StructureScene {
 
     /// Replace the geometry without touching the camera or the lights.
     public static func rebuildGeometry(
-        in root: SCNNode, structure: Structure, options: ViewerOptions, flexibility: [Float]? = nil
+        in root: SCNNode, structure: Structure, options: ViewerOptions,
+        flexibility: [Float]? = nil, ghosts: [[SIMD3<Float>]] = []
     ) {
         root.childNodes.forEach { $0.removeFromParentNode() }
 
@@ -94,6 +105,34 @@ public enum StructureScene {
             root.addChildNode(node)
         }
 
+        // Ghosts first, so the current frame draws over them.
+        //
+        // Cα trace only, and thin. A ghost trail of full tubes is four more
+        // copies of the most expensive geometry in the scene, redrawn on every
+        // frame of playback, and it buries the structure it is a trail of.
+        for (index, ghost) in ghosts.enumerated() where ghost.count == structure.atomCount {
+            var mesh = TubeMesh()
+            for chainIndex in structure.chains.indices where options.drawsChain(chainIndex) {
+                var chainMesh = ghostTube(
+                    structure: structure, chainIndex: chainIndex, positions: ghost,
+                    radius: options.ghostRadius,
+                    // Older ghosts are fainter, which is what makes the trail
+                    // read as a direction rather than as a tangle.
+                    fade: Float(index + 1) / Float(ghosts.count + 1))
+                chainMesh.translate(by: -centre)
+                let offset = Int32(mesh.positions.count)
+                mesh.positions.append(contentsOf: chainMesh.positions)
+                mesh.normals.append(contentsOf: chainMesh.normals)
+                mesh.colours.append(contentsOf: chainMesh.colours)
+                mesh.indices.append(contentsOf: chainMesh.indices.map { $0 + offset })
+            }
+            guard !mesh.isEmpty, let geometry = geometry(from: mesh) else { continue }
+            let node = SCNNode(geometry: geometry)
+            node.name = NodeName.ghost(index)
+            node.opacity = CGFloat(0.15 + 0.35 * Double(index + 1) / Double(ghosts.count + 1))
+            root.addChildNode(node)
+        }
+
         if options.showsSideChains, let sticks = stickGeometry(
             structure: structure, options: options, colours: colours, centre: centre)
         {
@@ -101,6 +140,27 @@ public enum StructureScene {
             node.name = NodeName.sticks
             root.addChildNode(node)
         }
+    }
+
+    /// A thin Cα tube for one chain of a past frame.
+    static func ghostTube(
+        structure: Structure, chainIndex: Int, positions: [SIMD3<Float>], radius: Float,
+        fade: Float
+    ) -> TubeMesh {
+        let range = structure.chains[chainIndex].residueRange
+        var controls: [SIMD3<Float>] = []
+        for residueIndex in range {
+            guard let alphaCarbon = structure.alphaCarbonIndex(ofResidue: residueIndex) else {
+                continue
+            }
+            controls.append(positions[alphaCarbon])
+        }
+        guard controls.count >= 2 else { return TubeMesh() }
+        // Three segments per residue rather than six, and six sides rather than
+        // ten: a ghost is a hint of where the chain was, not a model of it.
+        let path = TubeBuilder.interpolate(controls, segmentsPerSpan: 3)
+        let colour = SIMD3<Float>(repeating: 0.35 + 0.4 * fade)
+        return TubeBuilder.sweep(path: path, colours: [colour], radius: radius, sides: 6)
     }
 
     // MARK: - Geometry

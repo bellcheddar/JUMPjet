@@ -97,6 +97,16 @@ final class RunCoordinator {
     /// the live run.
     private(set) var pinnedFrame: Int?
 
+    // MARK: - Playback (see Playback.swift)
+
+    var isPlaying = false
+    /// 0.5 to 4 times, as the build plan specifies.
+    var playbackSpeed: Double = 1.0
+    var loopsPlayback = true
+    /// Trailing frames drawn behind the current one, 0 to 4.
+    var ghostCount = 0
+    var playbackTask: Task<Void, Never>?
+
     var configuration = RunConfiguration()
 
     private var embedder: ESMEmbedder?
@@ -270,6 +280,7 @@ final class RunCoordinator {
     private var baseStructure: Structure?
 
     func cancel() {
+        pausePlayback()
         stopFlag.set()
         task?.cancel()
         task = nil
@@ -289,6 +300,7 @@ final class RunCoordinator {
 
     func reset() {
         cancel()
+        pinnedFrame = nil
         prior = nil
         trajectory = nil
         lastProgress = nil

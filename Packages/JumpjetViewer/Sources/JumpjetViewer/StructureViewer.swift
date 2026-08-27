@@ -14,6 +14,7 @@ public struct StructureViewer: View {
     private let options: ViewerOptions
     private let flexibility: [Float]?
     private let frameVersion: Int
+    private let ghosts: [[SIMD3<Float>]]
 
     /// - Parameter frameVersion: bump this when only the COORDINATES changed.
     ///   An identifier and an atom count are identical between two frames of one
@@ -21,18 +22,19 @@ public struct StructureViewer: View {
     ///   the protein never appears to move.
     public init(
         structure: Structure, options: ViewerOptions, flexibility: [Float]? = nil,
-        frameVersion: Int = 0
+        frameVersion: Int = 0, ghosts: [[SIMD3<Float>]] = []
     ) {
         self.structure = structure
         self.options = options
         self.flexibility = flexibility
         self.frameVersion = frameVersion
+        self.ghosts = ghosts
     }
 
     public var body: some View {
         SceneKitContainer(
             structure: structure, options: options, flexibility: flexibility,
-            frameVersion: frameVersion)
+            frameVersion: frameVersion, ghosts: ghosts)
             .id(structure.identifier)
             .background(HUDPalette.background)
             .accessibilityLabel("Three dimensional structure of \(structure.identifier)")
@@ -70,13 +72,15 @@ private struct GeometryKey: Equatable {
         let options: ViewerOptions
         let flexibility: [Float]?
         let frameVersion: Int
+        let ghosts: [[SIMD3<Float>]]
 
         func makeCoordinator() -> Coordinator { Coordinator() }
 
         func makeUIView(context: Context) -> FramingSCNView {
             let view = FramingSCNView()
             view.scene = StructureScene.make(
-                structure: structure, options: options, flexibility: flexibility)
+                structure: structure, options: options, flexibility: flexibility,
+                ghosts: ghosts)
             view.allowsCameraControl = true
             view.defaultCameraController.interactionMode = .orbitTurntable
             view.defaultCameraController.inertiaEnabled = true
@@ -126,7 +130,8 @@ private struct GeometryKey: Equatable {
             // Geometry only. The camera node is a sibling of the structure
             // root, so the user's viewpoint survives every option change.
             StructureScene.rebuildGeometry(
-                in: root, structure: structure, options: options, flexibility: flexibility)
+                in: root, structure: structure, options: options, flexibility: flexibility,
+                ghosts: ghosts)
         }
 
         final class Coordinator {
@@ -191,6 +196,7 @@ private struct GeometryKey: Equatable {
         let options: ViewerOptions
         let flexibility: [Float]?
         let frameVersion: Int
+        let ghosts: [[SIMD3<Float>]]
 
         func makeCoordinator() -> Coordinator { Coordinator() }
 
