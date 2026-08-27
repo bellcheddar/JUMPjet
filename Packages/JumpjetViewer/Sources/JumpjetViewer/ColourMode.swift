@@ -31,6 +31,19 @@ public enum ColourMode: String, Sendable, Hashable, CaseIterable, Codable {
         }
     }
 
+    /// The name for a segmented control, where four or five segments share the
+    /// width of one instrument panel. "Confidence" truncates to "Confide..."
+    /// there, and pLDDT is the more precise word for it anyway.
+    public var shortName: String {
+        switch self {
+        case .chainbow: "Rainbow"
+        case .confidence: "pLDDT"
+        case .flexibility: "Flex"
+        case .element: "Atom"
+        case .chain: "Chain"
+        }
+    }
+
     /// Whether this mode says anything about the structure in hand.
     ///
     /// Offering a confidence scale for a crystal structure would put a 1.5

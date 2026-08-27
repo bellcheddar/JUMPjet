@@ -43,13 +43,12 @@ public enum StructureScene {
 
         let root = SCNNode()
         root.name = NodeName.root
-        // Centre the structure on the origin so the camera orbits its middle
-        // rather than swinging around a point tens of angstroms away, which is
-        // what makes a far-from-origin crystal structure feel broken to drag.
-        root.position = SCNVector3Make(0, 0, 0)
-        let centre = structure.centroid
-        root.pivot = SCNMatrix4MakeTranslation(
-            SceneFloat(centre.x), SceneFloat(centre.y), SceneFloat(centre.z))
+        // The structure is centred by MOVING ITS VERTICES, not by putting a
+        // translation in the node's pivot. A pivot centres it on screen and
+        // leaves the node's bounding box where the file put it, which quietly
+        // defeats SCNCameraController.frameNodes: it fits the camera to a
+        // volume tens of angstroms from anything visible, and the structure
+        // arrives half outside the panel.
         scene.rootNode.addChildNode(root)
 
         rebuildGeometry(in: root, structure: structure, options: options, flexibility: flexibility)
@@ -66,11 +65,16 @@ public enum StructureScene {
 
         let colours = ResidueColouring.colours(
             for: structure, mode: options.colourMode, flexibility: flexibility)
+        // Centre on the whole structure, not on the visible subset: filtering
+        // to one chain of a tetramer should not slide the other three across
+        // the panel as it is toggled.
+        let centre = structure.centroid
 
         for chainIndex in structure.chains.indices where options.drawsChain(chainIndex) {
-            let mesh = TubeBuilder.backboneTube(
+            var mesh = TubeBuilder.backboneTube(
                 structure: structure, chainIndex: chainIndex, residueColours: colours,
                 radius: options.tubeRadius)
+            mesh.translate(by: -centre)
             guard !mesh.isEmpty, let geometry = geometry(from: mesh) else { continue }
             let node = SCNNode(geometry: geometry)
             node.name = NodeName.tube(chainIndex)
@@ -78,7 +82,7 @@ public enum StructureScene {
         }
 
         if options.showsSideChains, let sticks = stickGeometry(
-            structure: structure, options: options, colours: colours)
+            structure: structure, options: options, colours: colours, centre: centre)
         {
             let node = SCNNode(geometry: sticks)
             node.name = NodeName.sticks
@@ -149,7 +153,8 @@ public enum StructureScene {
     /// draw calls, which is how a 600-residue protein drops from 60 fps to a
     /// slideshow on a phone.
     static func stickGeometry(
-        structure: Structure, options: ViewerOptions, colours: [SIMD3<Float>]
+        structure: Structure, options: ViewerOptions, colours: [SIMD3<Float>],
+        centre: SIMD3<Float>
     ) -> SCNGeometry? {
         let bonds = BondFinder.sideChainBonds(in: structure)
         guard !bonds.isEmpty else { return nil }
@@ -182,6 +187,7 @@ public enum StructureScene {
                 radius: options.stickRadius, sides: sides)
         }
 
+        mesh.translate(by: -centre)
         return geometry(from: mesh)
     }
 
@@ -201,21 +207,53 @@ public enum StructureScene {
 
     // MARK: - Camera and lights
 
+    /// The camera's vertical field of view, in degrees.
+    public static let fieldOfViewDegrees: Float = 45
+
+    /// How far back the camera must sit for a sphere of `radius` about the
+    /// origin to fit a view of the given aspect ratio.
+    ///
+    /// The aspect ratio is not optional here, and that is the whole point.
+    /// SceneKit applies `fieldOfView` to ONE dimension, so on a tall narrow
+    /// pane the horizontal angle is far smaller than the 45 degrees the naive
+    /// distance assumes, and the structure runs off both sides of the panel
+    /// while looking perfectly framed on a square iPhone view. Fitting the
+    /// tighter of the two angles is what makes one formula serve both.
+    ///
+    /// `radius / sin(halfAngle)` is the exact tangent distance for a sphere,
+    /// not the `radius / tan(halfAngle)` that fits a flat square at the centre
+    /// plane: the near face of a sphere is closer than its centre.
+    public static func cameraDistance(
+        boundingRadius radius: Float, aspect: Float, margin: Float = 1.06
+    ) -> Float {
+        let halfVertical = degreesToRadians(fieldOfViewDegrees) / 2
+        let safeAspect = aspect.isFinite && aspect > 0.01 ? aspect : 1
+        let halfHorizontal = atan(tan(halfVertical) * safeAspect)
+        let half = max(0.01, min(halfVertical, halfHorizontal))
+        return max(5, radius / sin(half) * margin)
+    }
+
+    static func degreesToRadians(_ degrees: Float) -> Float { degrees * .pi / 180 }
+
     static func addCamera(to scene: SCNScene, radius: Float) {
         let camera = SCNCamera()
-        camera.fieldOfView = 45
+        camera.fieldOfView = Double(fieldOfViewDegrees)
+        // Pin the direction: `.automatic` applies the field of view to the
+        // larger dimension, so the same camera means two different things on a
+        // portrait phone and a landscape iPad, and `cameraDistance` could not
+        // reason about either.
+        camera.projectionDirection = .vertical
         camera.zNear = 0.5
-        camera.zFar = Double(radius) * 10 + 100
+        camera.zFar = Double(radius) * 20 + 200
         camera.wantsHDR = false
 
         let node = SCNNode()
         node.name = NodeName.camera
         node.camera = camera
-        // Far enough back that the whole structure fits the 45 degree field
-        // with a margin, derived rather than guessed so a 142-residue globin
-        // and an 800-residue kinase both arrive framed.
-        let distance = max(12, radius / tan(Float.pi / 8) * 1.25)
-        node.position = SCNVector3Make(0, 0, SceneFloat(distance))
+        // A square view to start with. The view refits against its real aspect
+        // ratio as soon as it has been laid out.
+        node.position = SCNVector3Make(
+            0, 0, SceneFloat(cameraDistance(boundingRadius: radius, aspect: 1)))
         scene.rootNode.addChildNode(node)
     }
 
@@ -223,9 +261,11 @@ public enum StructureScene {
         let ambient = SCNNode()
         ambient.light = SCNLight()
         ambient.light?.type = .ambient
-        // Dim: this is a night cockpit, and a bright ambient washes the tube
-        // into a flat silhouette with no depth at all.
-        ambient.light?.intensity = 260
+        // Dim, but not so dim that the tube disappears: AlphaFold's very-high
+        // confidence blue is #0053D6, which on a #0A0E14 background is close to
+        // invisible under a 260 lumen ambient. The palette is fixed by the
+        // scale it means, so the LIGHTING is what has to give.
+        ambient.light?.intensity = 340
         ambient.light?.color = PlatformColour(
             red: 0.55, green: 0.62, blue: 0.75, alpha: 1)
         scene.rootNode.addChildNode(ambient)
@@ -233,7 +273,7 @@ public enum StructureScene {
         let key = SCNNode()
         key.light = SCNLight()
         key.light?.type = .directional
-        key.light?.intensity = 900
+        key.light?.intensity = 1250
         key.light?.castsShadow = false
         key.eulerAngles = SCNVector3Make(-0.6, 0.5, 0)
         scene.rootNode.addChildNode(key)
@@ -241,7 +281,7 @@ public enum StructureScene {
         let fill = SCNNode()
         fill.light = SCNLight()
         fill.light?.type = .directional
-        fill.light?.intensity = 320
+        fill.light?.intensity = 400
         fill.light?.color = PlatformColour(red: 0.35, green: 0.85, blue: 0.62, alpha: 1)
         fill.eulerAngles = SCNVector3Make(0.9, -1.1, 0)
         scene.rootNode.addChildNode(fill)

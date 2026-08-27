@@ -28,6 +28,11 @@ public struct TubeMesh: Sendable {
     }
 
     public var isEmpty: Bool { positions.isEmpty }
+
+    /// Shift every vertex. Normals are directions and are left alone.
+    public mutating func translate(by offset: SIMD3<Float>) {
+        for index in positions.indices { positions[index] += offset }
+    }
 }
 
 /// Builds a smooth tube through a backbone trace.

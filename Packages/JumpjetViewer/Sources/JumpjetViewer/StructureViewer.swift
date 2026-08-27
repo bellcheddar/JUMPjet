@@ -2,6 +2,7 @@ import JumpjetCore
 import JumpjetHUD
 import SceneKit
 import SwiftUI
+import simd
 
 /// The 3D view: a SceneKit scene with orbit, pinch and pan.
 ///
@@ -55,8 +56,8 @@ private struct GeometryKey: Equatable {
 
         func makeCoordinator() -> Coordinator { Coordinator() }
 
-        func makeUIView(context: Context) -> SCNView {
-            let view = SCNView()
+        func makeUIView(context: Context) -> FramingSCNView {
+            let view = FramingSCNView()
             view.scene = StructureScene.make(
                 structure: structure, options: options, flexibility: flexibility)
             view.allowsCameraControl = true
@@ -66,14 +67,36 @@ private struct GeometryKey: Equatable {
             view.antialiasingMode = .multisampling2X
             view.backgroundColor = .clear
             view.rendersContinuously = false
+            // Name the camera explicitly. Left nil, SceneKit finds a camera at
+            // RENDER time, and until then `defaultCameraController` has nothing
+            // to act on, so every reframe silently does nothing.
+            view.pointOfView = view.scene?.rootNode.childNode(
+                withName: StructureScene.NodeName.camera, recursively: false)
             context.coordinator.key = GeometryKey(structure, options)
+            context.coordinator.boundingRadius = structure.boundingRadius
+            // Framing is driven by LAYOUT, not by this call. The view has no
+            // bounds yet here, and on iPad the pane it ends up in is a very
+            // different shape from the one it is first measured at: framing
+            // once, early, left a third of the structure outside the panel.
+            view.onLayout = { [weak view] in
+                guard let view else { return }
+                context.coordinator.frameIfSizeChanged(view)
+            }
             return view
         }
 
-        func updateUIView(_ view: SCNView, context: Context) {
+        func updateUIView(_ view: FramingSCNView, context: Context) {
             let key = GeometryKey(structure, options)
             guard key != context.coordinator.key else { return }
+            let isNewStructure = context.coordinator.key?.identifier != key.identifier
             context.coordinator.key = key
+            defer {
+                if isNewStructure {
+                    context.coordinator.framedSize = nil
+                    context.coordinator.boundingRadius = structure.boundingRadius
+                    context.coordinator.frameIfSizeChanged(view)
+                }
+            }
 
             guard let scene = view.scene,
                 let root = scene.rootNode.childNode(
@@ -91,6 +114,56 @@ private struct GeometryKey: Equatable {
 
         final class Coordinator {
             var key: GeometryKey?
+            /// The size the camera was last framed against. Framing depends on
+            /// the aspect ratio, so a rotation or a split-view resize needs a
+            /// new fit and a repeat at the same size does not.
+            var framedSize: CGSize?
+            var boundingRadius: Float = 1
+
+            /// Refit the camera to the view's real aspect ratio.
+            ///
+            /// Only on a new structure or a genuine size change, never on every
+            /// update: reframing on each pass would yank the camera back to
+            /// default the moment the user orbited it.
+            ///
+            /// The distance changes; the DIRECTION does not. The geometry is
+            /// centred on the origin, so scaling the camera's position vector
+            /// refits without disturbing an orientation the user has chosen.
+            func frameIfSizeChanged(_ view: SCNView) {
+                let size = view.bounds.size
+                guard size.width > 1, size.height > 1 else { return }
+                if let framedSize,
+                    abs(framedSize.width - size.width) < 1,
+                    abs(framedSize.height - size.height) < 1
+                { return }
+                guard let camera = view.scene?.rootNode.childNode(
+                    withName: StructureScene.NodeName.camera, recursively: false)
+                else { return }
+                framedSize = size
+
+                let distance = StructureScene.cameraDistance(
+                    boundingRadius: boundingRadius,
+                    aspect: Float(size.width / size.height))
+                let current = camera.simdPosition
+                let direction = simd_length(current) > 1e-4
+                    ? simd_normalize(current) : SIMD3<Float>(0, 0, 1)
+                camera.simdPosition = direction * distance
+                view.pointOfView = camera
+            }
+        }
+    }
+
+    /// An SCNView that reports its own layout.
+    ///
+    /// SwiftUI does not call `updateUIView` when only the view's BOUNDS change,
+    /// so a representable that frames its camera in `update` frames it against
+    /// whatever size it was first measured at and never corrects.
+    final class FramingSCNView: SCNView {
+        var onLayout: (() -> Void)?
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            onLayout?()
         }
     }
 #else

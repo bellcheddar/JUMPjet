@@ -1,0 +1,680 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0F4101BD3FB9B59327277BC8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A77372F6CC773C8A8AF38A /* Assets.xcassets */; };
+		12F005D3346CEB9A442E0FD3 /* AccessionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */; };
+		1D3A5A1CA75ACE16335CC942 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
+		2054A6A7EC43F8813A31EC1F /* InstrumentPanels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */; };
+		367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */; };
+		5FDF6457B0995D2F79539BBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
+		A730E04640EBF3E659794CEE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB419058136043ABDC127E9E /* AppModel.swift */; };
+		B8668F4D02F9C13FC022E139 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D62F4B5EC2DA6211E768642 /* ContentView.swift */; };
+		BCF38D92F434A57CF9A9A058 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF1B2AAA247149A76D38044 /* AppModelTests.swift */; };
+		D9DFED2C9E87959204F78DA3 /* LaunchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */; };
+		FED12CD5AF3C51166182D496 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27599206621DD74001DF7C6D /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		04851ADD996000E2BEBA6BBB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 622B45485678D175FC7CF831 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 59AE495264C6A6C2B09B20CB;
+			remoteInfo = JUMPjet;
+		};
+		81DA78344CDEB0AA958C3780 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 622B45485678D175FC7CF831 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 59AE495264C6A6C2B09B20CB;
+			remoteInfo = JUMPjet;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02A77372F6CC773C8A8AF38A /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = App/Resources/Assets.xcassets; sourceTree = "<group>"; };
+		0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AccessionBar.swift; path = App/Sources/AccessionBar.swift; sourceTree = "<group>"; };
+		1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = JUMPjetApp.swift; path = App/Sources/JUMPjetApp.swift; sourceTree = "<group>"; };
+		27599206621DD74001DF7C6D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		28B30285D7172CBC0EF35291 /* JUMPJET_BUILD_PLAN.md */ = {isa = PBXFileReference; includeInIndex = 1; name = JUMPJET_BUILD_PLAN.md; path = Docs/JUMPJET_BUILD_PLAN.md; sourceTree = "<group>"; };
+		3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = InstrumentPanels.swift; path = App/Sources/InstrumentPanels.swift; sourceTree = "<group>"; };
+		3BF1B2AAA247149A76D38044 /* AppModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModelTests.swift; path = App/Tests/AppModelTests.swift; sourceTree = "<group>"; };
+		5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LaunchUITests.swift; path = App/UITests/LaunchUITests.swift; sourceTree = "<group>"; };
+		6D62F4B5EC2DA6211E768642 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/Sources/ContentView.swift; sourceTree = "<group>"; };
+		79C28983B9B7722AECE1304F /* MANIFEST.md */ = {isa = PBXFileReference; includeInIndex = 1; name = MANIFEST.md; path = Fixtures/MANIFEST.md; sourceTree = "<group>"; };
+		7B4B8229CEA372687E2B8098 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = App/Resources/Info.plist; sourceTree = "<group>"; };
+		88B714579B2910031D973FB5 /* JUMPjet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JUMPjet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECE5C811AD6CBF8E22F9F138 /* JUMPjetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JUMPjetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFDC331CA809B86B402364F2 /* JUMPjetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JUMPjetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB419058136043ABDC127E9E /* AppModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModel.swift; path = App/Sources/AppModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		55569B0C77269D994BABA57A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FDF6457B0995D2F79539BBE /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5D2F55A0B333CC2559BE899D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FED12CD5AF3C51166182D496 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8F42514D5C0280EE06BC96B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D3A5A1CA75ACE16335CC942 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2DD0C8EB9259CC885E0E6177 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				88B714579B2910031D973FB5 /* JUMPjet.app */,
+				EFDC331CA809B86B402364F2 /* JUMPjetTests.xctest */,
+				ECE5C811AD6CBF8E22F9F138 /* JUMPjetUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D990271D298E7DC07AE9317 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F46ADE3A14BF762C4DFE6415 /* Sources */,
+				768032015C36477F670C313F /* Tests */,
+				B11A100746A4D3BFF912E306 /* UITests */,
+				E7711E8350494508EEE14C47 /* Resources */,
+			);
+			name = App;
+			sourceTree = "<group>";
+		};
+		71B35B01C02C78DB7CAB7EFF /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				28B30285D7172CBC0EF35291 /* JUMPJET_BUILD_PLAN.md */,
+				79C28983B9B7722AECE1304F /* MANIFEST.md */,
+			);
+			name = Documentation;
+			sourceTree = SOURCE_ROOT;
+		};
+		768032015C36477F670C313F /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				3BF1B2AAA247149A76D38044 /* AppModelTests.swift */,
+			);
+			name = Tests;
+			sourceTree = SOURCE_ROOT;
+		};
+		B11A100746A4D3BFF912E306 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				5C047378D01D4FCAB8988FA8 /* LaunchUITests.swift */,
+			);
+			name = UITests;
+			sourceTree = SOURCE_ROOT;
+		};
+		BD7E4FA63F6995200E30B9F2 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				27599206621DD74001DF7C6D /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		E3D91DC3BB714486E3C827C7 = {
+			isa = PBXGroup;
+			children = (
+				2DD0C8EB9259CC885E0E6177 /* Products */,
+				E85B3611CDEB4B47C3CB5F6F /* Frameworks */,
+				5D990271D298E7DC07AE9317 /* App */,
+				71B35B01C02C78DB7CAB7EFF /* Documentation */,
+			);
+			sourceTree = "<group>";
+		};
+		E7711E8350494508EEE14C47 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				02A77372F6CC773C8A8AF38A /* Assets.xcassets */,
+				7B4B8229CEA372687E2B8098 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = SOURCE_ROOT;
+		};
+		E85B3611CDEB4B47C3CB5F6F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BD7E4FA63F6995200E30B9F2 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F46ADE3A14BF762C4DFE6415 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0DF761EF572A69C5E9EA3A7F /* AccessionBar.swift */,
+				FB419058136043ABDC127E9E /* AppModel.swift */,
+				6D62F4B5EC2DA6211E768642 /* ContentView.swift */,
+				3BA68DD66859D14CD809D021 /* InstrumentPanels.swift */,
+				1CA480A2FC56AF991F881566 /* JUMPjetApp.swift */,
+			);
+			name = Sources;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		514D3E6C936947AD88E9AEB5 /* JUMPjetUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9A42EA3DD26E2B24520D981F /* Build configuration list for PBXNativeTarget "JUMPjetUITests" */;
+			buildPhases = (
+				D14E885EF93D5BE84517CD68 /* Sources */,
+				5D2F55A0B333CC2559BE899D /* Frameworks */,
+				23388612746EE9C14A316F52 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8C30E326A085E004B88CE4D6 /* PBXTargetDependency */,
+			);
+			name = JUMPjetUITests;
+			productName = JUMPjetUITests;
+			productReference = ECE5C811AD6CBF8E22F9F138 /* JUMPjetUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		59AE495264C6A6C2B09B20CB /* JUMPjet */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD071E1E51633A53D6EAB75C /* Build configuration list for PBXNativeTarget "JUMPjet" */;
+			buildPhases = (
+				E9CCBF44BF0CB57D75B82036 /* Sources */,
+				55569B0C77269D994BABA57A /* Frameworks */,
+				5ACE24B1A2838EFA3307B0A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JUMPjet;
+			packageProductDependencies = (
+				D7E090C764EE95BB785FB72C /* JumpjetCore */,
+				089D8888FE44A0D16BBE0D05 /* JumpjetHUD */,
+				52F035207B8A7B7953DD3B14 /* JumpjetParse */,
+				AF07D1A03A66CE01822C9F13 /* JumpjetFetch */,
+				A7A598D7034DC70D16E6CA66 /* JumpjetViewer */,
+			);
+			productName = JUMPjet;
+			productReference = 88B714579B2910031D973FB5 /* JUMPjet.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6C443E61B2C1DCBE98732D0C /* JUMPjetTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9C7FD99EAF3771FA077152EA /* Build configuration list for PBXNativeTarget "JUMPjetTests" */;
+			buildPhases = (
+				1F1008359E60E0A0F0DF8A1D /* Sources */,
+				8F42514D5C0280EE06BC96B7 /* Frameworks */,
+				ACDC7A805E13F993ACDCDA72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2732FE6409FDB2F130D28922 /* PBXTargetDependency */,
+			);
+			name = JUMPjetTests;
+			productName = JUMPjetTests;
+			productReference = EFDC331CA809B86B402364F2 /* JUMPjetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		622B45485678D175FC7CF831 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = B787EEECD692072E3482854D /* Build configuration list for PBXProject "JUMPjet" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E3D91DC3BB714486E3C827C7;
+			minimizedProjectReferenceProxies = 0;
+			packageReferences = (
+				F4A250DC874A15B1BDB24533 /* XCLocalSwiftPackageReference "JumpjetCore" */,
+				0C0D29B38DE196916D9056E3 /* XCLocalSwiftPackageReference "JumpjetHUD" */,
+				C5C4B593EF9CA85D639F9241 /* XCLocalSwiftPackageReference "JumpjetParse" */,
+				28A6773F9CA9014E13A3CEC9 /* XCLocalSwiftPackageReference "JumpjetFetch" */,
+				59EDAA33AE3D45A20563DC08 /* XCLocalSwiftPackageReference "JumpjetViewer" */,
+			);
+			preferredProjectObjectVersion = 100;
+			productRefGroup = 2DD0C8EB9259CC885E0E6177 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				59AE495264C6A6C2B09B20CB /* JUMPjet */,
+				6C443E61B2C1DCBE98732D0C /* JUMPjetTests */,
+				514D3E6C936947AD88E9AEB5 /* JUMPjetUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		23388612746EE9C14A316F52 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5ACE24B1A2838EFA3307B0A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0F4101BD3FB9B59327277BC8 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ACDC7A805E13F993ACDCDA72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1F1008359E60E0A0F0DF8A1D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BCF38D92F434A57CF9A9A058 /* AppModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D14E885EF93D5BE84517CD68 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9DFED2C9E87959204F78DA3 /* LaunchUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E9CCBF44BF0CB57D75B82036 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12F005D3346CEB9A442E0FD3 /* AccessionBar.swift in Sources */,
+				A730E04640EBF3E659794CEE /* AppModel.swift in Sources */,
+				B8668F4D02F9C13FC022E139 /* ContentView.swift in Sources */,
+				2054A6A7EC43F8813A31EC1F /* InstrumentPanels.swift in Sources */,
+				367E75D5801E7416A20BAB30 /* JUMPjetApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2732FE6409FDB2F130D28922 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JUMPjet;
+			target = 59AE495264C6A6C2B09B20CB /* JUMPjet */;
+			targetProxy = 81DA78344CDEB0AA958C3780 /* PBXContainerItemProxy */;
+		};
+		8C30E326A085E004B88CE4D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JUMPjet;
+			target = 59AE495264C6A6C2B09B20CB /* JUMPjet */;
+			targetProxy = 04851ADD996000E2BEBA6BBB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		07571E68E1C87508531C4B84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_VERSION = 6.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2440B4523703CC846DD605FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcdeller.jumpjet;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		557B2AAA34469AE9BE258DFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcdeller.jumpjet.tests;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JUMPjet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JUMPjet";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		717F3AC370E3C2D524DBD2FD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcdeller.jumpjet;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		829D487B8EADEEA9A7A99C4A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcdeller.jumpjet.tests;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.2;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JUMPjet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JUMPjet";
+			};
+			name = Debug;
+		};
+		EA2749ED4E09517BF4DFC89B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_VERSION = 6.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F457D8D612DCD1C4E2296A4B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcdeller.jumpjet.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.2;
+				TEST_TARGET_NAME = JUMPjet;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F897DE2041EAEEE7F35C5D51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marcdeller.jumpjet.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.2;
+				TEST_TARGET_NAME = JUMPjet;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9A42EA3DD26E2B24520D981F /* Build configuration list for PBXNativeTarget "JUMPjetUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F457D8D612DCD1C4E2296A4B /* Release */,
+				F897DE2041EAEEE7F35C5D51 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9C7FD99EAF3771FA077152EA /* Build configuration list for PBXNativeTarget "JUMPjetTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				557B2AAA34469AE9BE258DFD /* Release */,
+				829D487B8EADEEA9A7A99C4A /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B787EEECD692072E3482854D /* Build configuration list for PBXProject "JUMPjet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA2749ED4E09517BF4DFC89B /* Debug */,
+				07571E68E1C87508531C4B84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD071E1E51633A53D6EAB75C /* Build configuration list for PBXNativeTarget "JUMPjet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2440B4523703CC846DD605FA /* Release */,
+				717F3AC370E3C2D524DBD2FD /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0C0D29B38DE196916D9056E3 /* XCLocalSwiftPackageReference "JumpjetHUD" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetHUD;
+		};
+		28A6773F9CA9014E13A3CEC9 /* XCLocalSwiftPackageReference "JumpjetFetch" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetFetch;
+		};
+		59EDAA33AE3D45A20563DC08 /* XCLocalSwiftPackageReference "JumpjetViewer" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetViewer;
+		};
+		C5C4B593EF9CA85D639F9241 /* XCLocalSwiftPackageReference "JumpjetParse" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetParse;
+		};
+		F4A250DC874A15B1BDB24533 /* XCLocalSwiftPackageReference "JumpjetCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/JumpjetCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		089D8888FE44A0D16BBE0D05 /* JumpjetHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C0D29B38DE196916D9056E3 /* XCLocalSwiftPackageReference "JumpjetHUD" */;
+			productName = JumpjetHUD;
+		};
+		52F035207B8A7B7953DD3B14 /* JumpjetParse */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5C4B593EF9CA85D639F9241 /* XCLocalSwiftPackageReference "JumpjetParse" */;
+			productName = JumpjetParse;
+		};
+		A7A598D7034DC70D16E6CA66 /* JumpjetViewer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 59EDAA33AE3D45A20563DC08 /* XCLocalSwiftPackageReference "JumpjetViewer" */;
+			productName = JumpjetViewer;
+		};
+		AF07D1A03A66CE01822C9F13 /* JumpjetFetch */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28A6773F9CA9014E13A3CEC9 /* XCLocalSwiftPackageReference "JumpjetFetch" */;
+			productName = JumpjetFetch;
+		};
+		D7E090C764EE95BB785FB72C /* JumpjetCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F4A250DC874A15B1BDB24533 /* XCLocalSwiftPackageReference "JumpjetCore" */;
+			productName = JumpjetCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 622B45485678D175FC7CF831 /* Project object */;
+}

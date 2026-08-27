@@ -2,6 +2,7 @@ import XCTest
 import JumpjetCore
 import JumpjetParse
 import SceneKit
+import simd
 
 @testable import JumpjetViewer
 
@@ -54,21 +55,57 @@ final class StructureSceneTests: XCTestCase {
         XCTAssertEqual(after.position.z, 33, accuracy: 1e-4)
     }
 
-    /// The pivot centres the structure so the camera orbits its middle. Without
-    /// it, a crystal structure sitting tens of angstroms from the origin swings
-    /// around a point outside itself and feels broken to drag.
-    func testTheStructureIsPivotedOnItsOwnCentroid() throws {
+    /// The geometry itself is centred on the origin, and the node carries no
+    /// pivot translation.
+    ///
+    /// Centring with a pivot puts the structure in the middle of the screen and
+    /// leaves the node's BOUNDING BOX where the file put it, which defeats
+    /// SCNCameraController.frameNodes: it fits the camera to a volume tens of
+    /// angstroms from anything visible and the structure lands half outside the
+    /// panel. A crystal structure is nowhere near the origin, so this is not a
+    /// theoretical distinction.
+    func testTheGeometryItselfIsCentredOnTheOrigin() throws {
         let structure = try PDBParser.parse(
             Fixtures.text("structures/1bab.pdb"), source: .pdbe).structure
-        let centroid = structure.centroid
-        XCTAssertGreaterThan(abs(centroid.x) + abs(centroid.y) + abs(centroid.z), 5)
+        XCTAssertGreaterThan(simd_length(structure.centroid), 5, "the fixture must be off-origin")
 
         let scene = StructureScene.make(structure: structure, options: ViewerOptions())
         let root = try XCTUnwrap(
             scene.rootNode.childNode(withName: StructureScene.NodeName.root, recursively: false))
-        XCTAssertEqual(Float(root.pivot.m41), centroid.x, accuracy: 1e-3)
-        XCTAssertEqual(Float(root.pivot.m42), centroid.y, accuracy: 1e-3)
-        XCTAssertEqual(Float(root.pivot.m43), centroid.z, accuracy: 1e-3)
+
+        XCTAssertEqual(Float(root.pivot.m41), 0, accuracy: 1e-6)
+        XCTAssertEqual(Float(root.pivot.m42), 0, accuracy: 1e-6)
+        XCTAssertEqual(Float(root.pivot.m43), 0, accuracy: 1e-6)
+
+        let box = root.boundingBox
+        let centre = SIMD3<Float>(
+            Float(box.min.x + box.max.x) / 2, Float(box.min.y + box.max.y) / 2,
+            Float(box.min.z + box.max.z) / 2)
+        XCTAssertLessThan(
+            simd_length(centre), 2, "the rendered geometry is not centred on the origin")
+    }
+
+    /// Filtering to one chain must not slide the rest of the structure across
+    /// the panel: the centre comes from the whole structure, not the subset.
+    func testChainFilteringDoesNotRecentreTheView() throws {
+        let structure = try PDBParser.parse(
+            Fixtures.text("structures/1bab.pdb"), source: .pdbe).structure
+
+        func chainABox(_ options: ViewerOptions) throws -> SCNVector3 {
+            let scene = StructureScene.make(structure: structure, options: options)
+            let root = try XCTUnwrap(
+                scene.rootNode.childNode(
+                    withName: StructureScene.NodeName.root, recursively: false))
+            let tube = try XCTUnwrap(root.childNode(withName: "tube.0", recursively: false))
+            return tube.boundingBox.min
+        }
+
+        var filtered = ViewerOptions()
+        filtered.visibleChains = [0]
+        let all = try chainABox(ViewerOptions())
+        let one = try chainABox(filtered)
+        XCTAssertEqual(Float(all.x), Float(one.x), accuracy: 1e-4)
+        XCTAssertEqual(Float(all.y), Float(one.y), accuracy: 1e-4)
     }
 
     func testSideChainsAreOffByDefaultAndAddASingleMergedNode() throws {
@@ -109,9 +146,45 @@ final class StructureSceneTests: XCTestCase {
         XCTAssertNotNil(root.childNode(withName: "tube.2", recursively: false))
     }
 
+    /// A tall narrow pane gets a much smaller HORIZONTAL angle than the 45
+    /// degree field of view, because SceneKit applies the field to one
+    /// dimension only. Ignoring that framed an iPad's tall viewer pane as if it
+    /// were square and ran the structure off both sides of the panel while
+    /// looking perfectly framed on an iPhone.
+    func testCameraDistanceAccountsForAspectRatio() {
+        let radius: Float = 30
+        let square = StructureScene.cameraDistance(boundingRadius: radius, aspect: 1)
+        let tall = StructureScene.cameraDistance(boundingRadius: radius, aspect: 0.5)
+        let wide = StructureScene.cameraDistance(boundingRadius: radius, aspect: 2)
+
+        XCTAssertGreaterThan(tall, square, "a narrow pane needs the camera further back")
+        XCTAssertEqual(wide, square, accuracy: 1e-3, "past square, height is the tighter limit")
+    }
+
+    /// `radius / sin(halfAngle)` is the tangent distance for a sphere. Using
+    /// `tan` instead fits a flat square at the centre plane and clips the near
+    /// face of anything round.
+    func testCameraDistanceIsTheSphereTangentNotThePlaneFit() {
+        let radius: Float = 20
+        let distance = StructureScene.cameraDistance(
+            boundingRadius: radius, aspect: 1, margin: 1)
+        let halfAngle = StructureScene.degreesToRadians(StructureScene.fieldOfViewDegrees) / 2
+
+        XCTAssertEqual(distance, radius / sin(halfAngle), accuracy: 1e-3)
+        XCTAssertGreaterThan(distance, radius / tan(halfAngle))
+    }
+
+    func testCameraDistanceSurvivesNonsenseAspectRatios() {
+        for aspect in [Float.nan, 0, -1, .infinity] {
+            let distance = StructureScene.cameraDistance(boundingRadius: 20, aspect: aspect)
+            XCTAssertTrue(distance.isFinite, "aspect \(aspect) produced \(distance)")
+            XCTAssertGreaterThan(distance, 0)
+        }
+    }
+
     /// The camera distance is derived from the bounding radius, so a small
-    /// globin and a large kinase both arrive framed rather than one filling the
-    /// screen and the other being a dot.
+    /// globin and a large chaperone both arrive framed rather than one filling
+    /// the screen and the other being a dot.
     func testCameraDistanceScalesWithTheStructure() throws {
         let small = try haemoglobin()
         let large = try PDBParser.parse(

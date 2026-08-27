@@ -1,0 +1,169 @@
+# CLAUDE.md
+
+Working agreement for the JUMPjet repository. Read this at the start of every session.
+
+**JUMPjet** = Just-in-time Unified Modelling of Protein Jumps, Ensembles and Transitions.
+A SwiftUI app for iOS and iPadOS: UniProt accession in, on-device conformational
+movie out. Crude short-timescale sampling and jump analytics, no cluster, no queue,
+no cloud.
+
+Full specification: `Docs/JUMPJET_BUILD_PLAN.md`. That document is authoritative.
+This file is the short version plus current state.
+
+---
+
+## Current state
+
+- **Phase:** 1 complete (airframe: fetch, parse, view). Phase 2 not started.
+- **Last completed:** Phase 1's definition of done, 2026-08-27 (see `Docs/CHANGELOG.md`)
+- **Blocked on:** nothing.
+- **Tests:** 139 across five packages, `Tools/test-all.sh`, host-side, no simulator.
+
+---
+
+## Ground rules from the build plan
+
+These are not negotiable and they are the reason several things are shaped
+oddly. Re-read section 2 of the build plan before arguing with any of them.
+
+1. **OpenMM has no iOS port.** Do not attempt to cross-compile it. The Phase 2
+   engine is a purpose-built Swift and Metal sampler called `JetEngine`.
+2. **The ANE only executes Core ML graphs.** The physics runs on GPU and CPU.
+   The ANE's real job is the ESM-2 embedding and the flexibility head. Verify
+   ANE dispatch in Instruments; do not claim it.
+3. **Pseudo-time, never picoseconds.** Frames are MC sweeps. The axis says so.
+4. Swift and iOS best practice: SwiftUI, Observation, async/await, no third-party
+   dependency managers. Unit tests for the physics core and the parsers.
+5. **British English in all UI copy and comments. No em dashes.**
+
+---
+
+## Module graph
+
+Local Swift packages under `Packages/`. The dependency rule is enforced by what
+each `Package.swift` is allowed to name, and it is acyclic and shallow.
+
+```
+JumpjetCore     (nothing)          structure model, chemistry, geometry, bonds
+JumpjetHUD      (nothing)          Night Sortie design system
+JumpjetParse    Core               PDB and mmCIF readers
+JumpjetFetch    Core, Parse        UniProt, AlphaFold DB, PDBe, model cache
+JumpjetViewer   Core, HUD          SceneKit renderer
+                (+ Parse in TESTS ONLY, so the renderer never learns about files)
+```
+
+Phases 2 to 4 add `JumpjetEngine`, `JumpjetNeural`, `JumpjetAnalysis` and
+`JumpjetMovie`. Add them to `PACKAGES` in `Tools/bootstrap-xcodeproj.rb` for the
+record, and to the app target in Xcode.
+
+`JUMPjet.xcodeproj` is committed and is the source of truth. `Tools/bootstrap-xcodeproj.rb`
+records its ORIGIN and must not be re-run to "regenerate" it: doing so discards
+every change made in Xcode since.
+
+---
+
+## Running things
+
+```bash
+Tools/test-all.sh                 # every package, on the host, about two seconds
+cd Packages/JumpjetCore && swift test
+xcodebuild -project JUMPjet.xcodeproj -scheme JUMPjet \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+```
+
+`JUMPJET_AUTOLOAD=P69905` in the app's environment loads that accession on
+launch, which is how a screenshot or a test reaches a loaded structure without
+driving the keyboard. Under `simctl` the variable needs the child prefix:
+
+```bash
+SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.jumpjet
+```
+
+---
+
+## Findings worth not rediscovering
+
+### Geometry
+
+- **The cross-product order in a dihedral IS the sign convention.** `b2 x n1`
+  gives the IUPAC sign; `n1 x b2` gives every torsion in the app the wrong sign,
+  and a self-consistent test suite passes either way. The test constructs four
+  atoms whose torsion is known by construction rather than by running the
+  function and writing down the answer.
+- **A torsion is INVARIANT under reversing the atom order**, not negated. The
+  intuitive guess fails against a correct implementation.
+- **Kabsch on rank-deficient point sets.** One-sided Jacobi leaves the left
+  columns for vanishing singular values EMPTY, and substituting fixed basis
+  vectors destroys orthonormality: the result is a "rotation" with determinant
+  zero that maps the points nowhere near each other. Complete the basis instead,
+  and sort the singular values first, because the reflection fix needs the
+  smallest one and Jacobi does not sort.
+
+### Parsing
+
+- **PDB is column-oriented; mmCIF is not.** Slicing the first six characters of
+  an mmCIF line drops every `ATOM` (five characters, so the slice reads into the
+  next field) while `HETATM` survives by being exactly six long. The result is a
+  structure containing only its ligands, which looks like an empty protein
+  rather than like a bug.
+- **The atom-name column alignment is what separates an alpha carbon from a
+  calcium ion** when the element column is missing, which truncated files do.
+- **Prefer `auth_*` over `label_*`.** `label_seq_id` is a one-based internal
+  index, and falling back to it silently renumbers the whole protein.
+- **Alternate locations: highest occupancy wins.** The minor conformer routinely
+  appears FIRST, so first-seen and last-seen policies both put the side chain in
+  the wrong place with no error.
+- The strongest tests in the suite parse the PDB and the mmCIF of the same entry
+  and compare them atom for atom. They check one reader against the other rather
+  than against a number anyone wrote down.
+
+### Fetch
+
+- **`"abc".contains("")` is FALSE in Swift.** A catch-all match rule written as
+  the empty string matches nothing at all.
+- **AlphaFold DB's model version moves.** The build plan was written at v4; v6
+  was current when the fixtures were recorded. Read it from the API, key the
+  cache on it, and never hard-code a file URL.
+- **PDBe answers a query for a secondary accession under the PRIMARY one**, so
+  looking up the key you asked for returns nothing.
+
+### Rendering
+
+- **Parallel transport, not a fixed up-vector.** A cross-section frame rebuilt
+  from a fixed up-vector corkscrews wherever the path turns towards that vector,
+  which on a helix is a visible twist that is not in the protein.
+- **Centre the geometry, not the node's pivot.** A pivot centres the structure on
+  screen and leaves the node's BOUNDING BOX where the file put it, which defeats
+  every camera-fitting routine: they fit a volume tens of angstroms from anything
+  visible.
+- **SceneKit applies `fieldOfView` to ONE dimension** (`.automatic` picks the
+  larger). A distance derived as though 45 degrees covered both looks perfectly
+  framed on a squarish iPhone panel and runs the structure off both sides of a
+  tall iPad pane. Set `projectionDirection` explicitly and fit the tighter of
+  the two angles.
+- **`radius / sin(halfAngle)`, not `tan`.** The near face of a sphere is closer
+  than its centre.
+- **SwiftUI does not call `updateUIView` when only the BOUNDS change.** A
+  representable that frames its camera there frames it against whatever size it
+  was first measured at and never corrects. Drive it from `layoutSubviews`.
+- **`SCNView.pointOfView` left nil means the camera is resolved at RENDER time**,
+  so `defaultCameraController` has nothing to act on and every reframe silently
+  does nothing.
+- **Merge the sticks into one geometry.** A node per bond is a few thousand draw
+  calls, which is how 60 fps becomes a slideshow.
+- **Split on window shape, not size class.** An iPad is `.regular` in both
+  orientations, and a portrait side-by-side split leaves the viewer a pane twice
+  as tall as it is wide.
+
+### Toolchain
+
+- The type checker gives up on a one-line Catmull-Rom: every literal and operator
+  is overloaded across `SIMD3` and its scalar. Write the basis terms out.
+- `simd` matrices subscript by column (`m[i]`); `.columns` is a tuple and cannot
+  take a variable index.
+- There is no double-to-float matrix conversion in `simd`; narrow column by column.
+- `Character` is not `Codable`.
+- `NSLock` is unavailable from an async context. Use an actor.
+- The iPad Pro 13-inch (M5) simulator kept shutting down under `simctl`; the iPad
+  Air 11-inch (M4) was stable. Never `killall CoreSimulatorService`: it unmounts
+  the runtime cryptex and only a reboot restores it.
