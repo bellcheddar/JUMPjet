@@ -16,7 +16,7 @@ what is NOT true yet.
 
 ## Ready
 
-- [x] **Bundle identifier** `com.marcdeller.jumpjet`, set in the project rather
+- [x] **Bundle identifier** `com.mdeller.jumpjet`, set in the project rather
       than generated.
 - [x] **Deployment target** iOS 17.0, and the Core ML model is converted at
       iOS17 to match. Converting the model at iOS18 would produce a bundle that

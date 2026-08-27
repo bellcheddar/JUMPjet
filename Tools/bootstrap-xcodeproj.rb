@@ -27,7 +27,7 @@ PROJECT_PATH = File.join(ROOT, "JUMPjet.xcodeproj")
 # and it is two major versions of reach wider than building against the current
 # SDK's minimum would be.
 DEPLOYMENT_TARGET = "17.0"
-BUNDLE_ID = "com.marcdeller.jumpjet"
+BUNDLE_ID = "com.mdeller.jumpjet"
 SWIFT_VERSION = "6.2"
 
 # Phase 1's five plus Phase 2's neural layer. JetEngine, Analysis and Movie

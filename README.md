@@ -120,7 +120,7 @@ Open `JUMPjet.xcodeproj` in Xcode and run. Type an accession (`P69905`, `P04406`
 `JUMPJET_AUTOLOAD` loads a structure on launch, which is how a screenshot or an interface test reaches a loaded structure without driving the keyboard (the flakiest part of any iOS UI test). Under `simctl` the variable needs the child prefix:
 
 ```bash
-SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.jumpjet
+SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.mdeller.jumpjet
 ```
 
 ## 🎨 Design system: "Night Sortie"

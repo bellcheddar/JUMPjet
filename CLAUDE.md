@@ -82,7 +82,7 @@ launch, which is how a screenshot or a test reaches a loaded structure without
 driving the keyboard. Under `simctl` the variable needs the child prefix:
 
 ```bash
-SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.marcdeller.jumpjet
+SIMCTL_CHILD_JUMPJET_AUTOLOAD=P69905 xcrun simctl launch <udid> com.mdeller.jumpjet
 ```
 
 ---
